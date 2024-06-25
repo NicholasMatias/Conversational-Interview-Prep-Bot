@@ -15,3 +15,4 @@ User Stories:
   9. As a job seeker, I want to be able to share my responses via email. 
   10. As a job seeker, I want to be able to add questions that aren't currently already available. 
 	
+<a href = "https://docs.google.com/document/d/1_gpMhK4igt0jIPBoaIAwuu8zG0rvs7JQEUOp0iLTWxs/edit?usp=sharing" target="_blank">Project Plan Page</a>
