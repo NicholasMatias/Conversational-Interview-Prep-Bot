@@ -1,28 +1,36 @@
 import {auth} from '../../../../backend/firebase/firebase'
 
-import { createUserWithEmailAndPassword, GoogleAuthProvider, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, updatePassword } from 'firebase/auth'
-
-export const doCreateUserWithEmailAndPassword  = async (email,password) => {
-    return createUserWithEmailAndPassword(auth, email,password)
-}
-
-export const doSignInWithEmailAndPassword = (email, password) => {
-    return signInWithEmailAndPassword(auth, email,password)
-}
-
-export const doSignInWithGoogle = async(email, password) => {
-    const provider = new GoogleAuthProvider()
-    const result = await signInWithPopup(auth, provider)
-    //result.user
-    return result
-
-}
-
-
-export const doSignOut = () =>{
-    return auth.signOut()
-}
-
+import {
+    signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
+    createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword,
+    signOut as firebaseSignOut,
+    GoogleAuthProvider,
+    FacebookAuthProvider,
+    signInWithPopup
+  } from 'firebase/auth';
+  
+  export const signInWithEmailAndPassword = (email, password) => {
+    return firebaseSignInWithEmailAndPassword(auth, email, password);
+  };
+  
+  export const createUserWithEmailAndPassword = (email, password) => {
+    return firebaseCreateUserWithEmailAndPassword(auth, email, password);
+  };
+  
+  export const signInWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(auth, provider);
+  };
+  
+  export const signInWithFacebook = () => {
+    const provider = new FacebookAuthProvider();
+    return signInWithPopup(auth, provider);
+  };
+  
+  export const signOut = () => {
+    return firebaseSignOut(auth);
+  };
+  
 
 
 //may implement password reset, email verification, and password change. Seems easy enough to add. 
