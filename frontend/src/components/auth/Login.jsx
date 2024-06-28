@@ -52,7 +52,7 @@ const Login = () => {
                 <input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
                 <button type='submit'>Login</button>
             </form>
-            <button onClick={handleFacebookLogin}>Login with Facebook</button>
+            {/* <button onClick={handleFacebookLogin}>Login with Facebook</button> */}
             <button onClick={handleGoogleLogin}>Login with Google</button>
         </div>
     )

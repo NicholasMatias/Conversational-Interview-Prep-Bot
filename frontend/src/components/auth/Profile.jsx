@@ -1,8 +1,9 @@
 import './Profile.css'
 
 import React from 'react'
-import { signOut } from 'firebase/auth'
+import { signOut } from './auth.js'
 import { useState,useEffect } from 'react'
+import { useAuth } from './auth.jsx'
 
 
 const Profile = () => {
