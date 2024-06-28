@@ -33,19 +33,3 @@ export const signOut = () => {
 
 
 
-//may implement password reset, email verification, and password change. Seems easy enough to add. 
-
-// export const doPasswordReset = (email) => {
-//     return sendPasswordResetEmail(auth, email)
-// }
-
-// export const doPasswordChange = (password) => {
-//     return updatePassword(auth.currentUser, password)
-// }
-
-
-// export const doSendEmailVerification = () => {
-//     return sendEmailVerification(auth.currentUser, {
-//         url: `${window.location.origin}/home`,
-//     })
-// }

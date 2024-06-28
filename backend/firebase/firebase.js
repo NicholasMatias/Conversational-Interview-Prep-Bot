@@ -1,4 +1,4 @@
-// Import the functions you need from the SDKs you need
+
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import {getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup} from 'firebase/auth'
@@ -7,6 +7,9 @@ import {getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sig
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
+console.log('Firebase api key:',import.meta.env.API_KEY)
+
 const firebaseConfig = {
   apiKey: "AIzaSyCjFjyMbmiEZDeu9Pb6IluxC3cXydh4E2Q",
   authDomain: "interviewme-e1d7b.firebaseapp.com",
