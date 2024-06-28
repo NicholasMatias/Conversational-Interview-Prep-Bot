@@ -1,20 +1,20 @@
-import React,{useState, useEffect, useContext} from 'react'
-import {auth} from '../../../../backend/firebase/firebase'
+import React, { useState, useEffect, useContext } from 'react'
+import { auth } from '../../../../backend/firebase/firebase'
 import { onAuthStateChanged } from 'firebase/auth'
 
 const AuthContext = React.createContext()
 
-export function useAuth(){
+export function useAuth() {
     return useContext(AuthContext)
 }
 
-export function AuthProvider ({children}){
+export function AuthProvider({ children }) {
     const [currentUser, setCurrUser] = useState(null)
     const [userLoggedIn, setUserLoggedIn] = useState(false)
     const [loading, setLoading] = useState(true)
 
-    useEffect(()=>{
-        const unsubscribe = onAuthStateChanged(auth, (user)=>{
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrUser(user)
             setLoading(false)
         })
@@ -22,12 +22,12 @@ export function AuthProvider ({children}){
     }, [])
 
 
-    async function initializeUser(user){
-        if(user){
-            setCurrUser({...user})
+    async function initializeUser(user) {
+        if (user) {
+            setCurrUser({ ...user })
             setUserLoggedIn(true)
         }
-        else{
+        else {
             setCurrUser(null)
             setUserLoggedIn(false)
         }
@@ -38,10 +38,10 @@ export function AuthProvider ({children}){
 
     const value = {
         currentUser,
-        
+
     }
     return (
-        <AuthContext.Provider value = {value}>
+        <AuthContext.Provider value={value}>
             {!loading && children}
         </AuthContext.Provider>
     )

@@ -1,4 +1,4 @@
-import {auth} from '../../../../backend/firebase/firebase'
+import { auth } from '../../../../backend/firebase/firebase'
 
 import {
     signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
@@ -7,30 +7,30 @@ import {
     GoogleAuthProvider,
     FacebookAuthProvider,
     signInWithPopup
-  } from 'firebase/auth';
-  
-  export const signInWithEmailAndPassword = (email, password) => {
+} from 'firebase/auth';
+
+export const signInWithEmailAndPassword = (email, password) => {
     return firebaseSignInWithEmailAndPassword(auth, email, password);
-  };
-  
-  export const createUserWithEmailAndPassword = (email, password) => {
+};
+
+export const createUserWithEmailAndPassword = (email, password) => {
     return firebaseCreateUserWithEmailAndPassword(auth, email, password);
-  };
-  
-  export const signInWithGoogle = () => {
+};
+
+export const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider);
-  };
-  
-  export const signInWithFacebook = () => {
+};
+
+export const signInWithFacebook = () => {
     const provider = new FacebookAuthProvider();
     return signInWithPopup(auth, provider);
-  };
-  
-  export const signOut = () => {
+};
+
+export const signOut = () => {
     return firebaseSignOut(auth);
-  };
-  
+};
+
 
 
 //may implement password reset, email verification, and password change. Seems easy enough to add. 
