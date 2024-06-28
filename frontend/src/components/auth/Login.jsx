@@ -2,12 +2,16 @@ import './Login.css'
 
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { signInWithEmailAndPassword, signInWithFacebook, signInWithGoogle} from './auth'
+import { signInWithEmailAndPassword, signInWithFacebook, signInWithGoogle } from './auth'
 import { useState } from 'react'
 
 const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState(false);
+    const [googleErrorMessage, setGoogleErrorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+
     const navigate = useNavigate()
 
     const handleLogin = async (e) => {
@@ -16,8 +20,32 @@ const Login = () => {
             await signInWithEmailAndPassword(email, password)
             navigate('/profile')
         }
-        catch (error) {
-            console.error('Error during email/ password sign-in',error)
+        catch (err) {
+            const errorMessage = err.message;
+            const errorCode = err.code;
+
+            setError(true);
+            console.log(errorCode)
+
+            switch (errorCode) {
+                case "auth/invalid-email":
+                    setErrorMessage("This email address is invalid.");
+                    break;
+                case "auth/user-disabled":
+                    setErrorMessage(
+                        "This email address is disabled by the administrator."
+                    );
+                    break;
+                case "auth/user-not-found":
+                    setErrorMessage("This email address is not registered.");
+                    break;
+                case "auth/wrong-password":
+                    setErrorMessage("The password is invalid or the user does not have a password.")
+                    break;
+                default:
+                    setErrorMessage(errorMessage);
+                    break;
+            }
         }
     }
 
@@ -28,8 +56,29 @@ const Login = () => {
             navigate('/profile')
 
         }
-        catch (error) {
-            console.error(error)
+        catch (err) {
+            const errorMessage = err.message;
+            const errorCode = err.code;
+
+            setError(true);
+
+            switch (errorCode) {
+                case "auth/operation-not-allowed":
+                    setGoogleErrorMessage("Email/password accounts are not enabled.");
+                    break;
+                case "auth/operation-not-supported-in-this-environment":
+                    setGoogleErrorMessage("HTTP protocol is not supported. Please use HTTPS.")
+                    break;
+                case "auth/popup-blocked":
+                    setGoogleErrorMessage("Popup has been blocked by the browser. Please allow popups for this website.")
+                    break;
+                case "auth/popup-closed-by-user":
+                    setGoogleErrorMessage("Popup has been closed by the user before finalizing the operation. Please try again.")
+                    break;
+                default:
+                    setGoogleErrorMessage(errorMessage);
+                    break;
+            }
         }
     }
 
@@ -40,11 +89,11 @@ const Login = () => {
 
         }
         catch (error) {
-            console.error(error)
+            console.error('Error during signin with Facebook:', error)
         }
     }
 
-    const handleCreateAccount=()=>{
+    const handleCreateAccount = () => {
         navigate('/signup')
     }
 
@@ -56,9 +105,12 @@ const Login = () => {
                 <input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
                 <button type='submit'>Login</button>
             </form>
+            {error && <p>{errorMessage}</p>}
+
             {/* <button onClick={handleFacebookLogin}>Login with Facebook</button> */}
             <button onClick={handleGoogleLogin}>Login with Google</button>
-            <button onClick={handleCreateAccount}>Signup</button>
+            {error && <p>{googleErrorMessage}</p>}
+            <p>Don't have an account? <button onClick={handleCreateAccount}>Signup</button></p>
         </div>
     )
 
