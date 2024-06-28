@@ -44,6 +44,10 @@ const Login = () => {
         }
     }
 
+    const handleCreateAccount=()=>{
+        navigate('/signup')
+    }
+
     return (
         <div>
             <h2>Login</h2>
@@ -54,6 +58,7 @@ const Login = () => {
             </form>
             {/* <button onClick={handleFacebookLogin}>Login with Facebook</button> */}
             <button onClick={handleGoogleLogin}>Login with Google</button>
+            <button onClick={handleCreateAccount}>Signup</button>
         </div>
     )
 
