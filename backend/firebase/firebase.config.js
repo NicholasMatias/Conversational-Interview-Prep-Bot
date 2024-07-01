@@ -7,19 +7,13 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, si
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// const express = require('express')
-// const cors = require('cors')
-// require('dotenv').config()
-import 'dotenv/config'
 
 
 
-// console.log('Testing the process.env:',process.env)
-const testKey = import.meta.env.API_KEY
-console.log('Firebase api key:', testKey)
+// console.log('Test:', import.meta.env.REACT_APP_API_KEY)
 
 const firebaseConfig = {
-    apiKey: import.meta.env.API_KEY,
+    apiKey: "AIzaSyCjFjyMbmiEZDeu9Pb6IluxC3cXydh4E2Q",
     authDomain: "interviewme-e1d7b.firebaseapp.com",
     projectId: "interviewme-e1d7b",
     storageBucket: "interviewme-e1d7b.appspot.com",
