@@ -98,19 +98,19 @@ const Login = () => {
     }
 
     return (
-        <div>
+        <div className='login-form'>
             <h2>Login</h2>
             <form onSubmit={handleLogin}>
-                <input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
-                <input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
+                <input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} required/>
+                <input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} required/>
                 <button type='submit'>Login</button>
             </form>
             {error && <p>{errorMessage}</p>}
-
+            {/* TODO: finish up meta developers authentication. Must file business authentication. (takes minimum 5 days) */}
             {/* <button onClick={handleFacebookLogin}>Login with Facebook</button> */}
-            <button onClick={handleGoogleLogin}>Login with Google</button>
+            <button className= "google-button" onClick={handleGoogleLogin}><i className="fa-brands fa-google"></i>Login with Google</button>
             {error && <p>{googleErrorMessage}</p>}
-            <p>Don't have an account? <button onClick={handleCreateAccount}>Signup</button></p>
+            <p className='form-footer'>Don't have an account? <button onClick={handleCreateAccount}>Signup</button></p>
         </div>
     )
 
