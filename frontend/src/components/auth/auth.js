@@ -1,4 +1,4 @@
-import { auth } from '../../../../backend/firebase/firebase'
+import { auth } from '../../../../backend/firebase/firebase.config'
 
 import {
     signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
