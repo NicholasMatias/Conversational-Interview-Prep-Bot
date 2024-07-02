@@ -1,0 +1,93 @@
+.intro-container {
+    text-align: center;
+    background-color: #222831;
+    color: white;
+    padding: 3em 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+header h1 {
+    margin: 0 0 0.5em;
+    font-size: 84px;
+    width: 50%;
+}
+
+header p {
+    margin: 0 0 1.5em;
+    font-size: 1.2em;
+    width: 50%;
+}
+
+.buttons {
+    gap: 1em;
+    width: 35%;
+    display: flex;
+    justify-content: center;
+}
+
+
+
+.btn {
+    padding: 1em 2em;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    border-radius: 0.5em;
+}
+
+.btn-signup {
+    background-color: #008A90;
+    color: white;
+}
+
+.btn-signup:hover {
+    background-color: #222831;
+    border: 2px solid white;
+    transition: background-color 0.3s ease;
+
+
+}
+
+
+.btn-learn-more {
+    background-color: #008A90;
+    color: white;
+}
+
+.btn-learn-more:hover {
+    background-color: #222831;
+    border: 2px solid white;
+    transition: background-color 0.3s ease;
+}
+
+
+.btn-login{
+    background-color: #008A90;
+    color: white;
+}
+
+.btn-login:hover {
+    background-color: #222831;
+    border: 2px solid white;
+    transition: background-color 0.3s ease;
+}
+
+
+.image-grid {
+    display: flex;
+    gap: 30px;
+    padding: 2em;
+    flex-wrap: wrap;
+    justify-content: center;
+    background-color: #222831;
+}
+
+.image-grid img {
+    width: 400px;
+    height: auto;
+    border-radius: 0.5em;
+}

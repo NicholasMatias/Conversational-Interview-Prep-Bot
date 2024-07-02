@@ -1,25 +1,80 @@
-body {
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
-}
-
 .signup-form {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 300px;
-    margin: auto;
-    border: 1px solid #ddd;
+    background-color: #393e46;
+    color: white;
+    padding: 2em;
+    border-radius: 0.5em;
+    margin: 2em auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    width: 400px;
+    height: 450px;
 }
 
-input[type="email"],
-input[type="password"],
-input[type="text"] {
+.signup-form h2 {
+    font-size: 2em;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+.signup-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+.signup-form label {
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+}
+
+.signup-form input {
+    padding: 0.5em;
+    font-size: 1em;
+    border: none;
+    border-radius: 0.5em;
+    margin-bottom: 1em;
+}
+
+.signup-form button {
+    background-color: #00adb5;
+    color: white;
+    padding: 1em;
+    border: none;
+    border-radius: 0.5em;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1em; /* Added margin-bottom for spacing */
+}
+
+.signup-form button:hover {
+    background-color: #007b7b;
+}
+
+.signup-form .form-footer {
+    margin-top: 1em;
+    text-align: center;
+}
+
+.signup-form .form-footer button {
+    background-color: transparent;
+    color: #00adb5;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    transition: color 0.3s ease;
+}
+
+.signup-form .form-footer button:hover {
+    color: #007b7b;
+}
+
+.signup-form .error-message {
+    color: red;
+    margin-bottom: 1em;
+    text-align: center;
+    min-height: 1.5em; /* Added to reserve space for error message */
+}
+
+
+.login-button{
     width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    border-radius: 4px;
 }

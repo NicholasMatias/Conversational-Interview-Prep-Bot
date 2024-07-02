@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword } from './auth.js'
 import { useState } from 'react'
 import { updateProfile } from 'firebase/auth'
+import Spacing from '../landing_page/spacing/Spacing.jsx'
+import Footer from '../landing_page/footer/Footer.jsx'
 
 const Signup = () => {
     const [email, setEmail] = useState('')
@@ -51,22 +53,44 @@ const Signup = () => {
     }
 
     const backToLogin = () => {
+        navigate('/login')
+    }
+
+    const handleHome =() =>{
         navigate('/')
     }
 
     return (
-        <div className='signup-form'>
-            <h2>Signup</h2>
-            <form onSubmit={handleSignup}>
-                <input type='text' placeholder='Username' value={username} onChange={(e) => setUsername(e.target.value)} required />
-                <input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} required/>
-                <input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} required />
-                <button type='submit'>Signup</button>
-            </form>
-            {error && <p>{errorMessage}</p>}
+        <>
+            <nav className='navBar-container'>
+                <div className="navbar">
+                    <div className="brand">
+                        InterviewMe
+                    </div>
+                    <ul className="nav-links">
+                        <li><a type='button' onClick={handleHome} >Home</a></li>
 
-            <p className='form-footer'>Already have an account? <button onClick={backToLogin}>Login</button></p>
-        </div>
+                    </ul>
+                </div>
+            </nav>
+            <Spacing/>
+            <div className='signup-form'>
+                <h2>Signup</h2>
+                <form onSubmit={handleSignup}>
+                    <input type='text' placeholder='Username' value={username} onChange={(e) => setUsername(e.target.value)} required />
+                    <input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} required />
+                    <input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} required />
+                    <button type='submit'>Signup</button>
+                </form>
+                {error && <p className='error-message'>{errorMessage}</p>}
+
+                <p className='form-footer'>Already have an account? </p>
+                <button className = "login-button"onClick={backToLogin}>Login</button>
+            </div>
+            <Spacing />
+            <Footer />
+        </>
+
     )
 }
 

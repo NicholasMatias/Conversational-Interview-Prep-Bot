@@ -4,6 +4,9 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { signInWithEmailAndPassword, signInWithFacebook, signInWithGoogle } from './auth'
 import { useState } from 'react'
+import Footer from '../landing_page/footer/Footer'
+import Spacing from '../landing_page/spacing/Spacing'
+import googleIcon from '../landing_page/images_icons/Google Icon.png'
 
 const Login = () => {
     const [email, setEmail] = useState('')
@@ -97,21 +100,48 @@ const Login = () => {
         navigate('/signup')
     }
 
+    const handleHome = ()=>{
+        navigate('/')
+    }
+
+    
+
     return (
-        <div className='login-form'>
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
-                <input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} required/>
-                <input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} required/>
-                <button type='submit'>Login</button>
-            </form>
-            {error && <p>{errorMessage}</p>}
-            {/* TODO: finish up meta developers authentication. Must file business authentication. (takes minimum 5 days) */}
-            {/* <button onClick={handleFacebookLogin}>Login with Facebook</button> */}
-            <button className= "google-button" onClick={handleGoogleLogin}><i className="fa-brands fa-google"></i>Login with Google</button>
-            {error && <p>{googleErrorMessage}</p>}
-            <p className='form-footer'>Don't have an account? <button onClick={handleCreateAccount}>Signup</button></p>
-        </div>
+        <>
+            <nav className='navBar-container'>
+                <div className="navbar">
+                    <div className="brand">
+                        InterviewMe
+                    </div>
+                    <ul className="nav-links">
+                        <li><a type='button' onClick={handleHome} >Home</a></li>
+                        
+                    </ul>
+                </div>
+            </nav>
+            <Spacing/>
+            <div className='form-container'>
+                <div className='login-form'>
+                    <h2>Login</h2>
+                    <form onSubmit={handleLogin}>
+                        <input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} required />
+                        <input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} required />
+                        <button type='submit' className='login-button'>Login</button>
+                    </form>
+                    {error && <p className='error-message'>{errorMessage}</p>}
+                    {/* TODO: finish up meta developers authentication. Must file business authentication. (takes minimum 5 days) */}
+                    {/* <button onClick={handleFacebookLogin}>Login with Facebook</button> */}
+                    <button className="google-button" onClick={handleGoogleLogin}><i className="fa-brands fa-google"></i>Login with Google</button>
+                    {error && <p>{googleErrorMessage}</p>}
+                    <p className='form-footer'>Don't have an account? </p>
+                    <button onClick={handleCreateAccount} className='signup-button'>Signup</button>
+                </div>
+            </div>
+            <Spacing/>
+            <Footer/>
+        </>
+
+
     )
 
 
