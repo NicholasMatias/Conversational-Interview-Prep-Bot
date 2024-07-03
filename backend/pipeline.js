@@ -46,7 +46,7 @@ async function getGroqChatCompletion(prompt) {
                     content: prompt
                 }
             ],
-            model: "llama3-8b-8192"
+            model: "llama3-70b-8192"
         });
         return response;
     } catch (error) {
