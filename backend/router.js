@@ -12,21 +12,19 @@ app.use(cors())
 app.use(express.json())
 
 const PORT = process.env.PORT || 3000
-console.log('Port:', PORT)
 
 
 const groqInstance = new groq({ apiKey: process.env.GROQ_API_KEY });
 
 app.post('/api/chat', async (req, res) => {
-    const { message, context,lastQuestionCheck} = req.body;
-    console.log('The question asked was:\n\t', context)
-    console.log("The user's response was:\n\t", message)
-    const lastQuestion = lastQuestionCheck=="quit"? true: false
-    console.log(context)
-    console.log("last question:", lastQuestion)
+    const { message, context,lastQuestionCheck, prevIsFollowUp} = req.body;
+
+    let lastQuestion = lastQuestionCheck=="quit"? true: false
     try {
         const doFollowUp = Math.random()>.65 ? true: false;
-        console.log("Follow up question is:", doFollowUp)
+        if(doFollowUp){lastQuestion= false;}
+        
+        if(prevIsFollowUp){lastQuestion=false;}
         const response = await groqInstance.chat.completions.create({
             messages: [
                 {
@@ -64,9 +62,7 @@ app.post('/api/chat', async (req, res) => {
         const followUpQuestionMatch = botResponse.match(/follow-up question, (.*)$/);
         const followUpQuestion = followUpQuestionMatch ? followUpQuestionMatch[1].trim() : null;
         
-        // console.log("Entire response:", botResponse)
         
-        console.log("Follow-up question:",followUpQuestion)
 
         res.json({
             response: botResponse,
