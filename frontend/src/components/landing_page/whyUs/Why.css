@@ -1,0 +1,72 @@
+.why-choose-us {
+    background-color: #222831;
+    padding: 2em;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-left: 8%;
+    margin-right: 8%;
+}
+
+.text {
+    flex: 1;
+    text-align: left;
+}
+
+.text h2 {
+    font-size: 60px;
+    margin-bottom: 0.5em;
+    color: #00adb5;
+
+}
+
+.text p {
+    font-size: 20px;
+    margin-bottom: 1em;
+    color: white;
+
+}
+
+.features {
+    flex: 2;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.feature {
+    background-color: #393e46;
+    padding: 1em;
+    border-radius: 0.5em;
+    margin: 1em;
+    text-align: center;
+    height: 400px;
+    width: 320px;
+}
+
+.feature img {
+    width: 300px;
+    height: auto;
+    border-radius: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.feature h3 {
+    font-size: 1.5em;
+    margin-bottom: 0.5em;
+    color: white;
+}
+
+.feature p {
+    font-size: 1em;
+    margin: 0;
+    color: white;
+}
