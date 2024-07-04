@@ -381,8 +381,9 @@ import { useNavigate } from 'react-router-dom'
 
 const interviewQuestions = [
     "Can you tell me about a time you worked on a team to complete a project? What was your role, and what did you learn from the experience?",
-    "How do you handle tight deadlines? Can you provide an example?",
-    "What is your greatest strength and how does it help you in your work?",
+    // "How do you handle tight deadlines? Can you provide an example?",
+    "quit"
+    // "What is your greatest strength and how does it help you in your work?",
     // Add more questions as needed
 ];
 
@@ -394,7 +395,7 @@ const Profile = () => {
     const [interviewStarted, setInterviewStarted] = useState(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [expectingFollowUp, setExpectingFollowUp] = useState(false); // Track follow-up state
-    const [lastQuestion, setLastQuestion] = useState(false)
+    const [lastQuestionCheck, setLastQuestionCheck] = useState("")
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -422,23 +423,26 @@ const Profile = () => {
 
             const currentQuestion = interviewQuestions[currentQuestionIndex];
             const context = `Question: ${currentQuestion}`;
+            if (interviewQuestions.length > 2) {
+                setLastQuestionCheck(interviewQuestions[currentQuestionIndex + 2])
 
+            }
             try {
                 const response = await fetch('http://localhost:5000/api/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ message: input, context, lastQuestion }), // Ensure context is included here
+                    body: JSON.stringify({ message: input, context, lastQuestionCheck }), // Ensure context is included here
                 });
                 const data = await response.json();
                 const botMessage = { role: "bot", content: data.response };
                 setMessages([...messages, userMessage, botMessage]);
                 setInput("");
-                
-                if (data.followUp ) {
+
+                if (data.followUp) {
                     // Process follow-up question
-                    if(!data.response.includes(data.followUp)){
+                    if (!data.response.includes(data.followUp)) {
                         setMessages(prevMessages => [
                             ...prevMessages,
                             { role: "bot", content: data.followUp }
@@ -452,10 +456,9 @@ const Profile = () => {
                 } else {
                     // Move to the next question if available
                     if (currentQuestionIndex < interviewQuestions.length - 1) {
+                        console.log("Current question index:", currentQuestionIndex)
                         setCurrentQuestionIndex(currentQuestionIndex + 1);
-                        // if(currentQuestionIndex==interviewQuestions.length){
-                        //     setLastQuestion(true)
-                        // }
+
                         const nextQuestion = interviewQuestions[currentQuestionIndex + 1];
                         setMessages(prevMessages => [
                             ...prevMessages,
@@ -463,9 +466,8 @@ const Profile = () => {
                         ]);
                         setExpectingFollowUp(false);
                     }
-                    else{
-                        setLastQuestion(true);
-                    }
+
+
 
                 }
             } catch (error) {
@@ -482,6 +484,9 @@ const Profile = () => {
             { role: "bot", content: welcomeMessage },
             { role: "bot", content: firstQuestion }
         ]);
+        if (interviewQuestions[1] == "quit") {
+            setLastQuestionCheck("quit")
+        }
         setExpectingFollowUp(false);
         setLastQuestion(false);
     };
@@ -502,7 +507,7 @@ const Profile = () => {
                     <div>
                         {messages.map((msg, index) => (
                             <div key={index}>
-                                <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong> {msg.content}
+                                <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong> {msg.content=="quit"? "That concludes your interview. Thank you for using our platform.": msg.content}
                             </div>
                         ))}
                     </div>

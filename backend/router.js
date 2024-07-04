@@ -18,9 +18,12 @@ console.log('Port:', PORT)
 const groqInstance = new groq({ apiKey: process.env.GROQ_API_KEY });
 
 app.post('/api/chat', async (req, res) => {
-    const { message, context, lastQuestion} = req.body;
+    const { message, context,lastQuestionCheck} = req.body;
     console.log('The question asked was:\n\t', context)
     console.log("The user's response was:\n\t", message)
+    const lastQuestion = lastQuestionCheck=="quit"? true: false
+    console.log(context)
+    console.log("last question:", lastQuestion)
     try {
         const doFollowUp = Math.random()>.65 ? true: false;
         console.log("Follow up question is:", doFollowUp)
@@ -40,7 +43,12 @@ app.post('/api/chat', async (req, res) => {
                     asked. Please provide a relevant reaction to their answer and say what you liked about their response. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
                     to the question: ${message}. Do not ask any type of question within your response. Say something to end this thought and mention going on to the next question. `
                     :
-                    `You are a interviewer who has just finished conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; do not include quotes around your response. 
+                    `
+                    You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; do not include quotes around your response.  
+                    The user is about give their response to a question that you have 
+                    asked. Please provide a relevant reaction to their answer and say what you liked about their response. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
+                    to the question: ${message}. Do not ask any type of question within your response. Say something to end this thought.
+                    Lastly, since this was the last question, you are done conducting the interview.
                     Express your thanks for getting to interview the person and mention that there will be post interview feedback via our post interview review. 
                     `
                 }
