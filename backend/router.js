@@ -41,7 +41,7 @@ app.post('/api/chat', async (req, res) => {
                     to the question: ${message}. Do not ask any type of question within your response. Say something to end this thought and mention going on to the next question. `
                     :
                     `You are a interviewer who has just finished conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; do not include quotes around your response. 
-                    Express your thanks for getting to interview the person and mention that there will be post interview feedback. 
+                    Express your thanks for getting to interview the person and mention that there will be post interview feedback via our post interview review. 
                     `
                 }
             ],
