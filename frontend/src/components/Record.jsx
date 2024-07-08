@@ -3,7 +3,7 @@
 import React from 'react';
 import { AudioRecorder } from 'react-audio-voice-recorder';
 
-const Record = () => {
+const Record = ({onTranscriptionComplete}) => {
     const addAudioElement = async (blob) => {
 
         // Prepare the blob data to send to the API
@@ -23,6 +23,10 @@ const Record = () => {
 
             const result = await response.json();
             console.log('Audio uploaded successfully:', result);
+
+            if(result){
+                onTranscriptionComplete(result);
+            }
         } catch (error) {
             console.error('Error uploading audio:', error);
         }

@@ -45,10 +45,26 @@ const Profile = () => {
         }
     };
 
-    const sendMessage = async () => {
-        if (input.trim()) {
-            const userMessage = { role: "user", content: input };
+    const handleTranscription = (transcribedText) =>{
+        setInput(transcribedText);
+        sendMessage(transcribedText);
+    }
+
+    const sendMessage = async (transcribedText) => {
+        // if (input.trim()) {
+        //     const userMessage = { role: "user", content: input };
+        //     setMessages([...messages, userMessage]);
+
+
+
+        const messageText = transcribedText || input;
+        if(messageText.trim()){
+            const userMessage = {role:"user", content: messageText};
             setMessages([...messages, userMessage]);
+        
+
+
+
 
             const currentQuestion = interviewQuestions[currentQuestionIndex];
             const context = `Question: ${currentQuestion}`;
@@ -62,7 +78,7 @@ const Profile = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ message: input, context, lastQuestionCheck, prevIsFollowUp }), 
+                    body: JSON.stringify({ message: input, context, lastQuestionCheck, prevIsFollowUp }),
                 });
                 const data = await response.json();
                 const botMessage = { role: "bot", content: data.response };
@@ -78,7 +94,7 @@ const Profile = () => {
                             { role: "bot", content: data.followUp }
                         ]);
                     }
-                    
+
                     setExpectingFollowUp(true);
                 } else {
                     setPrevIsFollowUp(false)
@@ -130,24 +146,30 @@ const Profile = () => {
             {!interviewStarted ? (
                 <button onClick={startInterview}>Start Interview</button>
             ) : (
+                // <div>
+                //     <div>
+                //         {messages.map((msg, index) => (
+                //             <div key={index}>
+                //                 <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong> {msg.content=="quit"? "That concludes your interview. Thank you for using our platform.": msg.content}
+                //             </div>
+                //         ))}
+                //     </div>
+                //     <input
+                //         type="text"
+                //         value={input}
+                //         onChange={(e) => setInput(e.target.value)}
+                //         placeholder="Type your message here..."
+                //     />
+                //     <button onClick={sendMessage}>Send</button>
+                // </div>
                 <div>
                     <div>
-                        {messages.map((msg, index) => (
-                            <div key={index}>
-                                <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong> {msg.content=="quit"? "That concludes your interview. Thank you for using our platform.": msg.content}
-                            </div>
+                        {messages.map((msg, index) => (<div key={index}>
+                            <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong> {msg.content == "quit" ? "That concludes your interview. Thank you for using our platform." : msg.content} </div>
                         ))}
-                    </div>
-                    <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder="Type your message here..."
-                    />
-                    <button onClick={sendMessage}>Send</button>
+                    </div> <Record onTranscriptionComplete={handleTranscription} />
                 </div>
             )}
-            <Record/>
 
         </div>
     );
