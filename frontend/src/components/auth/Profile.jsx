@@ -5,7 +5,7 @@ import { signOut } from './auth.js'
 import { useState, useEffect } from 'react'
 import { useAuth } from './auth.jsx'
 import { useNavigate } from 'react-router-dom'
-
+import Record from '../Record.jsx'
 
 const interviewQuestions = [
     "Can you tell me about a time you worked on a team to complete a project? What was your role, and what did you learn from the experience?",
@@ -116,7 +116,6 @@ const Profile = () => {
             setLastQuestionCheck("quit")
         }
         setExpectingFollowUp(false);
-        setLastQuestion(false);
     };
 
     return (
@@ -148,6 +147,8 @@ const Profile = () => {
                     <button onClick={sendMessage}>Send</button>
                 </div>
             )}
+            <Record/>
+
         </div>
     );
 };
