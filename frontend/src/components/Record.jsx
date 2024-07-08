@@ -2,10 +2,14 @@
 
 import React from 'react';
 import { AudioRecorder } from 'react-audio-voice-recorder';
+import { useState } from 'react';
 
 const Record = ({onTranscriptionComplete}) => {
-    const addAudioElement = async (blob) => {
 
+    const [isRecording, setIsRecording] = useState(false);
+
+    const addAudioElement = async (blob) => {
+        setIsRecording(true);
         // Prepare the blob data to send to the API
         const formData = new FormData();
         formData.append('file', blob, 'recording.mp4');
@@ -29,6 +33,9 @@ const Record = ({onTranscriptionComplete}) => {
             }
         } catch (error) {
             console.error('Error uploading audio:', error);
+        }
+        finally{
+            setIsRecording(false);
         }
     };
 

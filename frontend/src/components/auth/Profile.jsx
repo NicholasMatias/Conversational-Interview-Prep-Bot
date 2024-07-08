@@ -25,6 +25,8 @@ const Profile = () => {
     const [expectingFollowUp, setExpectingFollowUp] = useState(false); // Track follow-up state
     const [lastQuestionCheck, setLastQuestionCheck] = useState("")
     const [prevIsFollowUp, setPrevIsFollowUp] = useState(false)
+    const [isUserTurn, setIsUserTurn] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -45,9 +47,10 @@ const Profile = () => {
         }
     };
 
-    const handleTranscription = (transcribedText) =>{
+    const handleTranscription = (transcribedText) => {
         setInput(transcribedText);
         sendMessage(transcribedText);
+        setIsUserTurn(false);
     }
 
     const sendMessage = async (transcribedText) => {
@@ -58,10 +61,11 @@ const Profile = () => {
 
 
         const messageText = transcribedText || input;
-        if(messageText.trim()){
-            const userMessage = {role:"user", content: messageText};
+        if (messageText.trim()) {
+            setIsLoading(true);
+            const userMessage = { role: "user", content: messageText };
             setMessages([...messages, userMessage]);
-        
+
 
 
 
@@ -84,6 +88,7 @@ const Profile = () => {
                 const botMessage = { role: "bot", content: data.response };
                 setMessages([...messages, userMessage, botMessage]);
                 setInput("");
+                setIsLoading(false);
 
                 if (data.followUp) {
                     // Process follow-up question
@@ -94,7 +99,7 @@ const Profile = () => {
                             { role: "bot", content: data.followUp }
                         ]);
                     }
-
+                    setIsUserTurn(true);
                     setExpectingFollowUp(true);
                 } else {
                     setPrevIsFollowUp(false)
@@ -109,6 +114,7 @@ const Profile = () => {
                             { role: "bot", content: nextQuestion }
                         ]);
                         setExpectingFollowUp(false);
+                        setIsUserTurn(true);
                     }
 
 
@@ -116,6 +122,7 @@ const Profile = () => {
                 }
             } catch (error) {
                 console.error('Error sending message:', error);
+                setIsLoading(false);
             }
         }
     };
@@ -132,6 +139,7 @@ const Profile = () => {
             setLastQuestionCheck("quit")
         }
         setExpectingFollowUp(false);
+        setIsUserTurn(true);
     };
 
     return (
@@ -167,7 +175,9 @@ const Profile = () => {
                         {messages.map((msg, index) => (<div key={index}>
                             <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong> {msg.content == "quit" ? "That concludes your interview. Thank you for using our platform." : msg.content} </div>
                         ))}
-                    </div> <Record onTranscriptionComplete={handleTranscription} />
+                    </div>
+                    {isLoading && <div>Processing your response...</div>}
+                    {isUserTurn && !isLoading && <Record onTranscriptionComplete={handleTranscription} />}
                 </div>
             )}
 
