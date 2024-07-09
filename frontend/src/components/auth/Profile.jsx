@@ -1,3 +1,4 @@
+
 import './Profile.css'
 import React from 'react'
 import { signOut } from './auth.js'
@@ -5,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from './auth.jsx'
 import { useNavigate } from 'react-router-dom'
 import Record from '../Record.jsx'
+import TTS from '../TTS.jsx'
 
 const interviewQuestions = [
     "Can you tell me about a time you worked on a team to complete a project? What was your role, and what did you learn from the experience?",
@@ -21,7 +23,7 @@ const Profile = () => {
     const [messages, setMessages] = useState([]);
     const [interviewStarted, setInterviewStarted] = useState(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [expectingFollowUp, setExpectingFollowUp] = useState(false); // Track follow-up state
+    const [expectingFollowUp, setExpectingFollowUp] = useState(false);
     const [lastQuestionCheck, setLastQuestionCheck] = useState("")
     const [prevIsFollowUp, setPrevIsFollowUp] = useState(false)
 
@@ -29,6 +31,8 @@ const Profile = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isTranscribing, setIsTranscribing] = useState(false);
     const [isInterviewOver, setIsInterviewOver] = useState(false);
+    const [spokenMessages, setSpokenMessages] = useState([]);
+    const [newMessages, setNewMessages] = useState([]);
 
     const navigate = useNavigate();
 
@@ -40,6 +44,13 @@ const Profile = () => {
             });
         }
     }, [currentUser]);
+
+    useEffect(() => {
+        const unspokenMessages = messages.filter(msg =>
+            msg.role === "bot" && !spokenMessages.includes(msg.content)
+        );
+        setNewMessages(unspokenMessages);
+    }, [messages, spokenMessages]);
 
     const handleSignout = async () => {
         try {
@@ -55,23 +66,19 @@ const Profile = () => {
         setInput(transcribedText);
         sendMessage(transcribedText);
         setIsUserTurn(false);
-
     }
 
     const sendMessage = async (transcribedText) => {
-        
         const messageText = transcribedText || input;
         if (messageText.trim()) {
             setIsLoading(true);
             const userMessage = { role: "user", content: messageText };
             setMessages([...messages, userMessage]);
 
-
             const currentQuestion = interviewQuestions[currentQuestionIndex];
             const context = `Question: ${currentQuestion}`;
             if (interviewQuestions.length > 2) {
                 setLastQuestionCheck(interviewQuestions[currentQuestionIndex + 2])
-
             }
             try {
                 const response = await fetch('http://localhost:5000/api/chat', {
@@ -88,7 +95,6 @@ const Profile = () => {
                 setIsLoading(false);
 
                 if (data.followUp) {
-                    // Process follow-up question
                     setPrevIsFollowUp(true)
                     if (!data.response.includes(data.followUp)) {
                         setMessages(prevMessages => [
@@ -100,7 +106,6 @@ const Profile = () => {
                     setExpectingFollowUp(true);
                 } else {
                     setPrevIsFollowUp(false)
-                    // Move to the next question if available
                     if (currentQuestionIndex < interviewQuestions.length - 1) {
                         console.log("Current question index:", currentQuestionIndex)
                         setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -113,13 +118,9 @@ const Profile = () => {
                         setExpectingFollowUp(false);
                         setIsUserTurn(true);
                     }
-                    else{
+                    else {
                         setIsInterviewOver(true);
                     }
-                    
-
-
-
                 }
             } catch (error) {
                 console.error('Error sending message:', error);
@@ -144,6 +145,10 @@ const Profile = () => {
         setIsInterviewOver(false);
     };
 
+    const handleSpokenMessage = (spokenContent) => {
+        setSpokenMessages(prev => [...prev, spokenContent]);
+    };
+
     return (
         <div>
             {user && (
@@ -156,24 +161,35 @@ const Profile = () => {
             {!interviewStarted ? (
                 <button onClick={startInterview}>Start Interview</button>
             ) : (
-                
                 <div>
                     <div>
-                        {messages.map((msg, index) => (<div key={index}>
-                            <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong> {msg.content == "quit" ? "That concludes your interview. Thank you for using our platform." : msg.content} </div>
+                        {messages.map((msg, index) => (
+                            <div key={index}>
+                                <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong>
+                                {msg.content == "quit" ? "That concludes your interview. Thank you for using our platform." : msg.content}
+                            </div>
                         ))}
                     </div>
                     {isLoading && <div>Processing your response...</div>}
                     {isTranscribing && <div>Transcribing your response...</div>}
-                    {isUserTurn && !isLoading && !isTranscribing && !isInterviewOver && <Record
-                        onTranscriptionComplete={handleTranscription}
-                        onTranscriptionStart = {() => setIsTranscribing(true)}
-                    />}
+                    {isUserTurn && !isLoading && !isTranscribing && !isInterviewOver &&
+                        <Record
+                            onTranscriptionComplete={handleTranscription}
+                            onTranscriptionStart={() => setIsTranscribing(true)}
+                        />
+                    }
+                    {newMessages.length > 0 && (
+                        <TTS
+                            messages={newMessages}
+                            onMessageSpoken={handleSpokenMessage}
+                        />
+                    )}
                 </div>
             )}
-
         </div>
     );
 };
 
 export default Profile;
+
+
