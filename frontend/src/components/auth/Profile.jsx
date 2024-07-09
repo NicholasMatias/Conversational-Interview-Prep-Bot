@@ -9,7 +9,6 @@ import TTS from '../TTS.jsx'
 
 const interviewQuestions = [
     "Can you tell me about a time you worked on a team to complete a project? What was your role, and what did you learn from the experience?",
-    "How do you handle tight deadlines? Can you provide an example?",
     "What is your greatest strength and how does it help you in your work?",
     "quit"
     // Add more questions as needed
@@ -129,12 +128,12 @@ const Profile = () => {
 
     const startInterview = () => {
         setInterviewStarted(true);
-        const welcomeMessage = "Hello, excited to interview you!";
+        const welcomeMessage = "Hello, I am excited to interview you!";
         const firstQuestion = interviewQuestions[0];
         setMessages([
             { role: "bot", content: welcomeMessage },
             { role: "bot", content: firstQuestion }
-        ]);
+        ]);TTS
         if (interviewQuestions[1] == "quit") {
             setLastQuestionCheck("quit")
         }
