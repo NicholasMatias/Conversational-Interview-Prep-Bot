@@ -107,7 +107,6 @@ const Profile = () => {
                 } else {
                     setPrevIsFollowUp(false)
                     if (currentQuestionIndex < interviewQuestions.length - 1) {
-                        console.log("Current question index:", currentQuestionIndex)
                         setCurrentQuestionIndex(currentQuestionIndex + 1);
 
                         const nextQuestion = interviewQuestions[currentQuestionIndex + 1];

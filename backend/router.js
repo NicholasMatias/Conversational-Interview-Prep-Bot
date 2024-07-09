@@ -31,17 +31,7 @@ app.post('/api/chat', async (req, res) => {
         if (doFollowUp) { lastQuestion = false; }
 
         if (prevIsFollowUp) { lastQuestion = false; }
-        console.log("doFollowUp is:", doFollowUp);
-        console.log("lastQuestion is:", lastQuestion);
-        if (doFollowUp && !lastQuestion) {
-            console.log("Content 1\n")
-        }
-        else if (!lastQuestion && !doFollowUp) {
-            console.log("Content 2\n")
-        }
-        else {
-            console.log("Content 3\n")
-        }
+
         const response = await groqInstance.chat.completions.create({
             messages: [
                 {
@@ -128,7 +118,7 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
                 console.error('Error deleting file:', err);
             }
             else {
-                console.log('File deleted successfully')
+                res.status(200);
             }
         });
 
