@@ -6,6 +6,9 @@ import { useState } from 'react'
 import { updateProfile } from 'firebase/auth'
 import Spacing from '../landing_page/spacing/Spacing.jsx'
 import Footer from '../landing_page/footer/Footer.jsx'
+import { doc,  setDoc ,collection, addDoc} from "firebase/firestore";
+import { db } from "../../../../backend/firebase/firebase.config.js";
+
 
 const Signup = () => {
     const [email, setEmail] = useState('')
@@ -20,6 +23,28 @@ const Signup = () => {
         try {
             const userCredential = await createUserWithEmailAndPassword(email, password)
             const user = userCredential.user
+
+
+
+            const userid = user.uid;
+            try {
+                await setDoc(doc(db, "users", userid), {
+                    username: username,
+                    email: email,
+                });
+
+                const foldersRef = collection(db,"users", userid, `${username}'s Default Folder`);
+                await addDoc(foldersRef,{
+                    folderName: `${username}'s Default Folder`,
+                    createdAt: new Date(),
+                })
+
+            } catch (e) {
+                console.error("Error adding document: ", e);
+            }
+
+
+
             await updateProfile(user, {
                 displayName: username
             })
