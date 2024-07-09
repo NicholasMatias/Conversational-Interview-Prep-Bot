@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState, useRef } from 'react';
 
 const TTS = ({ messages, onMessageSpoken }) => {
@@ -25,7 +23,8 @@ const TTS = ({ messages, onMessageSpoken }) => {
         setError(null);
 
         const DEEPGRAM_URL = "https://api.deepgram.com/v1/speak?model=aura-asteria-en";
-        const DEEPGRAM_API_KEY = "1128ad09116c1e4e9294f4f0266685f63cfe00cd";
+        const DEEPGRAM_API_KEY = "1128ad09116c1e4e9294f4f0266685f63cfe00cd"; //Was having difficulty with env file for some reason on this one. 
+        //Likely due to it being on the frontend. I tried adding REACT_APP as a prefix and it still didn't work though. I am looking into it. 
 
         const payload = JSON.stringify({ text: message.content });
 

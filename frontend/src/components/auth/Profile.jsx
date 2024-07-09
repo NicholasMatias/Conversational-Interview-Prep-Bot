@@ -1,4 +1,3 @@
-
 import './Profile.css'
 import React from 'react'
 import { signOut } from './auth.js'
