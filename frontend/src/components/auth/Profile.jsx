@@ -1,5 +1,4 @@
 import './Profile.css'
-
 import React from 'react'
 import { signOut } from './auth.js'
 import { useState, useEffect } from 'react'
@@ -10,8 +9,8 @@ import Record from '../Record.jsx'
 const interviewQuestions = [
     "Can you tell me about a time you worked on a team to complete a project? What was your role, and what did you learn from the experience?",
     "How do you handle tight deadlines? Can you provide an example?",
+    "What is your greatest strength and how does it help you in your work?",
     "quit"
-    // "What is your greatest strength and how does it help you in your work?",
     // Add more questions as needed
 ];
 
@@ -25,8 +24,12 @@ const Profile = () => {
     const [expectingFollowUp, setExpectingFollowUp] = useState(false); // Track follow-up state
     const [lastQuestionCheck, setLastQuestionCheck] = useState("")
     const [prevIsFollowUp, setPrevIsFollowUp] = useState(false)
+
     const [isUserTurn, setIsUserTurn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isTranscribing, setIsTranscribing] = useState(false);
+    const [isInterviewOver, setIsInterviewOver] = useState(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -48,26 +51,20 @@ const Profile = () => {
     };
 
     const handleTranscription = (transcribedText) => {
+        setIsTranscribing(false);
         setInput(transcribedText);
         sendMessage(transcribedText);
         setIsUserTurn(false);
+
     }
 
     const sendMessage = async (transcribedText) => {
-        // if (input.trim()) {
-        //     const userMessage = { role: "user", content: input };
-        //     setMessages([...messages, userMessage]);
-
-
-
+        
         const messageText = transcribedText || input;
         if (messageText.trim()) {
             setIsLoading(true);
             const userMessage = { role: "user", content: messageText };
             setMessages([...messages, userMessage]);
-
-
-
 
 
             const currentQuestion = interviewQuestions[currentQuestionIndex];
@@ -116,6 +113,10 @@ const Profile = () => {
                         setExpectingFollowUp(false);
                         setIsUserTurn(true);
                     }
+                    else{
+                        setIsInterviewOver(true);
+                    }
+                    
 
 
 
@@ -140,6 +141,7 @@ const Profile = () => {
         }
         setExpectingFollowUp(false);
         setIsUserTurn(true);
+        setIsInterviewOver(false);
     };
 
     return (
@@ -154,22 +156,7 @@ const Profile = () => {
             {!interviewStarted ? (
                 <button onClick={startInterview}>Start Interview</button>
             ) : (
-                // <div>
-                //     <div>
-                //         {messages.map((msg, index) => (
-                //             <div key={index}>
-                //                 <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong> {msg.content=="quit"? "That concludes your interview. Thank you for using our platform.": msg.content}
-                //             </div>
-                //         ))}
-                //     </div>
-                //     <input
-                //         type="text"
-                //         value={input}
-                //         onChange={(e) => setInput(e.target.value)}
-                //         placeholder="Type your message here..."
-                //     />
-                //     <button onClick={sendMessage}>Send</button>
-                // </div>
+                
                 <div>
                     <div>
                         {messages.map((msg, index) => (<div key={index}>
@@ -177,7 +164,11 @@ const Profile = () => {
                         ))}
                     </div>
                     {isLoading && <div>Processing your response...</div>}
-                    {isUserTurn && !isLoading && <Record onTranscriptionComplete={handleTranscription} />}
+                    {isTranscribing && <div>Transcribing your response...</div>}
+                    {isUserTurn && !isLoading && !isTranscribing && !isInterviewOver && <Record
+                        onTranscriptionComplete={handleTranscription}
+                        onTranscriptionStart = {() => setIsTranscribing(true)}
+                    />}
                 </div>
             )}
 

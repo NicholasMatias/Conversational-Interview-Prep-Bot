@@ -27,10 +27,21 @@ app.post('/api/chat', async (req, res) => {
 
     let lastQuestion = lastQuestionCheck == "quit" ? true : false
     try {
-        const doFollowUp = Math.random() > .65 ? true : false;
+        const doFollowUp = Math.random() > .65  && !lastQuestion? true : false;
         if (doFollowUp) { lastQuestion = false; }
 
         if (prevIsFollowUp) { lastQuestion = false; }
+        console.log("doFollowUp is:", doFollowUp);
+        console.log("lastQuestion is:", lastQuestion);
+        if(doFollowUp && !lastQuestion){
+            console.log("Content 1\n")
+        }
+        else if(!lastQuestion && !doFollowUp){
+            console.log("Content 2\n")
+        }
+        else{
+            console.log("Content 3\n")
+        }
         const response = await groqInstance.chat.completions.create({
             messages: [
                 {
@@ -46,7 +57,7 @@ app.post('/api/chat', async (req, res) => {
                     The user is about give their response to a question that you have 
                     asked. Please provide a relevant reaction to their answer and say what you liked about their response. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
                     to the question: ${message}. Do not ask any type of question within your response. Say something to end this thought and mention going on to the next question. `
-                            :
+                        :
                             `
                     You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; do not include quotes around your response.  
                     The user is about give their response to a question that you have 
@@ -82,19 +93,7 @@ app.post('/api/chat', async (req, res) => {
 
 
 
-// const groqSTT = new groq({apiKey: process.env.GROQ_API_KEY})
 
-// app.post('/transcribe', upload.single('audio'), async (req, res) => {
-//     const file = req.file;
-//     const translation = await groqSTT.audio.transcriptions.create({
-//         file: fs.createReadStream(file.path),
-//         model: 'whisper-large-v3',
-//         prompt: 'Specify context or spelling', // Optional
-//         response_format: 'json', // Optional
-//         temperature: 0.0, // Optional
-//     });
-//     res.json(translation.text);
-// });
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
