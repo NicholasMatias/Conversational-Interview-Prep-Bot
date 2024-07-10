@@ -5,6 +5,7 @@ import Login from './components/auth/Login'
 import Signup from './components/auth/Signup'
 import Profile from './components/auth/Profile'
 import { LandingPage } from './components/landing_page/LandingPage'
+import Folders from './components/Folders/Folders'
 function App() {
 
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/profile' element={<Profile />} />
+        <Route path='/folders' element={<Folders/>} />
       </Routes>
     </Router>
   )

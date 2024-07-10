@@ -59,6 +59,10 @@ const Profile = () => {
         }
     };
 
+    const toFolders = () => {
+        navigate('/folders')
+    }
+
     const handleTranscription = (transcribedText) => {
         setIsTranscribing(false);
         setInput(transcribedText);
@@ -153,6 +157,7 @@ const Profile = () => {
                     <h1>Welcome, {user.name}</h1>
                     <p>{user.email}</p>
                     <button onClick={handleSignout}>Sign Out</button>
+                    <button onClick={toFolders}>Folders</button>
                 </>
             )}
             {!interviewStarted ? (
