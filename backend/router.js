@@ -20,7 +20,7 @@ app.use((req, res, next) => {
     next();
 });
 
-
+// This api call accesses Llama3's llama3-70b-8192 model through using groqcloud. 
 const groqInstance = new groq({ apiKey: process.env.GROQ_API_KEY });
 
 app.post('/api/chat', async (req, res) => {

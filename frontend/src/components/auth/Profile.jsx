@@ -37,6 +37,8 @@ const Profile = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [folderNames, setFolderNames] = useState([]);
 
+    const baseURL = import.meta.env.VITE_BASE_URL;
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -82,15 +84,20 @@ const Profile = () => {
         setIsUserTurn(false);
     }
 
+
+    // Manages the messages array, sends the user response and question asked to backend in body => then sent to groq llama3 to get a response to the user. 
     const sendMessage = async (transcribedText) => {
         const messageText = transcribedText || input;
         if (messageText.trim()) {
             setIsLoading(true);
             const userMessage = { role: "user", content: messageText };
             setMessages([...messages, userMessage]);
-
+            
+            // sets the current question. 
             const currentQuestion = interviewQuestions[currentQuestionIndex];
             const context = `Question: ${currentQuestion}`;
+
+            // sets the last question, so that the correct content is used in api call to groq on the backend body params. 
             if (interviewQuestions.length > 2) {
                 setLastQuestionCheck(interviewQuestions[currentQuestionIndex + 2])
             }
@@ -98,7 +105,7 @@ const Profile = () => {
             const isLastQuestion = currentQuestionIndex === interviewQuestions.length - 2;
 
             try {
-                const response = await fetch('http://localhost:5000/api/chat', {
+                const response = await fetch("http://localhost:5000/api/chat", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -115,6 +122,7 @@ const Profile = () => {
                     setIsInterviewOver(true);
                     setIsUserTurn(false);
                 }
+                // if there is a followup question, don't do to next question in interviewQuestions json file, allow user to respond to follow-up question. 
                 else if (data.followUp) {
                     setPrevIsFollowUp(true)
                     setIsUserTurn(true);
