@@ -1,11 +1,13 @@
-const express = require('express')
+import express from 'express';
+import cors from 'cors';
+import groq from 'groq-sdk'
+import dotenv from 'dotenv';
+dotenv.config();
+import multer from 'multer';
+import fs from 'fs';
 const app = express()
-const cors = require('cors')
-require('dotenv').config()
-const groq = require("groq-sdk");
-const multer = require('multer');
-const fs = require('fs');
 
+// const {doFollowUp_notLastQuestion_prompt, notLastQuestion_notFollowUp_prompt, lastQuestion_prompt} = require('./constants.js')
 
 
 

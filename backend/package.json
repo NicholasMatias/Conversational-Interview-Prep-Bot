@@ -2,10 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "router.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "devserver": "./node_modules/nodemon/bin/nodemon.js router.js",
-    "startGroq": "node pipeline.js"
+    "devserver": "./node_modules/nodemon/bin/nodemon.js router.js"
   },
   "keywords": [],
   "author": "",
