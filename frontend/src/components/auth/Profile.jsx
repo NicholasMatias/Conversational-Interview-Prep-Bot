@@ -7,6 +7,9 @@ import { useNavigate } from 'react-router-dom'
 import Record from '../Record.jsx'
 import TTS from '../TTS.jsx'
 import interview_questions from '../../../interview_questions.json';
+import { db } from '../../../../backend/firebase/firebase.config.js';
+import { doc, updateDoc, arrayUnion, getDoc, collection, addDoc } from 'firebase/firestore';
+import SaveModal from '../SaveTranscript/SaveModal.jsx';
 
 
 const interviewQuestions = interview_questions.basisBehavioralQuestions;
@@ -31,6 +34,9 @@ const Profile = () => {
     const [newMessages, setNewMessages] = useState([]);
     const [isSpeaking, setIsSpeaking] = useState(false);
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [folderNames, setFolderNames] = useState([]);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -40,6 +46,13 @@ const Profile = () => {
                 name: currentUser.displayName || "User",
             });
         }
+
+        const userRef = doc(db, "users", currentUser.uid)
+        getDoc(userRef).then((docSnap) => {
+            if (docSnap.exists()) {
+                setFolderNames(docSnap.data().folderNames || []);
+            }
+        })
     }, [currentUser]);
 
     useEffect(() => {
@@ -82,7 +95,7 @@ const Profile = () => {
                 setLastQuestionCheck(interviewQuestions[currentQuestionIndex + 2])
             }
 
-            const isLastQuestion = currentQuestionIndex === interviewQuestions.length -2;
+            const isLastQuestion = currentQuestionIndex === interviewQuestions.length - 2;
 
             try {
                 const response = await fetch('http://localhost:5000/api/chat', {
@@ -98,7 +111,7 @@ const Profile = () => {
                 setInput("");
                 setIsLoading(false);
 
-                if (isLastQuestion){
+                if (isLastQuestion) {
                     setIsInterviewOver(true);
                     setIsUserTurn(false);
                 }
@@ -138,7 +151,7 @@ const Profile = () => {
         setMessages([
             { role: "bot", content: welcomeMessage },
             { role: "bot", content: firstQuestion }
-        ]);TTS
+        ]); TTS
         if (interviewQuestions[1] == "quit") {
             setLastQuestionCheck("quit")
         }
@@ -155,6 +168,48 @@ const Profile = () => {
 
     const handleTTSStart = () => {
         setIsSpeaking(true);
+    }
+
+
+    const handleSave = async (transcriptName, selectedFolder) => {
+        if (!currentUser) return;
+
+
+        try {
+            const userRef = doc(db, "users", currentUser.uid);
+            const folderRef = collection(userRef, `${selectedFolder}`);
+
+
+            // Debugging logs
+            console.log("Transcript Name:", transcriptName);
+            console.log("Messages:", messages);
+
+
+            if (!transcriptName || !Array.isArray(messages)) {
+                console.error("Invalid data: transcriptName or messages are not properly initialized");
+                return;
+            }
+
+
+            await addDoc(folderRef, {
+                createdAt: new Date(),
+                name: transcriptName || null,
+                transcript: messages || null,
+            });
+
+
+            await updateDoc(userRef, {
+                transcripts: arrayUnion(transcriptName)
+            });
+
+
+            setIsModalOpen(false);
+
+
+            console.log("Transcript saved successfully.");
+        } catch (error) {
+            console.error("Error saving transcript:", error);
+        }
     }
 
     return (
@@ -191,16 +246,26 @@ const Profile = () => {
                         <TTS
                             messages={newMessages}
                             onMessageSpoken={handleSpokenMessage}
-                            onSpeakingStart = {handleTTSStart}
+                            onSpeakingStart={handleTTSStart}
                         />
                     )}
 
                     {isInterviewOver && !isSpeaking && (
                         <div>
                             <button>View Feedback</button>
-                            <button>Save Transcript</button>
+                            <button onClick={() => setIsModalOpen(true)}>Save Transcript</button>
                         </div>
                     )}
+
+
+                    <SaveModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onSave={handleSave}
+                        folderNames={folderNames}
+
+
+                    />
                 </div>
 
             )}

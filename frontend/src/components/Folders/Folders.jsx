@@ -32,13 +32,26 @@ const Folders = () => {
     const handleNewFolder = async (e) => {
         e.preventDefault();
         const folderName = e.target.form.folderName.value;
-        const foldersDocRef = doc(db,"users", currentUser.uid);
+        const thisUserDocRef = doc(db,"users", currentUser.uid);
         try {
-            await updateDoc(foldersDocRef,{
+            await updateDoc(thisUserDocRef,{
                 folderNames: arrayUnion(folderName),
             })
             setFolders([...folders, folderName])
+
+            const newFolderCollectionRef = collection(thisUserDocRef, folderName);
+
+            await setDoc(doc(newFolderCollectionRef, "initial"),{
+                createdAt: new Date(),
+                name: 'Initial Document'
+            })
+
+            console.log(`Folder ${folderName} created successfully.`);
         }
+
+
+
+
         catch (error) {
             console.error("Error creating folder:", error);
         }
