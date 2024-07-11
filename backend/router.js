@@ -67,7 +67,8 @@ app.post('/api/chat', async (req, res) => {
 
 
 
-// Configure Multer for file uploads
+// Configure Multer for file uploads, this essentially stores the user's audio response until it is sent through the api for transcription. The audio file is then deleted. 
+//technically is stored in uploads folder for a ms or two before being deleted.     
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/');
