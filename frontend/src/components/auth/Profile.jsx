@@ -8,7 +8,7 @@ import Record from '../Record.jsx'
 import TTS from '../TTS.jsx'
 import interview_questions from '../../../interview_questions.json';
 import { db } from '../../../../backend/firebase/firebase.config.js';
-import { doc, updateDoc, arrayUnion, getDoc, collection, addDoc } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, getDoc,setDoc, collection, addDoc } from 'firebase/firestore';
 import SaveModal from '../SaveTranscript/SaveModal.jsx';
 
 
@@ -185,7 +185,7 @@ const Profile = () => {
 
         try {
             const userRef = doc(db, "users", currentUser.uid);
-            const folderRef = collection(userRef, `${selectedFolder}`);
+            const folderRef = doc(userRef, `${selectedFolder}`,transcriptName);
 
 
             // Debugging logs
@@ -199,7 +199,7 @@ const Profile = () => {
             }
 
 
-            await addDoc(folderRef, {
+            await setDoc(folderRef, {
                 createdAt: new Date(),
                 name: transcriptName || null,
                 transcript: messages || null,
