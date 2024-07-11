@@ -8,7 +8,7 @@ import Record from '../Record.jsx'
 import TTS from '../TTS.jsx'
 import interview_questions from '../../../interview_questions.json';
 import { db } from '../../../../backend/firebase/firebase.config.js';
-import { doc, updateDoc, arrayUnion, getDoc,setDoc, collection, addDoc } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
 import SaveModal from '../SaveTranscript/SaveModal.jsx';
 
 
@@ -37,7 +37,7 @@ const Profile = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [folderNames, setFolderNames] = useState([]);
 
-    const baseURL = import.meta.env.VITE_BASE_URL;
+    const [alreadySaved, setAlreadySaved] = useState(false);
 
     const navigate = useNavigate();
 
@@ -92,7 +92,7 @@ const Profile = () => {
             setIsLoading(true);
             const userMessage = { role: "user", content: messageText };
             setMessages([...messages, userMessage]);
-            
+
             // sets the current question. 
             const currentQuestion = interviewQuestions[currentQuestionIndex];
             const context = `Question: ${currentQuestion}`;
@@ -185,7 +185,7 @@ const Profile = () => {
 
         try {
             const userRef = doc(db, "users", currentUser.uid);
-            const folderRef = doc(userRef, `${selectedFolder}`,transcriptName);
+            const folderRef = doc(userRef, `${selectedFolder}`, transcriptName);
 
 
             // Debugging logs
@@ -212,6 +212,7 @@ const Profile = () => {
 
 
             setIsModalOpen(false);
+            setAlreadySaved(true);
 
 
             console.log("Transcript saved successfully.");
@@ -261,7 +262,10 @@ const Profile = () => {
                     {isInterviewOver && !isSpeaking && (
                         <div>
                             <button>View Feedback</button>
-                            <button onClick={() => setIsModalOpen(true)}>Save Transcript</button>
+
+                            {!setAlreadySaved &&
+                                <button onClick={() => setIsModalOpen(true)}>Save Transcript</button>
+                            }
                         </div>
                     )}
 
