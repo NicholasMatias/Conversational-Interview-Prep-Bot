@@ -7,7 +7,7 @@ import multer from 'multer';
 import fs from 'fs';
 const app = express()
 
-// const {doFollowUp_notLastQuestion_prompt, notLastQuestion_notFollowUp_prompt, lastQuestion_prompt} = require('./constants.js')
+import {doFollowUp_notLastQuestion_prompt, notLastQuestion_notFollowUp_prompt, lastQuestion_prompt} from './constants.js';
 
 
 
@@ -39,25 +39,9 @@ app.post('/api/chat', async (req, res) => {
                 {
                     role: "user",
 
-                    content: doFollowUp && !lastQuestion ? `You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation 
-                    between two people. The user is about give their response to a question that you have 
-                    asked. Please provide a relevant reaction to their answer and brief feedback. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
-                    to the question: ${message} Lastly, ask a follow-up question to the user based on their response. Make the question relevant to them yet still broad enough to allow them to answer on their own terms. 
-                        `
-                        : !lastQuestion && !doFollowUp ?
-                            `You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; do not include quotes around your response.  
-                    The user is about give their response to a question that you have 
-                    asked. Please provide a relevant reaction to their answer and say what you liked about their response. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
-                    to the question: ${message}. Do not ask any type of question within your response. Say something to end this thought and mention going on to the next question. `
-                        :
-                        `
-                    You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; do not include quotes around your response.  
-                    The user is about give their response to a question that you have 
-                    asked. Please provide a relevant reaction to their answer and say what you liked about their response. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
-                    to the question: ${message}. Do not ask any type of question within your response. Say something to end this thought.
-                    Lastly, since this was the last question, you are done conducting the interview.
-                    You must always express your thanks for getting to interview the person and mention that there will be post interview feedback via our post interview review on our platform InterviewMe. 
-                    `
+                    content: doFollowUp && !lastQuestion ? doFollowUp_notLastQuestion_prompt(context, message)
+                        : !lastQuestion && !doFollowUp ? notLastQuestion_notFollowUp_prompt(context, message)
+                        : lastQuestion_prompt(context, message)
                 }
             ],
             model: "llama3-70b-8192",
