@@ -1,4 +1,5 @@
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const doFollowUp_notLastQuestion_prompt = (context, message) =>{
     return(`You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people. 
@@ -25,3 +26,10 @@ export const lastQuestion_prompt = (context, message) => {
     You must always express your thanks for getting to interview the person and mention that there will be post interview feedback via our post interview review on our platform InterviewMe. `)
 }
 
+export const errorChatCompletion = "Error getting chat completion:";
+
+export const errorTranscribingAudio = "Error transcribing audio:";
+
+export const baseURL = `http://localhost:${process.env.PORT}`;
+
+export const PORT = process.env.PORT || 3000

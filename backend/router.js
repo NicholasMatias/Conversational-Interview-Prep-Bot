@@ -7,7 +7,7 @@ import multer from 'multer';
 import fs from 'fs';
 const app = express()
 
-import {doFollowUp_notLastQuestion_prompt, notLastQuestion_notFollowUp_prompt, lastQuestion_prompt} from './constants.js';
+import {doFollowUp_notLastQuestion_prompt, notLastQuestion_notFollowUp_prompt, lastQuestion_prompt, errorChatCompletion, errorTranscribingAudio, baseURL, PORT} from './constants.js';
 
 
 
@@ -19,7 +19,6 @@ app.use((req, res, next) => {
     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
     next();
 });
-const PORT = process.env.PORT || 3000
 
 
 const groqInstance = new groq({ apiKey: process.env.GROQ_API_KEY });
@@ -56,8 +55,8 @@ app.post('/api/chat', async (req, res) => {
             followUp: doFollowUp
         });
     } catch (error) {
-        console.error("Error getting chat completion:", error);
-        res.status(500).json({ error: "Error getting chat completion" });
+        console.error(errorChatCompletion, error);
+        res.status(500).json({ error: errorChatCompletion });
     }
 });
 
@@ -107,8 +106,8 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
 
 
     } catch (error) {
-        console.error('Error transcribing audio:', error);
-        res.status(500).json({ error: 'Error transcribing audio' });
+        console.error(errorTranscribingAudio, error);
+        res.status(500).json({ error: errorTranscribingAudio });
     }
 });
 
@@ -123,5 +122,5 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
 
 
 const server = app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`)
+    console.log(`Server is running on ${baseURL}`)
 })
