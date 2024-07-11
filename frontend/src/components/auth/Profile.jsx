@@ -6,16 +6,11 @@ import { useAuth } from './auth.jsx'
 import { useNavigate } from 'react-router-dom'
 import Record from '../Record.jsx'
 import TTS from '../TTS.jsx'
-// import dotenv from 'dotenv'
-// dotenv.config();
-// import { baseURL } from '../../../../backend/constants.js'
+import interview_questions from '../../../interview_questions.json';
 
-const interviewQuestions = [
-    "Can you tell me about a time you worked on a team to complete a project? What was your role, and what did you learn from the experience?",
-    "What is your greatest strength and how does it help you in your work?",
-    "quit"
-    // Add more questions as needed
-];
+
+const interviewQuestions = interview_questions.basisBehavioralQuestions;
+
 
 const Profile = () => {
     const { currentUser } = useAuth();
