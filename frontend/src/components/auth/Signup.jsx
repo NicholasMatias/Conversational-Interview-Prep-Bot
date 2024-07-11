@@ -31,6 +31,7 @@ const Signup = () => {
                 await setDoc(doc(db, "users", userid), {
                     username: username,
                     email: email,
+                    folderNames: [`${username}'s Default Folder`]
                 });
 
                 const foldersRef = collection(db,"users", userid, `${username}'s Default Folder`);
