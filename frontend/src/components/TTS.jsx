@@ -25,9 +25,9 @@ const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
         setError(null);
         onSpeakingStart();
 
-        const DEEPGRAM_URL = "https://api.deepgram.com/v1/speak?model=aura-asteria-en";
-        const DEEPGRAM_API_KEY = "1128ad09116c1e4e9294f4f0266685f63cfe00cd"; //Was having difficulty with env file for some reason on this one. 
-        //Likely due to it being on the frontend. I tried adding REACT_APP as a prefix and it still didn't work though. I am looking into it. 
+        const DEEPGRAM_URL = import.meta.env.VITE_DEEPGRAM_URL;
+
+        const DEEPGRAM_API_KEY = import.meta.env.VITE_DEEPGRAM_API_KEY;
 
         const payload = JSON.stringify({ text: message.content });
 
