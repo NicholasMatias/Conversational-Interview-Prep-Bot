@@ -41,14 +41,14 @@ app.post('/api/chat', async (req, res) => {
                     between two people. The user is about give their response to a question that you have 
                     asked. Please provide a relevant reaction to their answer and brief feedback. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
                     to the question: ${message} Lastly, ask a follow-up question to the user based on their response. Make the question relevant to them yet still broad enough to allow them to answer on their own terms. 
-                    Format for the follow up question should be exactly as follows: "As a follow-up question, (the followup question)"`
+                        `
                         : !lastQuestion && !doFollowUp ?
                             `You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; do not include quotes around your response.  
                     The user is about give their response to a question that you have 
                     asked. Please provide a relevant reaction to their answer and say what you liked about their response. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
                     to the question: ${message}. Do not ask any type of question within your response. Say something to end this thought and mention going on to the next question. `
-                            :
-                            `
+                        :
+                        `
                     You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; do not include quotes around your response.  
                     The user is about give their response to a question that you have 
                     asked. Please provide a relevant reaction to their answer and say what you liked about their response. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
@@ -67,10 +67,10 @@ app.post('/api/chat', async (req, res) => {
 
         // Use regex (regular expression) to extract follow-up question
         const followUpQuestionMatch = botResponse.match(/follow-up question, (.*)$/);
-        const followUpQuestion = followUpQuestionMatch ? followUpQuestionMatch[1].trim() : null;
+        // const followUpQuestion = followUpQuestionMatch ? followUpQuestionMatch[1].trim() : null;
         res.json({
             response: botResponse,
-            followUp: followUpQuestion
+            followUp: doFollowUp
         });
     } catch (error) {
         console.error("Error getting chat completion:", error);

@@ -106,12 +106,6 @@ const Profile = () => {
                 }
                 else if (data.followUp) {
                     setPrevIsFollowUp(true)
-                    if (!data.response.includes(data.followUp)) {
-                        setMessages(prevMessages => [
-                            ...prevMessages,
-                            { role: "bot", content: data.followUp }
-                        ]);
-                    }
                     setIsUserTurn(true);
                     setExpectingFollowUp(true);
                 } else {
