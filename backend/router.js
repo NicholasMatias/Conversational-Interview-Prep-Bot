@@ -65,9 +65,6 @@ app.post('/api/chat', async (req, res) => {
         const botResponse = response.choices[0]?.message?.content || "I didn't understand that.";
 
 
-        // Use regex (regular expression) to extract follow-up question
-        const followUpQuestionMatch = botResponse.match(/follow-up question, (.*)$/);
-        // const followUpQuestion = followUpQuestionMatch ? followUpQuestionMatch[1].trim() : null;
         res.json({
             response: botResponse,
             followUp: doFollowUp

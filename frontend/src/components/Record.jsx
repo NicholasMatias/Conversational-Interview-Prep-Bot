@@ -25,7 +25,6 @@ const Record = ({onTranscriptionComplete, onTranscriptionStart}) => {
             }
 
             const result = await response.json();
-            console.log('Audio uploaded successfully:', result);
 
             if(result){
                 onTranscriptionComplete(result);
