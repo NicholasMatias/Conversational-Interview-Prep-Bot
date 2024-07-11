@@ -25,12 +25,12 @@ const groqInstance = new groq({ apiKey: process.env.GROQ_API_KEY });
 app.post('/api/chat', async (req, res) => {
     const { message, context, lastQuestionCheck, prevIsFollowUp } = req.body;
 
-    let lastQuestion = lastQuestionCheck == "quit" ? true : false
+    let lastQuestion = lastQuestionCheck == "quit";
     try {
-        const doFollowUp = Math.random() > .65 && !lastQuestion ? true : false;
-        if (doFollowUp) { lastQuestion = false; }
-
-        if (prevIsFollowUp) { lastQuestion = false; }
+        const doFollowUp = Math.random() > .65 && !lastQuestion;
+        if (doFollowUp || prevIsFollowUp){
+            lastQuestion = false;
+        }
 
         const response = await groqInstance.chat.completions.create({
             messages: [
@@ -107,8 +107,6 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
             response_format: 'json',
             temperature: 0.0,
         });
-
-        // Delete the file after processing if needed
 
         fs.unlinkSync(file.path, (err) => {
             if (err) {
