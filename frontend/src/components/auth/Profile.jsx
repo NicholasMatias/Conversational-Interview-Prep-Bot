@@ -31,6 +31,7 @@ const Profile = () => {
     const [isInterviewOver, setIsInterviewOver] = useState(false);
     const [spokenMessages, setSpokenMessages] = useState([]);
     const [newMessages, setNewMessages] = useState([]);
+    const [isSpeaking, setIsSpeaking] = useState(false);
 
     const navigate = useNavigate();
 
@@ -82,6 +83,9 @@ const Profile = () => {
             if (interviewQuestions.length > 2) {
                 setLastQuestionCheck(interviewQuestions[currentQuestionIndex + 2])
             }
+
+            const isLastQuestion = currentQuestionIndex === interviewQuestions.length -2;
+
             try {
                 const response = await fetch('http://localhost:5000/api/chat', {
                     method: 'POST',
@@ -96,7 +100,11 @@ const Profile = () => {
                 setInput("");
                 setIsLoading(false);
 
-                if (data.followUp) {
+                if (isLastQuestion){
+                    setIsInterviewOver(true);
+                    setIsUserTurn(false);
+                }
+                else if (data.followUp) {
                     setPrevIsFollowUp(true)
                     if (!data.response.includes(data.followUp)) {
                         setMessages(prevMessages => [
@@ -108,7 +116,7 @@ const Profile = () => {
                     setExpectingFollowUp(true);
                 } else {
                     setPrevIsFollowUp(false)
-                    if (currentQuestionIndex < interviewQuestions.length - 1) {
+                    if (!isLastQuestion) {
                         setCurrentQuestionIndex(currentQuestionIndex + 1);
 
                         const nextQuestion = interviewQuestions[currentQuestionIndex + 1];
@@ -121,6 +129,7 @@ const Profile = () => {
                     }
                     else {
                         setIsInterviewOver(true);
+                        setIsUserTurn(false);
                     }
                 }
             } catch (error) {
@@ -148,7 +157,13 @@ const Profile = () => {
 
     const handleSpokenMessage = (spokenContent) => {
         setSpokenMessages(prev => [...prev, spokenContent]);
+        setIsSpeaking(false);
     };
+
+
+    const handleTTSStart = () => {
+        setIsSpeaking(true);
+    }
 
     return (
         <div>
@@ -174,7 +189,7 @@ const Profile = () => {
                     </div>
                     {isLoading && <div>Processing your response...</div>}
                     {isTranscribing && <div>Transcribing your response...</div>}
-                    {isUserTurn && !isLoading && !isTranscribing && !isInterviewOver &&
+                    {isUserTurn && !isLoading && !isTranscribing && !isInterviewOver && !isSpeaking &&
                         <Record
                             onTranscriptionComplete={handleTranscription}
                             onTranscriptionStart={() => setIsTranscribing(true)}
@@ -184,9 +199,18 @@ const Profile = () => {
                         <TTS
                             messages={newMessages}
                             onMessageSpoken={handleSpokenMessage}
+                            onSpeakingStart = {handleTTSStart}
                         />
                     )}
+
+                    {isInterviewOver && !isSpeaking && (
+                        <div>
+                            <button>View Feedback</button>
+                            <button>Save Transcript</button>
+                        </div>
+                    )}
                 </div>
+
             )}
         </div>
     );
