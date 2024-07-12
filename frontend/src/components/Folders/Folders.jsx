@@ -2,7 +2,7 @@ import './Folders.css'
 import { setDoc, collection, getDoc, doc, getFirestore, updateDoc, arrayUnion} from "firebase/firestore";
 import { db } from "../../../../backend/firebase/firebase.config.js";
 import { useAuth } from '../auth/auth.jsx';
-import { useEffect, useState } from 'react';
+import { useEffect,useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import Folder from './Folder.jsx'
 import Spacing from '../landing_page/spacing/Spacing.jsx';
@@ -13,7 +13,7 @@ const Folders = () => {
     const { currentUser } = useAuth();
     const userid = currentUser.uid;
     const [folders, setFolders] = useState([])
-    const [inputValue, setInputValue] = useState("")
+    const folderNameRef = useRef(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,7 +32,7 @@ const Folders = () => {
 
     const handleNewFolder = async (e) => {
         e.preventDefault();
-        const folderName = e.target['folderName'].value;
+        const folderName = folderNameRef.current.value;
         const thisUserDocRef = doc(db,"users", currentUser.uid);
         try {
             await updateDoc(thisUserDocRef,{
@@ -46,7 +46,7 @@ const Folders = () => {
                 createdAt: new Date(),
                 name: 'Initial Document'
             })
-
+            folderNameRef.current.value = "";
             console.log(`Folder ${folderName} created successfully.`);
         }
 
@@ -71,7 +71,7 @@ const Folders = () => {
                         <h1>Create a New Folder</h1>
                         <div>
                             <label htmlFor="folderName">Folder Name: </label>
-                            <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' required />
+                            <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
                         </div>
                         <button type="submit" >Create Folder</button>
                     </form>
