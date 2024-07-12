@@ -58,7 +58,6 @@ const Folders = () => {
                 name: 'Initial Document'
             })
             folderNameRef.current.value = "";
-            console.log(`Folder ${folderName} created successfully.`);
         }
 
 
