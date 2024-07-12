@@ -40,6 +40,7 @@ const Folders = () => {
             setError('A folder with this name already exists.');
             return;
         }
+        setError("")
 
         const thisUserDocRef = doc(db,"users", currentUser.uid);
         try {
