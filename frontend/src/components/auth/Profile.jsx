@@ -38,6 +38,7 @@ const Profile = () => {
     const [folderNames, setFolderNames] = useState([]);
 
     const [alreadySaved, setAlreadySaved] = useState(false);
+    const [newInterview, setNewInterview] = useState(false);
 
     const navigate = useNavigate();
 
@@ -142,6 +143,7 @@ const Profile = () => {
                     }
                     else {
                         setIsInterviewOver(true);
+                        setNewInterview(false);
                         setIsUserTurn(false);
                     }
                 }
@@ -154,6 +156,7 @@ const Profile = () => {
 
     const startInterview = () => {
         setInterviewStarted(true);
+        setNewInterview(false);
         const welcomeMessage = "Hello, I am excited to interview you!";
         const firstQuestion = interviewQuestions[0];
         setMessages([
@@ -166,6 +169,7 @@ const Profile = () => {
         setExpectingFollowUp(false);
         setIsUserTurn(true);
         setIsInterviewOver(false);
+        setIsSpeaking(false);
     };
 
     const handleSpokenMessage = (spokenContent) => {
@@ -178,6 +182,7 @@ const Profile = () => {
         setIsSpeaking(true);
     }
 
+    
 
     const handleSave = async (transcriptName, selectedFolder) => {
         if (!currentUser) return;
@@ -221,6 +226,26 @@ const Profile = () => {
         }
     }
 
+    const handleNewInterview = () => {
+        setNewInterview(true);
+        setInterviewStarted(false);
+        setMessages([]);
+        setInput("");
+        setCurrentQuestionIndex(0);
+        setExpectingFollowUp(false);
+        setLastQuestionCheck("");
+        setPrevIsFollowUp(false);
+        setIsUserTurn(false);
+        setIsLoading(false);
+        setIsTranscribing(false);
+        setSpokenMessages([]);
+        setIsSpeaking(false);
+        setAlreadySaved(false);
+        setIsModalOpen(false);
+        setIsInterviewOver(false);
+        
+    }
+
     return (
         <div>
             {user && (
@@ -259,13 +284,19 @@ const Profile = () => {
                         />
                     )}
 
-                    {isInterviewOver && !isSpeaking && (
+                    {
+                        console.log(`isInterviewOver: ${isInterviewOver}\nisSpeaking: ${isSpeaking}\nnewInterview: ${newInterview}`)
+
+                    }
+
+                    {isInterviewOver && !isSpeaking && !newInterview && (
                         <div>
                             <button>View Feedback</button>
 
-                            {!setAlreadySaved &&
+                            {!alreadySaved &&
                                 <button onClick={() => setIsModalOpen(true)}>Save Transcript</button>
                             }
+                            <button onClick={handleNewInterview}>New Interview</button>
                         </div>
                     )}
 
