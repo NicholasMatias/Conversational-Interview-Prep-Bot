@@ -66,13 +66,13 @@ const Folders = () => {
             <Spacing />
             <div className='container'>
                 <div className='left-container'>
-                    <form>
+                    <form onSubmit={handleNewFolder}>
                         <h1>Create a New Folder</h1>
                         <div>
                             <label htmlFor="folderName">Folder Name: </label>
-                            <input type="text" placeholder='Enter Folder Name...' id='folderName' required />
+                            <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' required />
                         </div>
-                        <button onClick={handleNewFolder}>Create Folder</button>
+                        <button type="submit" >Create Folder</button>
                     </form>
 
                     <button onClick={toInterviewPage}>Interview Page</button>
