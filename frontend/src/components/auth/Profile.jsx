@@ -40,6 +40,9 @@ const Profile = () => {
     const [alreadySaved, setAlreadySaved] = useState(false);
     const [newInterview, setNewInterview] = useState(false);
 
+    const [error, setError] = useState("")
+
+
 
 
     const navigate = useNavigate();
@@ -189,19 +192,16 @@ const Profile = () => {
     const handleSave = async (transcriptName, selectedFolder) => {
         if (!currentUser) return;
 
-
         try {
-            try {
-                const userRef = doc(db, "users", currentUser.uid);
-                const folderRef = doc(userRef, `${selectedFolder}`, transcriptName);
+
+            if (!collection(db, "users", currentUser.uid, selectedFolder)) {
+                setError("Folder could not be found.")
             }
-            catch(error) {
-                console.error("Error getting path for selected folder:", error);
+            else {
+                setError("");
             }
-
-
-
-
+            const userRef = doc(db, "users", currentUser.uid);
+            const folderRef = doc(userRef, `${selectedFolder}`, transcriptName);
 
 
             if (!transcriptName || !Array.isArray(messages)) {
@@ -310,6 +310,7 @@ const Profile = () => {
                         onClose={() => setIsModalOpen(false)}
                         onSave={handleSave}
                     />
+                    {error && <p>{error}</p>}
                 </div>
 
             )}
