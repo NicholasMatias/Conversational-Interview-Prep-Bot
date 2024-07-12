@@ -14,6 +14,7 @@ const Folders = () => {
     const userid = currentUser.uid;
     const [folders, setFolders] = useState([])
     const folderNameRef = useRef(null);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,6 +34,13 @@ const Folders = () => {
     const handleNewFolder = async (e) => {
         e.preventDefault();
         const folderName = folderNameRef.current.value;
+
+
+        if (folders.includes(folderName)){
+            setError('A folder with this name already exists.');
+            return;
+        }
+
         const thisUserDocRef = doc(db,"users", currentUser.uid);
         try {
             await updateDoc(thisUserDocRef,{
@@ -72,6 +80,7 @@ const Folders = () => {
                         <div>
                             <label htmlFor="folderName">Folder Name: </label>
                             <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
+                            {error && <p style={{color: 'red'}}>{error}</p>}
                         </div>
                         <button type="submit" >Create Folder</button>
                     </form>
