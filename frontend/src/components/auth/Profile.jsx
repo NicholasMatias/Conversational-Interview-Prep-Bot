@@ -1,7 +1,7 @@
 import './Profile.css'
 import React from 'react'
 import { signOut } from './auth.js'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from './auth.jsx'
 import { useNavigate } from 'react-router-dom'
 import Record from '../Record.jsx'
@@ -39,6 +39,8 @@ const Profile = () => {
 
     const [alreadySaved, setAlreadySaved] = useState(false);
     const [newInterview, setNewInterview] = useState(false);
+
+
 
     const navigate = useNavigate();
 
@@ -182,20 +184,24 @@ const Profile = () => {
         setIsSpeaking(true);
     }
 
-    
+
 
     const handleSave = async (transcriptName, selectedFolder) => {
         if (!currentUser) return;
 
 
         try {
-            const userRef = doc(db, "users", currentUser.uid);
-            const folderRef = doc(userRef, `${selectedFolder}`, transcriptName);
+            try {
+                const userRef = doc(db, "users", currentUser.uid);
+                const folderRef = doc(userRef, `${selectedFolder}`, transcriptName);
+            }
+            catch(error) {
+                console.error("Error getting path for selected folder:", error);
+            }
 
 
-            // Debugging logs
-            console.log("Transcript Name:", transcriptName);
-            console.log("Messages:", messages);
+
+
 
 
             if (!transcriptName || !Array.isArray(messages)) {
@@ -220,7 +226,6 @@ const Profile = () => {
             setAlreadySaved(true);
 
 
-            console.log("Transcript saved successfully.");
         } catch (error) {
             console.error("Error saving transcript:", error);
         }
@@ -243,8 +248,11 @@ const Profile = () => {
         setAlreadySaved(false);
         setIsModalOpen(false);
         setIsInterviewOver(false);
-        
+
     }
+
+
+
 
     return (
         <div>
@@ -284,11 +292,6 @@ const Profile = () => {
                         />
                     )}
 
-                    {
-                        console.log(`isInterviewOver: ${isInterviewOver}\nisSpeaking: ${isSpeaking}\nnewInterview: ${newInterview}`)
-
-                    }
-
                     {isInterviewOver && !isSpeaking && !newInterview && (
                         <div>
                             <button>View Feedback</button>
@@ -296,6 +299,7 @@ const Profile = () => {
                             {!alreadySaved &&
                                 <button onClick={() => setIsModalOpen(true)}>Save Transcript</button>
                             }
+
                             <button onClick={handleNewInterview}>New Interview</button>
                         </div>
                     )}
@@ -305,9 +309,6 @@ const Profile = () => {
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
                         onSave={handleSave}
-                        folderNames={folderNames}
-
-
                     />
                 </div>
 
