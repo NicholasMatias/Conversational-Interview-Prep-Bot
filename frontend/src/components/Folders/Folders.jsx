@@ -13,6 +13,7 @@ const Folders = () => {
     const { currentUser } = useAuth();
     const userid = currentUser.uid;
     const [folders, setFolders] = useState([])
+    const [inputValue, setInputValue] = useState("")
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -31,7 +32,7 @@ const Folders = () => {
 
     const handleNewFolder = async (e) => {
         e.preventDefault();
-        const folderName = e.target.form.folderName.value;
+        const folderName = e.target['folderName'].value;
         const thisUserDocRef = doc(db,"users", currentUser.uid);
         try {
             await updateDoc(thisUserDocRef,{
