@@ -1,11 +1,13 @@
-const express = require('express')
+import express from 'express';
+import cors from 'cors';
+import groq from 'groq-sdk'
+import dotenv from 'dotenv';
+dotenv.config();
+import multer from 'multer';
+import fs from 'fs';
 const app = express()
-const cors = require('cors')
-require('dotenv').config()
-const groq = require("groq-sdk");
-const multer = require('multer');
-const fs = require('fs');
 
+import {doFollowUp_notLastQuestion_prompt, notLastQuestion_notFollowUp_prompt, lastQuestion_prompt, errorChatCompletion, errorTranscribingAudio, baseURL, PORT} from './constants.js';
 
 
 
@@ -17,7 +19,6 @@ app.use((req, res, next) => {
     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
     next();
 });
-const PORT = process.env.PORT || 3000
 
 
 const groqInstance = new groq({ apiKey: process.env.GROQ_API_KEY });
@@ -25,37 +26,21 @@ const groqInstance = new groq({ apiKey: process.env.GROQ_API_KEY });
 app.post('/api/chat', async (req, res) => {
     const { message, context, lastQuestionCheck, prevIsFollowUp } = req.body;
 
-    let lastQuestion = lastQuestionCheck == "quit" ? true : false
+    let lastQuestion = lastQuestionCheck == "quit";
     try {
-        const doFollowUp = Math.random() > .65 && !lastQuestion ? true : false;
-        if (doFollowUp) { lastQuestion = false; }
-
-        if (prevIsFollowUp) { lastQuestion = false; }
+        const doFollowUp = Math.random() > .65 && !lastQuestion;
+        if (doFollowUp || prevIsFollowUp){
+            lastQuestion = false;
+        }
 
         const response = await groqInstance.chat.completions.create({
             messages: [
                 {
                     role: "user",
 
-                    content: doFollowUp && !lastQuestion ? `You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation 
-                    between two people. The user is about give their response to a question that you have 
-                    asked. Please provide a relevant reaction to their answer and brief feedback. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
-                    to the question: ${message} Lastly, ask a follow-up question to the user based on their response. Make the question relevant to them yet still broad enough to allow them to answer on their own terms. 
-                    Format for the follow up question should be exactly as follows: "As a follow-up question, (the followup question)"`
-                        : !lastQuestion && !doFollowUp ?
-                            `You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; do not include quotes around your response.  
-                    The user is about give their response to a question that you have 
-                    asked. Please provide a relevant reaction to their answer and say what you liked about their response. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
-                    to the question: ${message}. Do not ask any type of question within your response. Say something to end this thought and mention going on to the next question. `
-                            :
-                            `
-                    You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; do not include quotes around your response.  
-                    The user is about give their response to a question that you have 
-                    asked. Please provide a relevant reaction to their answer and say what you liked about their response. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
-                    to the question: ${message}. Do not ask any type of question within your response. Say something to end this thought.
-                    Lastly, since this was the last question, you are done conducting the interview.
-                    You must always express your thanks for getting to interview the person and mention that there will be post interview feedback via our post interview review on our platform InterviewMe. 
-                    `
+                    content: doFollowUp && !lastQuestion ? doFollowUp_notLastQuestion_prompt(context, message)
+                        : !lastQuestion && !doFollowUp ? notLastQuestion_notFollowUp_prompt(context, message)
+                        : lastQuestion_prompt(context, message)
                 }
             ],
             model: "llama3-70b-8192",
@@ -65,16 +50,13 @@ app.post('/api/chat', async (req, res) => {
         const botResponse = response.choices[0]?.message?.content || "I didn't understand that.";
 
 
-        // Use regex (regular expression) to extract follow-up question
-        const followUpQuestionMatch = botResponse.match(/follow-up question, (.*)$/);
-        const followUpQuestion = followUpQuestionMatch ? followUpQuestionMatch[1].trim() : null;
         res.json({
             response: botResponse,
-            followUp: followUpQuestion
+            followUp: doFollowUp
         });
     } catch (error) {
-        console.error("Error getting chat completion:", error);
-        res.status(500).json({ error: "Error getting chat completion" });
+        console.error(errorChatCompletion, error);
+        res.status(500).json({ error: errorChatCompletion });
     }
 });
 
@@ -111,8 +93,6 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
             temperature: 0.0,
         });
 
-        // Delete the file after processing if needed
-
         fs.unlinkSync(file.path, (err) => {
             if (err) {
                 console.error('Error deleting file:', err);
@@ -126,8 +106,8 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
 
 
     } catch (error) {
-        console.error('Error transcribing audio:', error);
-        res.status(500).json({ error: 'Error transcribing audio' });
+        console.error(errorTranscribingAudio, error);
+        res.status(500).json({ error: errorTranscribingAudio });
     }
 });
 
@@ -142,5 +122,5 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
 
 
 const server = app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`)
+    console.log(`Server is running on ${baseURL}`)
 })

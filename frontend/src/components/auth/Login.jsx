@@ -1,12 +1,12 @@
 import './Login.css'
-
+import { doc,  setDoc } from "firebase/firestore";
+import { db } from "../../../../backend/firebase/firebase.config";
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { signInWithEmailAndPassword, signInWithFacebook, signInWithGoogle } from './auth'
 import { useState } from 'react'
 import Footer from '../landing_page/footer/Footer'
 import Spacing from '../landing_page/spacing/Spacing'
-import googleIcon from '../landing_page/images_icons/Google Icon.png'
 
 const Login = () => {
     const [email, setEmail] = useState('')
@@ -56,6 +56,7 @@ const Login = () => {
     const handleGoogleLogin = async () => {
         try {
             await signInWithGoogle()
+            
             navigate('/profile')
 
         }
