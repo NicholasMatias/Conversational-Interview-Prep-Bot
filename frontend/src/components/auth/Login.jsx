@@ -1,5 +1,5 @@
 import './Login.css'
-import { doc,  setDoc } from "firebase/firestore";
+import { doc,  setDoc, getDoc, addDoc, collection } from "firebase/firestore";
 import { db } from "../../../../backend/firebase/firebase.config";
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -53,10 +53,30 @@ const Login = () => {
     }
 
 
-    const handleGoogleLogin = async () => {
+    const handleGoogleLogin = async (e) => {
         try {
-            await signInWithGoogle()
-            
+            const userCredentials = await signInWithGoogle()
+            const user = userCredentials.user;
+
+            console.log("userCredentials successfully fetched.")
+
+            const userDocRef = doc(db,"users", user.uid);
+            const userDocSnapshot = await getDoc(userDocRef);
+
+            if(!userDocSnapshot.exists()){
+                await setDoc(userDocRef, {
+                    username: user.displayName || user.email,
+                    email: user.email,
+                    folderNames: [`${user.displayName || user.email}'s Default Folder`]
+                })
+                const foldersRef = doc(db,"users", user.uid, `${user.displayName || user.email}'s Default Folder`,'initial')
+                await setDoc(foldersRef, {
+                    folderName: `${user.displayName || user.email}'s Default Folder`,
+                    createdAt: new Date(),
+                })
+                console.log("Default Folder Created")
+            }
+
             navigate('/profile')
 
         }

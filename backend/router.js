@@ -10,8 +10,6 @@ const app = express()
 import {doFollowUp_notLastQuestion_prompt, notLastQuestion_notFollowUp_prompt, lastQuestion_prompt, errorChatCompletion, errorTranscribingAudio, baseURL, PORT} from './constants.js';
 
 
-
-
 app.use(cors())
 app.use(express.json())
 app.use((req, res, next) => {
@@ -61,12 +59,6 @@ app.post('/api/chat', async (req, res) => {
 });
 
 
-
-
-
-
-
-
 // Configure Multer for file uploads, this essentially stores the user's audio response until it is sent through the api for transcription. The audio file is then deleted. 
 //technically is stored in uploads folder for a ms or two before being deleted.     
 const storage = multer.diskStorage({
@@ -111,15 +103,6 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
         res.status(500).json({ error: errorTranscribingAudio });
     }
 });
-
-
-
-
-
-
-
-
-
 
 
 const server = app.listen(PORT, () => {
