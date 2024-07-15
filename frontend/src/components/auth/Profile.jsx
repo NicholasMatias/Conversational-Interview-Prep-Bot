@@ -10,6 +10,7 @@ import interview_questions from '../../../interview_questions.json';
 import { db } from '../../../../backend/firebase/firebase.config.js';
 import { doc, updateDoc, arrayUnion, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
 import SaveModal from '../SaveTranscript/SaveModal.jsx';
+import { Spinner } from '@chakra-ui/react'
 
 
 const interviewQuestions = interview_questions.basisBehavioralQuestions;
@@ -276,8 +277,27 @@ const Profile = () => {
                             </div>
                         ))}
                     </div>
-                    {isLoading && <div>Processing your response...</div>}
-                    {isTranscribing && <div>Transcribing your response...</div>}
+                    {isLoading && <div><h3>Processing your response 
+                        <Spinner
+                            thickness='4px'
+                            speed='0.65s'
+                            emptyColor='gray.200'
+                            color='blue.500'
+                            size='xs'
+                        />
+                    </h3>
+                    </div>}
+                    {isTranscribing && <div><h3>Transcribing your response 
+                        <Spinner
+                            thickness='4px'
+                            speed='0.65s'
+                            emptyColor='gray.200'
+                            color='blue.500'
+                            size='xs'
+
+                        />
+                    </h3>
+                    </div>}
                     {isUserTurn && !isLoading && !isTranscribing && !isInterviewOver && !isSpeaking &&
                         <Record
                             onTranscriptionComplete={handleTranscription}

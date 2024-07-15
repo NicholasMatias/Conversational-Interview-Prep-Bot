@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import Folder from './Folder.jsx'
 import Spacing from '../landing_page/spacing/Spacing.jsx';
+import { Spinner } from '@chakra-ui/react'
 
 
 
@@ -91,7 +92,15 @@ const Folders = () => {
                 </div>
 
                 <div className='folder-grid-container'>
-                    {loading ? <p>Loading Folders...</p>
+                    {loading ? <h3>Loading Folders
+                        <Spinner
+                            thickness='4px'
+                            speed='0.65s'
+                            emptyColor='gray.200'
+                            color='blue.500'
+                            size='sm'
+                        />
+                    </h3>
                         :
                         <div className='folders-container'>
                             {folders?.map((folderName, index) => (

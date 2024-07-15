@@ -1,5 +1,4 @@
-
-
+import { Spinner } from '@chakra-ui/react'
 import React, { useEffect, useState, useRef } from 'react';
 
 const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
@@ -19,7 +18,7 @@ const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
     }, [queue]);
 
     const speak = async (message) => {
-        if (isSpeakingRef.current || message.content=="quit") return;
+        if (isSpeakingRef.current || message.content == "quit") return;
         isSpeakingRef.current = true;
         setIsLoading(true);
         setError(null);
@@ -68,7 +67,17 @@ const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
 
     return (
         <div>
-            {isLoading && <p>Converting to speech...</p>}
+            {isLoading && <h3>Converting to speech 
+                <Spinner
+                    thickness='4px'
+                    speed='0.65s'
+                    emptyColor='gray.200'
+                    color='blue.500'
+                    size='xs'
+                />
+            </h3>
+
+            }
             {error && <p>Error: {error}</p>}
         </div>
     );
