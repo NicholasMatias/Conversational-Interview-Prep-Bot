@@ -193,12 +193,12 @@ const Profile = () => {
         if (!currentUser) return;
 
         try {
-
             if (!collection(db, "users", currentUser.uid, selectedFolder)) {
                 setError("Folder could not be found.")
             }
             else {
                 setError("");
+
             }
             const userRef = doc(db, "users", currentUser.uid);
             const folderRef = doc(userRef, `${selectedFolder}`, transcriptName);

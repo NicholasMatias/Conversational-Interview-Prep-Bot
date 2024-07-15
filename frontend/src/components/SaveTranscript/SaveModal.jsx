@@ -8,8 +8,9 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
     const folderNameRef = useRef(null);
     const [error, setError] = useState('');
     const [folders, setFolders] = useState([])
-    const [selectedFolder, setSelectedFolder] = useState(folders[0] || '');
     const { currentUser } = useAuth();
+    const [selectedFolder, setSelectedFolder] = useState(folders[0] || `${currentUser.displayName}'s Default Folder`);
+
 
 
     if (!isOpen) return null;
