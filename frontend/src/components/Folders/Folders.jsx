@@ -1,8 +1,8 @@
 import './Folders.css'
-import { setDoc, collection, getDoc, doc, getFirestore, updateDoc, arrayUnion} from "firebase/firestore";
+import { setDoc, collection, getDoc, doc, getFirestore, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../../../../backend/firebase/firebase.config.js";
 import { useAuth } from '../auth/auth.jsx';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import Folder from './Folder.jsx'
 import Spacing from '../landing_page/spacing/Spacing.jsx';
@@ -13,17 +13,21 @@ const Folders = () => {
     const { currentUser } = useAuth();
     const userid = currentUser.uid;
     const [folders, setFolders] = useState([])
+    const folderNameRef = useRef(null);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchFolders = async () => {
-            const userDocRef  = doc(db,"users",currentUser.uid);
+            const userDocRef = doc(db, "users", currentUser.uid);
             const userDoc = await getDoc(userDocRef);
 
-            if(userDoc.exists()){
+            if (userDoc.exists()) {
                 const userData = userDoc.data();
                 setFolders(userData.folderNames || [])
             }
+            setLoading(false);
         }
 
         fetchFolders();
@@ -31,14 +35,34 @@ const Folders = () => {
 
     const handleNewFolder = async (e) => {
         e.preventDefault();
-        const folderName = e.target.form.folderName.value;
-        const foldersDocRef = doc(db,"users", currentUser.uid);
+        const folderName = folderNameRef.current.value;
+
+
+        if (folders.includes(folderName)) {
+            setError('A folder with this name already exists.');
+            return;
+        }
+        setError("")
+
+        const thisUserDocRef = doc(db, "users", currentUser.uid);
         try {
-            await updateDoc(foldersDocRef,{
+            await updateDoc(thisUserDocRef, {
                 folderNames: arrayUnion(folderName),
             })
             setFolders([...folders, folderName])
+
+            const newFolderCollectionRef = collection(thisUserDocRef, folderName);
+
+            await setDoc(doc(newFolderCollectionRef, "initial"), {
+                createdAt: new Date(),
+                name: 'Initial Document'
+            })
+            folderNameRef.current.value = "";
         }
+
+
+
+
         catch (error) {
             console.error("Error creating folder:", error);
         }
@@ -53,26 +77,29 @@ const Folders = () => {
             <Spacing />
             <div className='container'>
                 <div className='left-container'>
-                    <form>
+                    <form onSubmit={handleNewFolder}>
                         <h1>Create a New Folder</h1>
                         <div>
                             <label htmlFor="folderName">Folder Name: </label>
-                            <input type="text" placeholder='Enter Folder Name...' id='folderName' required />
+                            <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
+                            {error && <p style={{ color: 'red' }}>{error}</p>}
                         </div>
-                        <button onClick={handleNewFolder}>Create Folder</button>
+                        <button type="submit" >Create Folder</button>
                     </form>
 
                     <button onClick={toInterviewPage}>Interview Page</button>
                 </div>
 
                 <div className='folder-grid-container'>
-                    <div className='folders-container'>
-                        {folders?.map((folderName, index) => (
-                            <Folder key={index} folderName={folderName} />
-                        ))}
+                    {loading ? <p>Loading Folders...</p>
+                        :
+                        <div className='folders-container'>
+                            {folders?.map((folderName, index) => (
+                                <Folder key={index} folderName={folderName} />
+                            ))}
 
 
-                    </div>
+                        </div>}
 
                 </div>
 

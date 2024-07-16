@@ -1,12 +1,15 @@
 import './Profile.css'
 import React from 'react'
 import { signOut } from './auth.js'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from './auth.jsx'
 import { useNavigate } from 'react-router-dom'
 import Record from '../Record.jsx'
 import TTS from '../TTS.jsx'
 import interview_questions from '../../../interview_questions.json';
+import { db } from '../../../../backend/firebase/firebase.config.js';
+import { doc, updateDoc, arrayUnion, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
+import SaveModal from '../SaveTranscript/SaveModal.jsx';
 
 
 const interviewQuestions = interview_questions.basisBehavioralQuestions;
@@ -31,6 +34,17 @@ const Profile = () => {
     const [newMessages, setNewMessages] = useState([]);
     const [isSpeaking, setIsSpeaking] = useState(false);
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [folderNames, setFolderNames] = useState([]);
+
+    const [alreadySaved, setAlreadySaved] = useState(false);
+    const [newInterview, setNewInterview] = useState(false);
+
+    const [error, setError] = useState("")
+
+
+
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -40,6 +54,13 @@ const Profile = () => {
                 name: currentUser.displayName || "User",
             });
         }
+
+        const userRef = doc(db, "users", currentUser.uid)
+        getDoc(userRef).then((docSnap) => {
+            if (docSnap.exists()) {
+                setFolderNames(docSnap.data().folderNames || []);
+            }
+        })
     }, [currentUser]);
 
     useEffect(() => {
@@ -69,6 +90,8 @@ const Profile = () => {
         setIsUserTurn(false);
     }
 
+
+    // Manages the messages array, sends the user response and question asked to backend in body => then sent to groq llama3 to get a response to the user. 
     const sendMessage = async (transcribedText) => {
         const messageText = transcribedText || input;
         if (messageText.trim()) {
@@ -76,16 +99,19 @@ const Profile = () => {
             const userMessage = { role: "user", content: messageText };
             setMessages([...messages, userMessage]);
 
+            // sets the current question. 
             const currentQuestion = interviewQuestions[currentQuestionIndex];
             const context = `Question: ${currentQuestion}`;
+
+            // sets the last question, so that the correct content is used in api call to groq on the backend body params. 
             if (interviewQuestions.length > 2) {
                 setLastQuestionCheck(interviewQuestions[currentQuestionIndex + 2])
             }
 
-            const isLastQuestion = currentQuestionIndex === interviewQuestions.length -2;
+            const isLastQuestion = currentQuestionIndex === interviewQuestions.length - 2;
 
             try {
-                const response = await fetch('http://localhost:5000/api/chat', {
+                const response = await fetch("http://localhost:5000/api/chat", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -98,10 +124,11 @@ const Profile = () => {
                 setInput("");
                 setIsLoading(false);
 
-                if (isLastQuestion){
+                if (isLastQuestion) {
                     setIsInterviewOver(true);
                     setIsUserTurn(false);
                 }
+                // if there is a followup question, don't do to next question in interviewQuestions json file, allow user to respond to follow-up question. 
                 else if (data.followUp) {
                     setPrevIsFollowUp(true)
                     setIsUserTurn(true);
@@ -121,6 +148,7 @@ const Profile = () => {
                     }
                     else {
                         setIsInterviewOver(true);
+                        setNewInterview(false);
                         setIsUserTurn(false);
                     }
                 }
@@ -133,18 +161,20 @@ const Profile = () => {
 
     const startInterview = () => {
         setInterviewStarted(true);
+        setNewInterview(false);
         const welcomeMessage = "Hello, I am excited to interview you!";
         const firstQuestion = interviewQuestions[0];
         setMessages([
             { role: "bot", content: welcomeMessage },
             { role: "bot", content: firstQuestion }
-        ]);TTS
+        ]); TTS
         if (interviewQuestions[1] == "quit") {
             setLastQuestionCheck("quit")
         }
         setExpectingFollowUp(false);
         setIsUserTurn(true);
         setIsInterviewOver(false);
+        setIsSpeaking(false);
     };
 
     const handleSpokenMessage = (spokenContent) => {
@@ -156,6 +186,73 @@ const Profile = () => {
     const handleTTSStart = () => {
         setIsSpeaking(true);
     }
+
+
+
+    const handleSave = async (transcriptName, selectedFolder) => {
+        if (!currentUser) return;
+
+        try {
+
+            if (!collection(db, "users", currentUser.uid, selectedFolder)) {
+                setError("Folder could not be found.")
+            }
+            else {
+                setError("");
+            }
+            const userRef = doc(db, "users", currentUser.uid);
+            const folderRef = doc(userRef, `${selectedFolder}`, transcriptName);
+
+
+            if (!transcriptName || !Array.isArray(messages)) {
+                console.error("Invalid data: transcriptName or messages are not properly initialized");
+                return;
+            }
+
+
+            await setDoc(folderRef, {
+                createdAt: new Date(),
+                name: transcriptName || null,
+                transcript: messages || null,
+            });
+
+
+            await updateDoc(userRef, {
+                transcripts: arrayUnion(transcriptName)
+            });
+
+
+            setIsModalOpen(false);
+            setAlreadySaved(true);
+
+
+        } catch (error) {
+            console.error("Error saving transcript:", error);
+        }
+    }
+
+    const handleNewInterview = () => {
+        setNewInterview(true);
+        setInterviewStarted(false);
+        setMessages([]);
+        setInput("");
+        setCurrentQuestionIndex(0);
+        setExpectingFollowUp(false);
+        setLastQuestionCheck("");
+        setPrevIsFollowUp(false);
+        setIsUserTurn(false);
+        setIsLoading(false);
+        setIsTranscribing(false);
+        setSpokenMessages([]);
+        setIsSpeaking(false);
+        setAlreadySaved(false);
+        setIsModalOpen(false);
+        setIsInterviewOver(false);
+
+    }
+
+
+
 
     return (
         <div>
@@ -191,16 +288,29 @@ const Profile = () => {
                         <TTS
                             messages={newMessages}
                             onMessageSpoken={handleSpokenMessage}
-                            onSpeakingStart = {handleTTSStart}
+                            onSpeakingStart={handleTTSStart}
                         />
                     )}
 
-                    {isInterviewOver && !isSpeaking && (
+                    {isInterviewOver && !isSpeaking && !newInterview && (
                         <div>
                             <button>View Feedback</button>
-                            <button>Save Transcript</button>
+
+                            {!alreadySaved &&
+                                <button onClick={() => setIsModalOpen(true)}>Save Transcript</button>
+                            }
+
+                            <button onClick={handleNewInterview}>New Interview</button>
                         </div>
                     )}
+
+
+                    <SaveModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onSave={handleSave}
+                    />
+                    {error && <p>{error}</p>}
                 </div>
 
             )}

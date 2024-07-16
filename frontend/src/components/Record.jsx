@@ -4,6 +4,8 @@ import { useState } from 'react';
 
 const Record = ({onTranscriptionComplete, onTranscriptionStart}) => {
 
+    const baseURL = import.meta.env.VITE_BASE_URL;
+
     const [isRecording, setIsRecording] = useState(false);
 
     const addAudioElement = async (blob) => {
@@ -15,7 +17,7 @@ const Record = ({onTranscriptionComplete, onTranscriptionStart}) => {
 
         // Make an API call to upload the audio file
         try {
-            const response = await fetch('http://localhost:5000/transcribe', {
+            const response = await fetch("http://localhost:5000/transcribe", {
                 method: 'POST',
                 body: formData,
             });
