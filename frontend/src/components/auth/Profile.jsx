@@ -220,7 +220,7 @@ const Profile = () => {
 
 
             await updateDoc(userRef, {
-                transcripts: arrayUnion(transcriptName)
+                [selectedFolder]: arrayUnion(transcriptName)
             });
 
 
