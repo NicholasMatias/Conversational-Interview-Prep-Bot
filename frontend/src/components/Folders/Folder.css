@@ -45,7 +45,7 @@
     text-align: center;
 }
 
-.folder-modal-container button{
+.btn-close{
     background-color: #00adb5;
     color: white;
     padding: 1em;
@@ -62,4 +62,29 @@
 .folder-modal-container button:hover{
     background-color: #007b7b;
 
+}
+
+.transcript-item{
+    text-align: left;
+    margin: 20px;
+    display: flex;   
+}
+.transcript-item button{
+    margin-left: 20px;
+    padding: 5px;
+    background-color: #00adb5;
+    border:none;
+    outline: none;
+    border-radius: 5px;
+
+}
+
+.transcript-item button:hover{
+    cursor: pointer;
+    background-color: #007b7b;
+}
+
+.no-transcripts{
+    text-align: left;
+    margin: 20px;
 }

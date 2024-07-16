@@ -310,8 +310,8 @@ const Profile = () => {
                             </div>
                         ))}
                     </div>
-                    {isLoading && <div className='loading-container'><h3 className='loading-message'>Processing your response</h3> <div class="loader"></div></div>}
-                    {isTranscribing && <div className='loading-container'><h3 className='loading-message'>Transcribing your response</h3> <div class="loader"></div></div>}
+                    {isLoading && <div className='loading-container'><h3 className='loading-message'>Processing your response</h3> <div className="loader"></div></div>}
+                    {isTranscribing && <div className='loading-container'><h3 className='loading-message'>Transcribing your response</h3> <div className="loader"></div></div>}
                     {isUserTurn && !isLoading && !isTranscribing && !isInterviewOver && !isSpeaking &&
                         <Record
                             onTranscriptionComplete={handleTranscription}

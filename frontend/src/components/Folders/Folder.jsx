@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './Folder.css'
 import { doc, updateDoc, arrayUnion, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
 import { db } from '../../../../backend/firebase/firebase.config';
@@ -22,24 +22,19 @@ const Folder = ({ folderName }) => {
         setTranscripts(transcriptNames || []);
     }
 
-    const handleOpenModal = async() => {
+    const handleOpenModal = async () => {
 
 
         getTranscripts();
-        console.log("Transcripts:",transcripts)
+        console.log("Transcripts:", transcripts)
 
         setIsModalOpen(true);
 
     }
+    useEffect(()=>{
+        setTranscripts([]);
+    },[folderName])
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    }
-
-
-    const openFolder = () => {
-
-    }
 
     return (
         <>
@@ -55,13 +50,19 @@ const Folder = ({ folderName }) => {
                             {`${folderName}'s Transcripts`}
                         </h1>
                         <div className='transcripts-container'>
-                            {transcripts?.map((transcriptName, index) => (
-                                <li key={index}>{transcriptName}</li>
-                            ))}
+                            { transcripts.length>0 ? transcripts?.map((transcriptName, index) => (
+                                <div key={index} className='transcript-item'>
+                                    <h3>- {transcriptName}'s Transcript</h3>
+                                    <button>view</button>
+                                </div>
+                            )):
+                            <div>
+                                <h3 className='no-transcripts'>No transcripts saved to this folder.</h3>
+                            </div>}
 
 
                         </div>
-                        <button onClick={(() => setIsModalOpen(false))}>Close</button>
+                        <button className="btn-close" onClick={(() => setIsModalOpen(false))}>Close</button>
                     </div>
 
                 </div>
