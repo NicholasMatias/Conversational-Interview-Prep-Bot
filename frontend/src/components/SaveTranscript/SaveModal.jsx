@@ -11,7 +11,7 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
     const [folders, setFolders] = useState([])
     const { currentUser } = useAuth();
     const [selectedFolder, setSelectedFolder] = useState(folders[0] || `${currentUser.displayName}'s Default Folder`);
-
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
 
     if (!isOpen) return null;
@@ -32,7 +32,10 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
         e.preventDefault();
         const folderName = folderNameRef.current.value;
 
-
+        setShowSuccessMessage(true);
+        setTimeout(()=>{
+            setShowSuccessMessage(false);
+        }, 1000)
         if (folders.includes(folderName)) {
             setError('A folder with this name already exists.');
             return;
@@ -67,7 +70,7 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
         <div className='overlay' >
             <div className="modal">
                 <form onSubmit={handleNewFolder}>
-                    <h3>Create a New Folder</h3>
+                    <h3>Save to a New or Preexisting Folder</h3>
                     <div>
                         <label htmlFor="folderName">Folder Name: </label>
                         <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
@@ -75,7 +78,8 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
                     </div>
                     <button type="submit" >Create Folder</button>
                 </form>
-                <div className="form-group">
+                {showSuccessMessage && <p className='success-message'>Folder Created Successfully</p>}
+                <div className="form-group save-divider">
                     <label>Save Transcript:</label>
                     <input
                         type="text"
