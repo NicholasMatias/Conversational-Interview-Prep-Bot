@@ -9,12 +9,23 @@ const Folder = ({ folderName }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [transcripts, setTranscripts] = useState([]);
 
+
+    const getTranscripts = async () => {
+        const docRef = doc(db, "users", currentUser.uid)
+        const userDoc = await getDoc(docRef);
+        if (!userDoc.exists()) {
+            console.error("User document could not be found.");
+        }
+        const userData = userDoc.data();
+        const userTranscripts = userData.transcripts;
+        const transcriptNames = userTranscripts[folderName];
+        setTranscripts(transcriptNames || []);
+    }
+
     const handleOpenModal = () => {
 
-        const docRef = doc(db, "users", currentUser.uid)
-        const userDoc = getDoc(docRef);
-        
 
+        getTranscripts();
 
         setIsModalOpen(true);
 
