@@ -22,10 +22,11 @@ const Folder = ({ folderName }) => {
         setTranscripts(transcriptNames || []);
     }
 
-    const handleOpenModal = () => {
+    const handleOpenModal = async() => {
 
 
         getTranscripts();
+        console.log("Transcripts:",transcripts)
 
         setIsModalOpen(true);
 
@@ -53,6 +54,13 @@ const Folder = ({ folderName }) => {
                         <h1>
                             {`${folderName}'s Transcripts`}
                         </h1>
+                        <div className='transcripts-container'>
+                            {transcripts?.map((transcriptName, index) => (
+                                <li key={index}>{transcriptName}</li>
+                            ))}
+
+
+                        </div>
                         <button onClick={(() => setIsModalOpen(false))}>Close</button>
                     </div>
 
