@@ -43,9 +43,11 @@ const Folders = () => {
 
         if (folders.includes(folderName)) {
             setError('A folder with this name already exists.');
+            setTimeout(()=>{
+                setError('')
+            },1000)
             return;
         }
-        setError("")
 
         const thisUserDocRef = doc(db, "users", currentUser.uid);
         try {
@@ -85,7 +87,8 @@ const Folders = () => {
     };
 
     return (
-        <>
+        <div className='folders-page'>
+
             <nav className='navBar-container'>
                 <div className="navbar">
                     <div className="brand">
@@ -104,12 +107,12 @@ const Folders = () => {
                 <div className='left-container'>
                     <form onSubmit={handleNewFolder}>
                         <h1>Create a New Folder</h1>
-                        <div>
+                        <div className='form-group'>
                             <label htmlFor="folderName">Folder Name: </label>
-                            <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
-                            {error && <p style={{ color: 'red' }}>{error}</p>}
+                            <input className="input-spacing" type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
+                            {error && <p style={{ color: 'black' }}>{error}</p>}
                         </div>
-                        <button type="submit" >Create Folder</button>
+                        <button type="submit" className='create-folder-btn'>Create Folder</button>
                     </form>
 
                 </div>
@@ -128,7 +131,7 @@ const Folders = () => {
                 </div>
 
             </div>
-        </>
+        </div>
     )
 }
 
