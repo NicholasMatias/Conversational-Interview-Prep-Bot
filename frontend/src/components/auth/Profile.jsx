@@ -219,10 +219,28 @@ const Profile = () => {
             });
 
 
-            await updateDoc(userRef, {
-                [selectedFolder]: arrayUnion(transcriptName)
-            });
 
+
+            const userDoc = await getDoc(userRef);
+            if (!userDoc.exists()) {
+                console.error("User document does not exist");
+                return;
+            }
+            const userData = userDoc.data();
+            let transcriptsData = userData.transcripts || {};
+            console.log(transcriptsData[selectedFolder]);
+
+            let folderTranscripts = transcriptsData[selectedFolder] || []
+            folderTranscripts.push(transcriptName);
+
+            transcriptsData[selectedFolder] = folderTranscripts;
+
+            const updateData = {
+                transcripts: transcriptsData
+            }
+
+            await updateDoc(userRef, updateData);
+            console.log("Successfully updated:", transcriptsData[selectedFolder])
 
             setIsModalOpen(false);
             setAlreadySaved(true);

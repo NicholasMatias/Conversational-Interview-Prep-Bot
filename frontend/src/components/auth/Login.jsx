@@ -67,7 +67,8 @@ const Login = () => {
                 await setDoc(userDocRef, {
                     username: user.displayName || user.email,
                     email: user.email,
-                    folderNames: [`${user.displayName || user.email}'s Default Folder`]
+                    folderNames: [`${user.displayName || user.email}'s Default Folder`],
+                    transcripts: {}
                 })
                 const foldersRef = doc(db,"users", user.uid, `${user.displayName || user.email}'s Default Folder`,'initial')
                 await setDoc(foldersRef, {

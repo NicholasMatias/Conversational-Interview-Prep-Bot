@@ -1,15 +1,23 @@
 import { useState } from 'react'
 import './Folder.css'
-
-
+import { doc, updateDoc, arrayUnion, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
+import { db } from '../../../../backend/firebase/firebase.config';
+import { useAuth } from '../auth/auth.jsx';
 
 const Folder = ({ folderName }) => {
+    const { currentUser } = useAuth();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [transcripts, setTranscripts] = useState([]);
 
     const handleOpenModal = () => {
-        setIsModalOpen(true);
+
+        const docRef = doc(db, "users", currentUser.uid)
+        const userDoc = getDoc(docRef);
         
+
+
+        setIsModalOpen(true);
+
     }
 
     const handleCloseModal = () => {

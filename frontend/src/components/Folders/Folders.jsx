@@ -118,7 +118,7 @@ const Folders = () => {
                 </div>
 
                 <div className='folder-grid-container'>
-                    {loading ? <div className='loading-container'><h3>Loading your folders</h3> <div class="loader"></div></div>
+                    {loading ? <div className='loading-container'><h3>Loading your folders</h3> <div className="loader"></div></div>
                         :
                         <div className='folders-container'>
                             {folders?.map((folderName, index) => (
