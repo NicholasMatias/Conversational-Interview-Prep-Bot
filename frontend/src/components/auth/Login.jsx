@@ -125,7 +125,7 @@ const Login = () => {
         navigate('/')
     }
 
-    
+
 
     return (
         <>
@@ -136,7 +136,7 @@ const Login = () => {
                     </div>
                     <ul className="nav-links">
                         <li><a type='button' onClick={handleHome} >Home</a></li>
-                        
+
                     </ul>
                 </div>
             </nav>
@@ -169,3 +169,4 @@ const Login = () => {
 }
 
 export default Login
+

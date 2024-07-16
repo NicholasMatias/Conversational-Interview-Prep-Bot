@@ -1,18 +1,74 @@
 .modal {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Center the modal */
+    background-color: #222831;
+    color: white;
+    padding: 2em;
+    border-radius: 0.5em;
+    max-width: 400px;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    text-align: center;
 }
 
 
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
+
+.modal h3 {
+    font-size: 1.5em;
+    margin-bottom: 1em;
 }
+
+.modal .form-group {
+    margin-bottom: 1em;
+    width: 100%;
+}
+
+.modal label {
+    display: block;
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+    text-align: left;
+}
+
+.modal input,
+.modal select {
+    width: 100%;
+    padding: 0.5em;
+    font-size: 1em;
+    border: none;
+    border-radius: 0.5em;
+    margin-bottom: 1em;
+    box-sizing: border-box;
+}
+
+.modal button {
+    background-color: #00adb5;
+    color: white;
+    padding: 1em;
+    border: none;
+    border-radius: 0.5em;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1em;
+    width: 100%;
+}
+
+.modal button:hover {
+    background-color: #007b7b;
+}
+
+.modal .error-message {
+    color: red;
+    margin-bottom: 1em;
+    text-align: center;
+    min-height: 1.5em;
+}
+
+
+
+

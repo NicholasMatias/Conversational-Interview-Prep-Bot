@@ -1,5 +1,5 @@
-import { Spinner } from '@chakra-ui/react'
 import React, { useEffect, useState, useRef } from 'react';
+import './TTS.css'
 
 const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -67,15 +67,7 @@ const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
 
     return (
         <div>
-            {isLoading && <h3>Converting to speech 
-                <Spinner
-                    thickness='4px'
-                    speed='0.65s'
-                    emptyColor='gray.200'
-                    color='blue.500'
-                    size='xs'
-                />
-            </h3>
+            {isLoading &&<div className='loading-container'><h3 className='loading-message'>Converting to speech</h3> <div class="loader"></div></div>
 
             }
             {error && <p>Error: {error}</p>}

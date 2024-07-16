@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { db } from '../../../../backend/firebase/firebase.config.js';
 import { doc, updateDoc, arrayUnion, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
 import { useAuth } from '../auth/auth.jsx';
+import './SaveModal.css'
 
 const SaveModal = ({ isOpen, onClose, onSave }) => {
     const [transcriptName, setTranscriptName] = useState('');
@@ -65,7 +66,7 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
     return (
         <div className="modal">
             <form onSubmit={handleNewFolder}>
-                <h1>Create a New Folder</h1>
+                <h3>Create a New Folder</h3>
                 <div>
                     <label htmlFor="folderName">Folder Name: </label>
                     <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
@@ -73,14 +74,16 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
                 </div>
                 <button type="submit" >Create Folder</button>
             </form>
-            <div className="modal-content">
-                <h2>Save Transcript</h2>
+            <div className="form-group">
+                <label>Save Transcript:</label>
                 <input
                     type="text"
                     placeholder="Enter transcript name"
                     value={transcriptName}
                     onChange={(e) => setTranscriptName(e.target.value)}
                 />
+            </div>
+            <div className='form-group'>
                 <select
                     value={selectedFolder}
                     onChange={(e) => setSelectedFolder(e.target.value)}

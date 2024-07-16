@@ -92,15 +92,7 @@ const Folders = () => {
                 </div>
 
                 <div className='folder-grid-container'>
-                    {loading ? <h3>Loading Folders
-                        <Spinner
-                            thickness='4px'
-                            speed='0.65s'
-                            emptyColor='gray.200'
-                            color='blue.500'
-                            size='sm'
-                        />
-                    </h3>
+                    {loading ? <div className='loading-container'><h3>Loading your folders</h3> <div class="loader"></div></div>
                         :
                         <div className='folders-container'>
                             {folders?.map((folderName, index) => (
