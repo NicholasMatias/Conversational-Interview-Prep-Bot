@@ -28,7 +28,7 @@
 }
 
 
-.folder-modal-container{
+.folder-modal-container, .transcript-modal-container{
     position: fixed;
     top: 50%;
     left: 50%;
@@ -87,4 +87,17 @@
 .no-transcripts{
     text-align: left;
     margin: 20px;
+}
+
+
+.messages-container{
+    margin: 20px;
+    display: flex;
+    text-align: left;
+}
+
+.messages{
+
+    text-align: left;
+    
 }

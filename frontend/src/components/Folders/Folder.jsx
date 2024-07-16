@@ -8,6 +8,9 @@ const Folder = ({ folderName }) => {
     const { currentUser } = useAuth();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [transcripts, setTranscripts] = useState([]);
+    const [isTranscriptOpen, setIsTranscriptOpen] = useState(false);
+    const [currentTranscriptName, setCurrentTranscriptName] = useState("");
+    const [transcriptData, setTranscriptData] = useState([]);
 
 
     const getTranscripts = async () => {
@@ -23,21 +26,36 @@ const Folder = ({ folderName }) => {
     }
 
     const handleOpenModal = async () => {
-
-
         getTranscripts();
-        console.log("Transcripts:", transcripts)
-
         setIsModalOpen(true);
 
     }
-    useEffect(()=>{
+    useEffect(() => {
         setTranscripts([]);
-    },[folderName])
+    }, [folderName])
 
+
+    const viewTranscript = async (transcriptName) => {
+        setIsModalOpen(false);
+        setIsTranscriptOpen(true);
+        const userRef = doc(db, "users", currentUser.uid, folderName, transcriptName);
+        const currentTranscript = await getDoc(userRef)
+        if (!currentTranscript.exists()) {
+            console.error("This transcript could not be found.");
+        }
+        const docData =   currentTranscript.data()
+        setCurrentTranscriptName(transcriptName)
+        setTranscriptData(docData.transcript)
+        // transcriptData.map((message, index) => {
+        //     console.log("Message:", message.content);
+        // })
+
+        // console.log(docData.transcript);
+
+    }
 
     return (
-        <>
+        <div>
             <div className='folder' onClick={handleOpenModal}>
                 <i className="fa-solid fa-folder"></i>
                 <h3 className='folder-name'>{folderName}</h3>
@@ -50,15 +68,15 @@ const Folder = ({ folderName }) => {
                             {`${folderName}'s Transcripts`}
                         </h1>
                         <div className='transcripts-container'>
-                            { transcripts.length>0 ? transcripts?.map((transcriptName, index) => (
+                            {transcripts.length > 0 ? transcripts?.map((transcriptName, index) => (
                                 <div key={index} className='transcript-item'>
                                     <h3>- {transcriptName}'s Transcript</h3>
-                                    <button>view</button>
+                                    <button onClick={() => viewTranscript(transcriptName)}>view</button>
                                 </div>
-                            )):
-                            <div>
-                                <h3 className='no-transcripts'>No transcripts saved to this folder.</h3>
-                            </div>}
+                            )) :
+                                <div>
+                                    <h3 className='no-transcripts'>No transcripts saved to this folder.</h3>
+                                </div>}
 
 
                         </div>
@@ -66,11 +84,36 @@ const Folder = ({ folderName }) => {
                     </div>
 
                 </div>
-
-
             }
 
-        </>
+            {
+                isTranscriptOpen &&
+                <div className='overlay'>
+                    <div className='transcript-modal-container'>
+
+                        <h1>{currentTranscriptName} Transcript</h1>
+                        <div>
+                            {transcriptData.length> 0 ? transcriptData?.map((message, index) => {
+                                return(
+                                <div className="messages-container"key={index}>
+                                    <h3 className='messages'>{message.role}</h3>
+                                    <p className='messages'>{message.content}</p>
+                                </div>
+                                )
+                                
+                            }):
+                            <h1>No text in this transcript.</h1>}
+
+                        </div>
+
+
+                        <button onClick={() => setIsTranscriptOpen(false)}>Close</button>
+
+                    </div>
+                </div>
+            }
+
+        </div>
     )
 }
 
