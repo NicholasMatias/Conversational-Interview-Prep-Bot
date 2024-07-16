@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom'
 import Folder from './Folder.jsx'
 import Spacing from '../landing_page/spacing/Spacing.jsx';
 import { Spinner } from '@chakra-ui/react'
+import { signOut } from '../auth/auth.js'
+
 
 
 
@@ -73,8 +75,30 @@ const Folders = () => {
         navigate('/profile')
     }
 
+    const handleSignout = async () => {
+        try {
+            await signOut();
+            navigate('/');
+        } catch (error) {
+            console.error('Error signing out', error);
+        }
+    };
+
     return (
         <>
+            <nav className='navBar-container'>
+                <div className="navbar">
+                    <div className="brand">
+                        InterviewMe
+                    </div>
+                    <ul className="nav-links">
+                        <li><a type='button' onClick={toInterviewPage}>Interview Page</a></li>
+
+                        <li><a type='button' onClick={handleSignout} >Logout</a></li>
+
+                    </ul>
+                </div>
+            </nav>
             <Spacing />
             <div className='container'>
                 <div className='left-container'>
@@ -88,7 +112,6 @@ const Folders = () => {
                         <button type="submit" >Create Folder</button>
                     </form>
 
-                    <button onClick={toInterviewPage}>Interview Page</button>
                 </div>
 
                 <div className='folder-grid-container'>
