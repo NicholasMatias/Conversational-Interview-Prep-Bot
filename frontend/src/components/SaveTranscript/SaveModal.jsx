@@ -17,16 +17,16 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
     if (!isOpen) return null;
 
 
-        const fetchFolders = async () => {
-            const userDocRef = doc(db, "users", currentUser.uid);
-            const userDoc = await getDoc(userDocRef);
+    const fetchFolders = async () => {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
 
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                setFolders(userData.folderNames || [])
-            }
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setFolders(userData.folderNames || [])
         }
-        fetchFolders();
+    }
+    fetchFolders();
 
     const handleNewFolder = async (e) => {
         e.preventDefault();
@@ -64,38 +64,41 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
 
 
     return (
-        <div className="modal">
-            <form onSubmit={handleNewFolder}>
-                <h3>Create a New Folder</h3>
-                <div>
-                    <label htmlFor="folderName">Folder Name: </label>
-                    <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
-                    {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div className='overlay' >
+            <div className="modal">
+                <form onSubmit={handleNewFolder}>
+                    <h3>Create a New Folder</h3>
+                    <div>
+                        <label htmlFor="folderName">Folder Name: </label>
+                        <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
+                        {error && <p style={{ color: 'red' }}>{error}</p>}
+                    </div>
+                    <button type="submit" >Create Folder</button>
+                </form>
+                <div className="form-group">
+                    <label>Save Transcript:</label>
+                    <input
+                        type="text"
+                        placeholder="Enter transcript name"
+                        value={transcriptName}
+                        onChange={(e) => setTranscriptName(e.target.value)}
+                    />
                 </div>
-                <button type="submit" >Create Folder</button>
-            </form>
-            <div className="form-group">
-                <label>Save Transcript:</label>
-                <input
-                    type="text"
-                    placeholder="Enter transcript name"
-                    value={transcriptName}
-                    onChange={(e) => setTranscriptName(e.target.value)}
-                />
-            </div>
-            <div className='form-group'>
-                <select
-                    value={selectedFolder}
-                    onChange={(e) => setSelectedFolder(e.target.value)}
-                >
-                    {folders.map((folder) => (
-                        <option key={folder} value={folder}>
-                            {folder}
-                        </option>
-                    ))}
-                </select>
-                <button onClick={() => onSave(transcriptName, selectedFolder)}>Save</button>
-                <button onClick={onClose}>Cancel</button>
+                <div className='form-group'>
+                    <label>Select Folder:</label>
+                    <select
+                        value={selectedFolder}
+                        onChange={(e) => setSelectedFolder(e.target.value)}
+                    >
+                        {folders.map((folder) => (
+                            <option key={folder} value={folder}>
+                                {folder}
+                            </option>
+                        ))}
+                    </select>
+                    <button onClick={() => onSave(transcriptName, selectedFolder)}>Save</button>
+                    <button onClick={onClose}>Cancel</button>
+                </div>
             </div>
         </div>
     );
