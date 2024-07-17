@@ -88,3 +88,13 @@
     cursor: pointer;
     background-color: #0a5357;
 }
+
+.message-format{
+    width: 100%;
+    margin: 5px auto;
+    text-align: left;
+    white-space: pre-wrap;
+    font-style: normal;
+    font-family: sans-serif;
+    line-height: 1.3;
+}

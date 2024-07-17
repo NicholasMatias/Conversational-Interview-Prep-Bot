@@ -306,7 +306,7 @@ const Profile = () => {
                         {messages.map((msg, index) => (
                             <div key={index} className='current-message'>
                                 <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong>
-                                {msg.content == "quit" ? "That concludes your interview. Thank you for using our platform." : ` ${msg.content}`}
+                                <pre className='message-format'>{msg.content == "quit" ? "That concludes your interview. Thank you for using our platform." : ` ${msg.content}`}</pre>
                             </div>
                         ))}
                     </div>

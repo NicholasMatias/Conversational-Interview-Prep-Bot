@@ -64,7 +64,7 @@ const Folder = ({ folderName }) => {
             {isModalOpen &&
                 <div className='overlay'>
                     <div className='folder-modal-container'>
-                        <h1>
+                        <h1 className='title'>
                             {`${folderName}'s Transcripts`}
                         </h1>
                         <div className='transcripts-container'>
@@ -91,13 +91,16 @@ const Folder = ({ folderName }) => {
                 <div className='overlay'>
                     <div className='transcript-modal-container'>
 
-                        <h1>{currentTranscriptName} Transcript</h1>
+                        <h1 className='title'>{currentTranscriptName} Transcript</h1>
                         <div>
                             {transcriptData.length> 0 ? transcriptData?.map((message, index) => {
                                 return(
                                 <div className="messages-container"key={index}>
-                                    <h3 className='messages'>{message.role}</h3>
-                                    <p className='messages'>{message.content}</p>
+                                    <h3 className='messages-transcript'>{message.role==="bot"? "Interviewer:":"You:"}</h3>
+                                    <pre className='messages-transcript'>{message.content.trim()}</pre>
+                                    {
+                                        console.log(message.content)
+                                    }
                                 </div>
                                 )
                                 
@@ -107,7 +110,7 @@ const Folder = ({ folderName }) => {
                         </div>
 
 
-                        <button onClick={() => setIsTranscriptOpen(false)}>Close</button>
+                        <button className='btn-close-transcript' onClick={() => setIsTranscriptOpen(false)}>Close</button>
 
                     </div>
                 </div>
