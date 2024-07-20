@@ -2,81 +2,45 @@ const { Classifier } = require('ml-classify-text')
 const path = require("path")
 const fs = require("fs")
 
-let star_data = JSON.parse(fs.readFileSync(path.join(__dirname,'STAR_Responses.json'), 'utf-8'))
-
-const situationData = star_data.slice(0,10000).map(item => item['Situation']);
-const noSituation = new Array(100).fill("There was no situation detected.");
-
-const situation_model = new Classifier()
-
-situation_model.train(situationData,"Situation");
-situation_model.train(noSituation, "No Situation");
-
-const predictions = situation_model.predict("  I was a project manager for a project that was a stock forecasting model. My team consisted of three other students and myself. I led the weekly meetings and I set them up via Google Calendar invites. I would set the agenda for every weekly meeting as well. During these meetings, I would check in with each member and then help them set up their sprints for the following week. So this included ensuring that the sprint was reasonable in terms of the project and then reasonable in terms of the scope as well. as well, so like the given time constraints. Through doing this, I was able to actually assemble these meetings, and we were able to actually produce a really, really good product when it came to the end result")
-
-if (predictions.length) {
-	predictions.forEach((prediction) => {
-		console.log(`${prediction.label} (${prediction.confidence})`)
-	})
-} else {
-	console.log('No predictions returned')
-}		
 
 
-const taskData = star_data.slice(0,10000).map(item => item['Task']);
-const noTask = new Array(100).fill("There was no task detected.");
+function trainModels(type) {
+	const star_data = JSON.parse(fs.readFileSync(path.join(__dirname, 'STAR_Responses.json'), 'utf-8'))
 
-const task_model = new Classifier()
+	const modelData = star_data.slice(0, 10000).map(item => item[`${type}`]);
+	const labelNotFound = new Array(100).fill(`There was no ${type} detected.`);
 
-task_model.train(taskData,"Task")
-task_model.train(noTask,"No Task")
+	const model = new Classifier()
 
+	model.train(modelData, `${type}`);
+	model.train(labelNotFound, `No ${type}`);
 
-const taskPredictions = task_model.predict("  I was a project manager for a project that was a stock forecasting model. My team consisted of three other students and myself. I led the weekly meetings and I set them up via Google Calendar invites. I would set the agenda for every weekly meeting as well. During these meetings, I would check in with each member and then help them set up their sprints for the following week. So this included ensuring that the sprint was reasonable in terms of the project and then reasonable in terms of the scope as well. as well, so like the given time constraints. Through doing this, I was able to actually assemble these meetings, and we were able to actually produce a really, really good product when it came to the end result")
-
-if (taskPredictions.length) {
-	taskPredictions.forEach((prediction) => {
-		console.log(`${prediction.label} (${prediction.confidence})`)
-	})
-} else {
-	console.log('No predictions returned')
-}		
+	return model
+}
 
 
-const actionData = star_data.slice(0,10000).map(item => item['Action'])
-const noAction = new Array(100).fill("There was no action detected.")
+function getResults(userResponse) {
+	const situation_model = trainModels("Situation");
+	const task_model = trainModels("Task");
+	const action_model = trainModels("Action");
+	const result_model = trainModels("Result");
 
-const action_model = new Classifier()
+	const situation_prediction = situation_model.predict(userResponse)
+	const task_prediction = task_model.predict(userResponse)
+	const action_prediction = action_model.predict(userResponse)
+	const result_prediction = result_model.predict(userResponse)
 
-action_model.train(actionData, "Action")
-action_model.train(noAction, "No Action")
-
-const actionPrediction = action_model.predict("  I was a project manager for a project that was a stock forecasting model. My team consisted of three other students and myself. I led the weekly meetings and I set them up via Google Calendar invites. I would set the agenda for every weekly meeting as well. During these meetings, I would check in with each member and then help them set up their sprints for the following week. So this included ensuring that the sprint was reasonable in terms of the project and then reasonable in terms of the scope as well. as well, so like the given time constraints. Through doing this, I was able to actually assemble these meetings, and we were able to actually produce a really, really good product when it came to the end result")
-
-if (actionPrediction.length) {
-	actionPrediction.forEach((prediction) => {
-		console.log(`${prediction.label} (${prediction.confidence})`)
-	})
-} else {
-	console.log('No predictions returned')
-}		
+	if (situation_prediction.length) console.log(`${situation_prediction[0].label} (${situation_prediction[0].confidence})`);
+	if (task_prediction.length) console.log(`${task_prediction[0].label} (${task_prediction[0].confidence})`);
+	if (action_prediction.length) console.log(`${action_prediction[0].label} (${action_prediction[0].confidence})`);
+	if (result_prediction.length) console.log(`${result_prediction[0].label} (${result_prediction[0].confidence})`);
 
 
-const resultData = star_data.slice(0,10000).map(item => item['Result'])
-const noResult = new Array(100).fill("There was no result detected.")
 
-const result_model = new Classifier()
+	return [situation_prediction[0].confidence, task_prediction[0].confidence, action_prediction[0].confidence, result_prediction[0].confidence]
+}
 
-result_model.train(resultData, "Result")
-result_model.train(noResult, "No Result")
-
-const resultPrediction = result_model.predict("  I was a project manager for a project that was a stock forecasting model. My team consisted of three other students and myself. I led the weekly meetings and I set them up via Google Calendar invites. I would set the agenda for every weekly meeting as well. During these meetings, I would check in with each member and then help them set up their sprints for the following week. So this included ensuring that the sprint was reasonable in terms of the project and then reasonable in terms of the scope as well. as well, so like the given time constraints. Through doing this, I was able to actually assemble these meetings, and we were able to actually produce a really, really good product when it came to the end result")
-
-if (resultPrediction.length) {
-	resultPrediction.forEach((prediction) => {
-		console.log(`${prediction.label} (${prediction.confidence})`)
-	})
-} else {
-	console.log('No predictions returned')
-}		
-
+module.exports = {
+	trainModels: trainModels,
+	getResults: getResults
+}
