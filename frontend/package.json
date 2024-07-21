@@ -18,15 +18,9 @@
     "dotenv": "^16.4.5",
     "evaluate": "^1.0.2",
     "framer-motion": "^11.3.2",
-    "ml-classify-text": "^2.0.1",
-    "numpy": "^0.0.1",
-    "pandas": "^0.0.3",
     "react": "^18.3.1",
     "react-audio-voice-recorder": "^2.2.0",
-    "react-dom": "^18.3.1",
-    "scikit-learn": "^0.1.0",
-    "torch": "^0.2.7",
-    "transformers": "^1.8.3"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

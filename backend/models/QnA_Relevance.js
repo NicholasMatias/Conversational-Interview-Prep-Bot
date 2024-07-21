@@ -1,5 +1,4 @@
 import natural from 'natural'
-import { getResults } from './TextClassification.cjs';
 const TfIdf = natural.TfIdf
 
 

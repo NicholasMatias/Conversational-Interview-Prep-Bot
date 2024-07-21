@@ -11,6 +11,7 @@ import { db } from '../../../../backend/firebase/firebase.config.js';
 import { doc, updateDoc, arrayUnion, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
 import SaveModal from '../SaveTranscript/SaveModal.jsx';
 import Spacing from '../landing_page/spacing/Spacing.jsx'
+import InterviewFeedback from '../InterviewFeedback/InterviewFeedback.jsx'
 
 
 
@@ -42,7 +43,9 @@ const Profile = () => {
     const [alreadySaved, setAlreadySaved] = useState(false);
     const [newInterview, setNewInterview] = useState(false);
 
-    const [error, setError] = useState("")
+    const [error, setError] = useState("");
+
+    const [isFeedbackTime, setIsFeedbackTime] = useState(false);
 
 
 
@@ -328,7 +331,7 @@ const Profile = () => {
 
                     {isInterviewOver && !isSpeaking && !newInterview && (
                         <div>
-                            <button className='interview-end-btn'>View Feedback</button>
+                            <button className='interview-end-btn' onClick={() => setIsFeedbackTime(true)}>View Feedback</button>
 
                             {!alreadySaved &&
                                 <button className='interview-end-btn' onClick={() => setIsModalOpen(true)}>Save Transcript</button>
@@ -345,6 +348,14 @@ const Profile = () => {
                         onSave={handleSave}
                     />
                     {error && <p>{error}</p>}
+
+
+                    <InterviewFeedback
+                        messagesPass={messages}
+                        isOpen={isFeedbackTime}
+                        onClose={() => setIsFeedbackTime(false)}
+                    />
+
                 </div>
 
             )}
