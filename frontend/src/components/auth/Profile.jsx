@@ -406,7 +406,7 @@ const Profile = () => {
         const feedback = []
         for (let i = 0; i < messages.length; i++) {
             const message = messages[i];
-            console.log("Message:",message)
+            // console.log("Message:",message)
             if (message.role === "user") {
                 try {
                     const messageContent = message.content

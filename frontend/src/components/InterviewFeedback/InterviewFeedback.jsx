@@ -11,9 +11,9 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose }) => {
 
 
 
-    for (let i = 0; i < messagesPass.length; i++) {
-        console.log(`Message ${i}: ${messagesPass[i].result}`)
-    }
+    // for (let i = 0; i < messagesPass.length; i++) {
+    //     console.log(`Message ${i}: ${messagesPass[i].result}`)
+    // }
 
 
     const colors = {
