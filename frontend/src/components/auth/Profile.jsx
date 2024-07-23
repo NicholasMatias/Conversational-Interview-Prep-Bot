@@ -46,7 +46,7 @@ const Profile = () => {
     const [error, setError] = useState("");
 
     const [isFeedbackTime, setIsFeedbackTime] = useState(false);
-
+    const [feedbackMessage, setFeedbackMessage] = useState('Loading Interview Feedback')
 
 
 
@@ -273,7 +273,7 @@ const Profile = () => {
         setAlreadySaved(false);
         setIsModalOpen(false);
         setIsInterviewOver(false);
-
+        setFeedbackMessage("Loading Interview Feedback")
     }
 
 
@@ -498,8 +498,16 @@ const Profile = () => {
 
     }
 
+    const [feedbackLoading, setFeedbackLoading] = useState(false)
+
     const showFeedback = async () => {
+        const feedbackQueue = [];
+
+
+        setFeedbackMessage("Loading Interview Feedback")
+        setFeedbackLoading(true)
         const feedback = []
+
         for (let i = 0; i < messages.length; i++) {
             const message = messages[i];
             if (message.role === "user") {
@@ -533,9 +541,22 @@ const Profile = () => {
                 })
             }
         }
+
         wordFreqPhrases()
         setFeedbackData(feedback)
         averageScores(feedback)
+
+        feedbackQueue.push("Analyzing user response for STAR method and question relevance");
+        feedbackQueue.push('Determining most frequently used words and phrases');
+        feedbackQueue.push('Calculating average STAR scores');
+        // Process the queue
+        while (feedbackQueue.length > 0) {
+            const message = feedbackQueue.shift();
+            setFeedbackMessage(message);
+            await new Promise(resolve => setTimeout(resolve, 750)); 
+        }
+
+        setFeedbackLoading(false)
         setIsFeedbackTime(true)
     }
 
@@ -659,6 +680,14 @@ const Profile = () => {
                     />
                     {error && <p>{error}</p>}
 
+
+                    {
+                        feedbackLoading && (
+                            <div className='feedback-loading'>
+                                <h1>{feedbackMessage}</h1><div className='loader-feedback'></div>
+                            </div>
+                        )
+                    }
 
                     <InterviewFeedback
                         messagesPass={feedbackData}

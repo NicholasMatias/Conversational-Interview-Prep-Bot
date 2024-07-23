@@ -1,21 +1,22 @@
-.messages-container{
-    width:80%;
+.messages-container {
+    width: 80%;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0 auto;
-    margin-bottom:50px;
+    margin-bottom: 50px;
 }
 
 
-.current-message{
+.current-message {
     background-color: #393e46;
-    padding:15px;
+    padding: 15px;
     border-radius: 3px;
     margin-bottom: 10px;
     width: 1200px;
     text-align: left;
 }
+
 .loader {
     border: 2px solid #f3f3f3;
     /* Light grey */
@@ -38,59 +39,59 @@
     }
 }
 
-.loading-container{
+.loading-container {
     display: flex;
     align-items: center;
     width: 100%;
 }
 
-.welcome-message{
+.welcome-message {
     text-align: center;
-    color:white;
+    color: white;
     margin-bottom: 30px;
 }
 
-.loading-message{
-    color:white;
+.loading-message {
+    color: white;
 }
 
-.start-interview-container{
+.start-interview-container {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.start-interview-btn{
+.start-interview-btn {
     padding: 10px;
     margin-top: 10px;
     background-color: #008A90;
-    color:white;
+    color: white;
     border: none;
     border-radius: 3px;
-    transform:translateY(-30px);
+    transform: translateY(-30px);
 }
 
-.start-interview-btn:hover{
+.start-interview-btn:hover {
     cursor: pointer;
     background-color: #0a5357;
 }
 
-.interview-end-btn{
+.interview-end-btn {
     padding: 10px;
     margin: 10px;
     background-color: #008A90;
-    color:white;
+    color: white;
     border: none;
     border-radius: 3px;
-    
+
 }
 
-.interview-end-btn:hover{
+.interview-end-btn:hover {
     cursor: pointer;
     background-color: #0a5357;
 }
 
-.message-format{
+.message-format {
     width: 100%;
     margin: 5px auto;
     text-align: left;
@@ -100,22 +101,52 @@
     line-height: 1.3;
 }
 
-.starTip{
+.starTip {
     text-decoration: underline;
 }
 
-.starTip:hover{
+.starTip:hover {
     cursor: pointer;
 }
 
-.situation-tooltip, .task-tooltip, .action-tooltip, .result-tooltip, .star-tooltip, .relevance-tooltip{
+.situation-tooltip,
+.task-tooltip,
+.action-tooltip,
+.result-tooltip,
+.star-tooltip,
+.relevance-tooltip {
     z-index: 1000;
 }
 
-.tooltipText{
+.tooltipText {
     width: 300px;
 }
 
+.feedback-loading {
 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
 
+}
+
+.loader-feedback {
+    border: 4px solid #f3f3f3;
+    /* Light grey */
+    border-top: 4px solid #3498db;
+    /* Blue */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 2s linear infinite;
+    margin-left: 5px;
+}
