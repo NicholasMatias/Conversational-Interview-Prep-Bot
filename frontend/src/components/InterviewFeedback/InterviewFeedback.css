@@ -48,6 +48,7 @@
     z-index: 1000;
     text-align: center;
     overflow-y: auto;
+    outline: 1px white solid;
 }
 
 .messages-container {
@@ -92,7 +93,7 @@
     padding-top: 5px;
     padding-bottom: 5px;
     border-radius: 5px;
-    border: 2px black solid;
+    outline: 1px white solid;
 }
 
 
@@ -144,11 +145,12 @@
 
 .freq-container{
     display: flex;
-    width: 900px;
+    width: 850px;
     margin: 15px auto;
     flex-wrap: wrap;
 
 }
+
 
 .freq-word{
     background-color: #393e46;
@@ -166,4 +168,73 @@
 }
 .freq-header{
     text-align: left;
+    margin-left:10px;
+}
+
+.average-container{
+    background-color: #393e46;
+    width: 890px;
+    margin: 5px auto;
+    padding: 5px;
+    outline: 1px white solid;
+    border-radius: 5px;
+    display: flex;
+    margin-bottom: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.average-star-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #393e46;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 5px;
+    outline: 1px white solid;
+    margin: 5px;
+}
+
+.star-average{
+    margin: 10px;
+    border-radius: 3px;
+    padding: 3px;
+    outline: 1px white solid;
+    color: black;
+}
+
+
+
+.color-scale{
+    margin: 20px;
+    background-color: #393e46;
+    width: 225px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center;
+    height: 60px;
+    border-radius: 5px;
+    outline: 1px white solid;
+}
+.color-titles{
+    color: white;
+    width: 175px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+
+
+.color-chart{
+    display: flex;
+    outline: 1px white solid;
+    width: 175px;
+    height: 20px;
+}
+
+.color-value{
+    width: 35px;
+    height: 20px;
 }

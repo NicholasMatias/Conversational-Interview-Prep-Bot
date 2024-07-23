@@ -42,8 +42,6 @@ function getResults(userResponse) {
 	if (result_prediction.length) {
 		console.log(`${result_prediction[0].label} (${result_prediction[0].confidence})`);
 	}
-
-
 	return [situation_prediction[0].confidence, task_prediction[0].confidence, action_prediction[0].confidence, result_prediction[0].confidence]
 }
 

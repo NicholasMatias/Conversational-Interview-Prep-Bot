@@ -422,24 +422,81 @@ const Profile = () => {
             return 0
         }
     }
-    const [freqWords, setFreqWords ] = useState([])
+    const [freqWords, setFreqWords] = useState([])
     const [freqPhrases, setFreqPhrases] = useState([])
 
-    const wordFreqPhrases =async () => {
-        const userMessages = messages.filter(message => message.role==="user")
+    const wordFreqPhrases = async () => {
+        const userMessages = messages.filter(message => message.role === "user")
         const userAnswers = userMessages.map(message => message.content)
         const singleText = userAnswers.join(" ")
-        const mostFreqWords = await getFreq(singleText,10, 1)
+        const mostFreqWords = await getFreq(singleText, 10, 1)
         const mostFreqPhrases = await getFreq(singleText, 5, 2)
-        console.log(mostFreqPhrases)
-        console.log("Full text:", singleText)
-        console.log(mostFreqWords)
+        
         setFreqPhrases(mostFreqPhrases)
         setFreqWords(mostFreqWords)
 
     }
 
     const [feedbackData, setFeedbackData] = useState([])
+
+    const scoreClassifier = (result) => {
+        if (!result || result <= .2) {
+            return 'last'
+        } else if (result <= .35) {
+            return 'fourth'
+        } else if (result <= .45) {
+            return 'third'
+        } else if (result <= .55) {
+            return 'second'
+        } else {
+            return 'best'
+        }
+    }
+
+    const [scoreAverages, setScoreAverages] = useState([])
+
+    const sumContents = (array) => {
+        let sum = 0
+        array.forEach(element => {
+            sum += element
+        });
+        return sum
+
+    }
+
+    const averageScores = (feedback) => {
+        const situationScores = []
+        const taskScores = []
+        const actionScores = []
+        const resultScores = []
+
+        for (let i = 0; i < feedback.length; i++) {
+            const message = feedback[i]
+            if (message.role === "user") {
+                situationScores.push(message.situation[1])
+                taskScores.push(message.task[1])
+                actionScores.push(message.action[1])
+                resultScores.push(message.result[1])
+            }
+        }
+        const totalResponses = situationScores.length
+
+       
+
+        const avgSituationScore = sumContents(situationScores) / totalResponses
+        const avgTaskScore = sumContents(taskScores) / totalResponses
+        const avgActionScore = sumContents(actionScores) / totalResponses
+        const avgResultScore = sumContents(resultScores) / totalResponses
+
+        const avgSituationClass = scoreClassifier(avgSituationScore)
+        const avgTaskClass = scoreClassifier(avgTaskScore)
+        const avgActionClass = scoreClassifier(avgActionScore)
+        const avgResultClass = scoreClassifier(avgResultScore)
+
+        const averages = [avgSituationClass, avgTaskClass, avgActionClass, avgResultClass]
+        setScoreAverages(averages)
+
+    }
 
     const showFeedback = async () => {
         const feedback = []
@@ -478,11 +535,23 @@ const Profile = () => {
         }
         wordFreqPhrases()
         setFeedbackData(feedback)
+        averageScores(feedback)
         setIsFeedbackTime(true)
     }
 
-    const toQuestions = () =>{
+    const toQuestions = () => {
         navigate('/questions')
+    }
+
+
+
+    const colors = {
+        0: '#ff0a0a',
+        last: '#ff0a0a',
+        fourth: '#f2ce02',
+        third: '#85e62c',
+        second: '#209c05',
+        best: '#00FF00'
     }
 
 
@@ -497,10 +566,10 @@ const Profile = () => {
                                 InterviewMe
                             </div>
                             <ul className="nav-links">
-                                <li><a type='button'onClick={toHome}>Home</a></li>
+                                <li><a type='button' onClick={toHome}>Home</a></li>
 
                                 <li><a type='button' onClick={toQuestions}>Questions</a></li>
-                                
+
                                 <li><a type='button' onClick={toFolders}>Folders</a></li>
 
                                 <li><a type='button' onClick={handleSignout} >Logout</a></li>
@@ -508,6 +577,13 @@ const Profile = () => {
                             </ul>
                         </div>
                     </nav>
+
+
+
+                    
+
+
+
                     <Spacing />
                     <h1 className='welcome-message'>Welcome to the interview interface page!</h1>
                     <div>
@@ -601,6 +677,7 @@ const Profile = () => {
                         onClose={() => setIsFeedbackTime(false)}
                         freqPhrases={freqPhrases}
                         freqWords={freqWords}
+                        scoreAverages={scoreAverages}
 
                     />
 

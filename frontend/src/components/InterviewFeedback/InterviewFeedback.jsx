@@ -1,9 +1,8 @@
 import './InterviewFeedback.css'
-import { Tooltip } from 'react-tooltip'
 import Spacing from '../landing_page/spacing/Spacing';
 
 
-const InterviewFeedback = ({ messagesPass, isOpen, onClose, freqWords, freqPhrases }) => {
+const InterviewFeedback = ({ messagesPass, isOpen, onClose, freqWords, freqPhrases, scoreAverages }) => {
 
     if (!isOpen) return null;
 
@@ -19,15 +18,41 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose, freqWords, freqPhras
 
 
 
-
     return (
         <div className="overlay ">
             <div className="transcript-modal-container">
                 <div>
                     <h1>Interview Feedback</h1>
                 </div>
-                <Spacing/>
-                
+                <Spacing />
+
+                <div className='average-container'>
+                    <h3 className='star-header'>Average STAR Scores:</h3>
+                    <div className='average-star-container'>
+                        <div style={{ backgroundColor: colors[scoreAverages[0]] }} className='star-average' ><h3>Situation</h3></div>
+                        <div style={{ backgroundColor: colors[scoreAverages[1]] }} className='star-average'><h3>Task</h3></div>
+                        <div style={{ backgroundColor: colors[scoreAverages[2]] }} className='star-average'><h3>Action</h3></div>
+                        <div style={{ backgroundColor: colors[scoreAverages[3]] }} className='star-average'><h3>Result</h3></div>
+                    </div>
+                    <div className='color-scale'>
+                        <div className='color-titles'>
+                            <h5 className='best-color'>Worst</h5>
+                            <h5>={'>'}</h5>
+                            <h5>={'>'}</h5>
+                            <h5>={'>'}</h5>
+                            <h5 className='worst-color'>Best</h5>
+                        </div>
+                        <div className='color-chart'>
+                            <div className='color-value' style={{ backgroundColor: colors['last'] }}></div>
+                            <div className='color-value' style={{ backgroundColor: colors['fourth'] }}></div>
+                            <div className='color-value' style={{ backgroundColor: colors['third'] }}></div>
+                            <div className='color-value' style={{ backgroundColor: colors['second'] }}></div>
+                            <div className='color-value' style={{ backgroundColor: colors['best'] }}></div>
+
+                        </div>
+                    </div>
+                </div>
+
                 <div className='freq-main'>
                     <div className='freq-header-container'>
                         <h3 className='freq-header'>Most Frequently Used Words and Phrases</h3>
@@ -36,7 +61,7 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose, freqWords, freqPhras
                         {
                             freqWords.length > 0 ? freqWords.map((word, index) => {
                                 return (
-                                    <h3 className='freq-word'>{word[0]}: {word[1]}</h3>
+                                    <h3 key={index} className='freq-word'>{word[0]}: {word[1]}</h3>
                                 )
                             })
                                 :
