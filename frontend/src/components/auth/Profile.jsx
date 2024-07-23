@@ -276,6 +276,174 @@ const Profile = () => {
 
 
 
+    const getSituation = async (userResponse) => {
+        try {
+            const response = await fetch("http://localhost:5000/situation", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ response: userResponse }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const situationScore = await response.json()
+
+
+            return situationScore
+        }
+        catch (error) {
+            console.error("Error in getSituation:", error)
+            return 0
+        }
+    }
+
+    const getTask = async (userResponse) => {
+        try {
+            const response = await fetch("http://localhost:5000/task", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ response: userResponse }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const taskScore = await response.json()
+            // console.log("task score value:", taskScore)
+
+
+            return taskScore 
+        }
+        catch (error) {
+            console.error("Error in getTask:", error)
+            return 0
+        }
+    }
+
+    const getAction = async (userResponse) => {
+        try {
+            const response = await fetch("http://localhost:5000/action", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ response: userResponse }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const actionScore = await response.json()
+            // console.log("action score value:", actionScore)
+
+
+            return actionScore 
+        }
+        catch (error) {
+            console.error("Error in getAction:", error)
+            return 0
+        }
+    }
+
+
+    const getResult = async (userResponse) => {
+        try {
+            const response = await fetch("http://localhost:5000/result", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ response: userResponse }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const resultScore = await response.json()
+            // console.log("result score value:", resultScore)
+
+
+            return resultScore 
+        }
+        catch (error) {
+            console.error("Error in getResult:", error)
+            return 0
+        }
+    }
+
+
+    const getRelevance = async (question, userResponse) => {
+        try {
+            const response = await fetch('http://localhost:5000/relevance', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                },
+                body: JSON.stringify({ response: userResponse, question: question })
+            })
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+
+            const relevanceScore = await response.json()
+            return relevanceScore
+        }
+        catch (error) {
+            console.error("Error in getRelevance:", error)
+            return 0
+        }
+    }
+
+    const [feedbackData, setFeedbackData] = useState([])
+
+    const showFeedback = async () => {
+        const feedback = []
+        for (let i = 0; i < messages.length; i++) {
+            const message = messages[i];
+            console.log("Message:",message)
+            if (message.role === "user") {
+                try {
+                    const messageContent = message.content
+                    // const [situation, task, action, result, relevance]  = await Promise.all([getSituation(messageContent), getTask(messageContent), getAction(messageContent), getResult(messageContent), getRelevance(message[i-1].content, messageContent)])
+                    const feedbackItem = {
+                        role: "user",
+                        content: message.content,
+                        situation: await getSituation(message.content),
+                        task: await getTask(message.content),
+                        action: await getAction(message.content),
+                        result: await getResult(message.content),
+                        relevance: await getRelevance(messages[i - 1].content, message.content)
+                    }
+                    feedback.push(feedbackItem)
+                }
+                catch (error) {
+                    console.error("Error fetching feedback for message", error)
+                    feedback.push({
+                        role: "user",
+                        content: message.content,
+                        error: "Failed to fetch feedback"
+                    })
+                }
+            }
+
+            else {
+                feedback.push({
+                    role: "bot",
+                    content: message.content
+                })
+            }
+        }
+        setFeedbackData(feedback)
+        setIsFeedbackTime(true)
+    }
+
+
 
     return (
         <div>
@@ -296,7 +464,7 @@ const Profile = () => {
                     </nav>
                     <Spacing />
                     <h1 className='welcome-message'>Welcome to the interview interface page!</h1>
-
+                
                 </>
             )}
             {!interviewStarted ? (
@@ -331,7 +499,7 @@ const Profile = () => {
 
                     {isInterviewOver && !isSpeaking && !newInterview && (
                         <div>
-                            <button className='interview-end-btn' onClick={() => setIsFeedbackTime(true)}>View Feedback</button>
+                            <button className='interview-end-btn' onClick={showFeedback}>View Feedback</button>
 
                             {!alreadySaved &&
                                 <button className='interview-end-btn' onClick={() => setIsModalOpen(true)}>Save Transcript</button>
@@ -351,9 +519,10 @@ const Profile = () => {
 
 
                     <InterviewFeedback
-                        messagesPass={messages}
+                        messagesPass={feedbackData}
                         isOpen={isFeedbackTime}
                         onClose={() => setIsFeedbackTime(false)}
+
                     />
 
                 </div>

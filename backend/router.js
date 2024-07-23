@@ -109,7 +109,7 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
 app.post('/situation', async(req,res) => {
     try{
         const {response} = req.body;
-        const results = getSituation(response);
+        const results =  getSituation(response);
         res.json(results);
     }
     catch(error){

@@ -47,50 +47,78 @@ function getResults(userResponse) {
 	return [situation_prediction[0].confidence, task_prediction[0].confidence, action_prediction[0].confidence, result_prediction[0].confidence]
 }
 
-function getSituation(userResponse){
+function getSituation(userResponse) {
 	const situation_model = trainModels("Situation");
 	const situation_prediction = situation_model.predict(userResponse)
 
 	const result = situation_prediction ? situation_prediction[0].confidence : 0
-	if (result > .5){
-		return true
+
+	if (!result || result <= .2) {
+		return 'last'
+	} else if (result <= .35) {
+		return 'fourth'
+	} else if (result <= .45) {
+		return 'third'
+	} else if (result <= .55) {
+		return 'second'
+	} else {
+		return 'best'
 	}
-	return false
 
 }
 
-function getTask(userResponse){
+function getTask(userResponse) {
 	const task_model = trainModels("Task");
 	const task_prediction = task_model.predict(userResponse)
 
 	const result = task_prediction.length ? task_prediction[0].confidence : 0;
-	if(result > .5){
-		return true
-	}
-	return false
-}
+	if (!result || result <= .2) {
+		return 'last'
+	} else if (result <= .35) {
+		return 'fourth'
+	} else if (result <= .45) {
+		return 'third'
+	} else if (result <= .55) {
+		return 'second'
+	} else {
+		return 'best'
+	}}
 
-function getAction(userResponse){
+function getAction(userResponse) {
 	const action_model = trainModels("Action");
 	const action_prediction = action_model.predict(userResponse)
 
-	const result = action_prediction.length?  action_prediction[0].confidence : 0;
-	if(result > .5){
-		return true
-	}
-	return false
-}
+	const result = action_prediction.length ? action_prediction[0].confidence : 0;
 
-function getResult(userResponse){
+	if (!result || result <= .2) {
+		return 'last'
+	} else if (result <= .35) {
+		return 'fourth'
+	} else if (result <= .45) {
+		return 'third'
+	} else if (result <= .55) {
+		return 'second'
+	} else {
+		return 'best'
+	}}
+
+function getResult(userResponse) {
 	const result_model = trainModels("Result");
 	const result_prediction = result_model.predict(userResponse)
-	
+
 	const result = result_prediction.length ? result_prediction[0].confidence : 0;
-	if(result > .5){
-		return true
-	}
-	return false
-}
+
+	if (!result || result <= .2) {
+		return 'last'
+	} else if (result <= .35) {
+		return 'fourth'
+	} else if (result <= .45) {
+		return 'third'
+	} else if (result <= .55) {
+		return 'second'
+	} else {
+		return 'best'
+	}}
 
 module.exports = {
 	trainModels: trainModels,

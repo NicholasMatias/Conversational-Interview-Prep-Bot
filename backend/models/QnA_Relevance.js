@@ -45,6 +45,15 @@ export function getRelevanceScore(question, response){
 
     const similarity = cosineSimilarity(questionVector, responseVector)
 
-    return similarity
-
+    if (!result || result <= .3) {
+		return 'last'
+	} else if (result <= .50) {
+		return 'fourth'
+	} else if (result <= .65) {
+		return 'third'
+	} else if (result <= .80) {
+		return 'second'
+	} else {
+		return 'best'
+	}
 }
