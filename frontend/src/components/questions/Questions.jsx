@@ -1,15 +1,19 @@
-import './Home.css'
+import './Questions.css'
 import { useNavigate } from 'react-router-dom'
 import { signOut } from '../auth/auth'
+function Questions() {
 
-function Home() {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
-    const toInterview = () => {
+    const toHome = () => {
+        navigate('/home')
+    }
+
+    const toInterview = () =>{
         navigate('/profile')
     }
 
-    const toFolders = () => {
+    const toFolders = () =>{
         navigate('/folders')
     }
 
@@ -22,11 +26,6 @@ function Home() {
         }
     };
 
-    const toQuestions = () => {
-        navigate('/questions')
-    }
-
-
     return (
         <>
             <nav className='navBar-container'>
@@ -35,7 +34,7 @@ function Home() {
                         InterviewMe
                     </div>
                     <ul className="nav-links">
-                        <li><a type='button' onClick={toQuestions}>Questions</a></li>
+                        <li><a type='button' onClick={toHome}>Home</a></li>
 
                         <li><a type='button' onClick={toInterview}>Interview</a></li>
 
@@ -50,4 +49,4 @@ function Home() {
     )
 }
 
-export default Home
+export default Questions

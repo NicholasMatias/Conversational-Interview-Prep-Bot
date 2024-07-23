@@ -441,6 +441,9 @@ const Profile = () => {
         setIsFeedbackTime(true)
     }
 
+    const toQuestions = () =>{
+        navigate('/questions')
+    }
 
 
     return (
@@ -455,6 +458,8 @@ const Profile = () => {
                             </div>
                             <ul className="nav-links">
                                 <li><a type='button'onClick={toHome}>Home</a></li>
+
+                                <li><a type='button' onClick={toQuestions}>Questions</a></li>
                                 
                                 <li><a type='button' onClick={toFolders}>Folders</a></li>
 
