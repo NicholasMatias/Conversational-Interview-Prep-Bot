@@ -28,7 +28,6 @@ const Login = () => {
             const errorCode = err.code;
 
             setError(true);
-            console.log(errorCode)
 
             switch (errorCode) {
                 case "auth/invalid-email":
@@ -58,7 +57,6 @@ const Login = () => {
             const userCredentials = await signInWithGoogle()
             const user = userCredentials.user;
 
-            console.log("userCredentials successfully fetched.")
 
             const userDocRef = doc(db,"users", user.uid);
             const userDocSnapshot = await getDoc(userDocRef);
@@ -75,7 +73,6 @@ const Login = () => {
                     folderName: `${user.displayName || user.email}'s Default Folder`,
                     createdAt: new Date(),
                 })
-                console.log("Default Folder Created")
             }
 
             navigate('/home')

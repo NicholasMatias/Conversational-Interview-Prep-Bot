@@ -431,7 +431,7 @@ const Profile = () => {
         const singleText = userAnswers.join(" ")
         const mostFreqWords = await getFreq(singleText, 10, 1)
         const mostFreqPhrases = await getFreq(singleText, 5, 2)
-        
+
         setFreqPhrases(mostFreqPhrases)
         setFreqWords(mostFreqWords)
 
@@ -481,7 +481,7 @@ const Profile = () => {
         }
         const totalResponses = situationScores.length
 
-       
+
 
         const avgSituationScore = sumContents(situationScores) / totalResponses
         const avgTaskScore = sumContents(taskScores) / totalResponses
@@ -544,17 +544,6 @@ const Profile = () => {
     }
 
 
-
-    const colors = {
-        0: '#ff0a0a',
-        last: '#ff0a0a',
-        fourth: '#f2ce02',
-        third: '#85e62c',
-        second: '#209c05',
-        best: '#00FF00'
-    }
-
-
     return (
         <div>
             <a className='my-anchor-element'></a>
@@ -580,7 +569,7 @@ const Profile = () => {
 
 
 
-                    
+
 
 
 

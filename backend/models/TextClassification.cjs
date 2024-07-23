@@ -30,18 +30,7 @@ function getResults(userResponse) {
 	const action_prediction = action_model.predict(userResponse)
 	const result_prediction = result_model.predict(userResponse)
 
-	if (situation_prediction.length) {
-		console.log(`${situation_prediction[0].label} (${situation_prediction[0].confidence})`);
-	}
-	if (task_prediction.length) {
-		console.log(`${task_prediction[0].label} (${task_prediction[0].confidence})`);
-	}
-	if (action_prediction.length) {
-		console.log(`${action_prediction[0].label} (${action_prediction[0].confidence})`);
-	}
-	if (result_prediction.length) {
-		console.log(`${result_prediction[0].label} (${result_prediction[0].confidence})`);
-	}
+	
 	return [situation_prediction[0].confidence, task_prediction[0].confidence, action_prediction[0].confidence, result_prediction[0].confidence]
 }
 
