@@ -1,6 +1,5 @@
-
-
 import React, { useEffect, useState, useRef } from 'react';
+import './TTS.css'
 
 const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +18,7 @@ const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
     }, [queue]);
 
     const speak = async (message) => {
-        if (isSpeakingRef.current || message.content=="quit") return;
+        if (isSpeakingRef.current || message.content == "quit") return;
         isSpeakingRef.current = true;
         setIsLoading(true);
         setError(null);
@@ -68,7 +67,9 @@ const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
 
     return (
         <div>
-            {isLoading && <p>Converting to speech...</p>}
+            {isLoading &&<div className='loading-container'><h3 className='loading-message'>Converting to speech</h3> <div class="loader"></div></div>
+
+            }
             {error && <p>Error: {error}</p>}
         </div>
     );

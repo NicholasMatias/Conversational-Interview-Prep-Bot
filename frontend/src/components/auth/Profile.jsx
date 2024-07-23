@@ -10,6 +10,8 @@ import interview_questions from '../../../interview_questions.json';
 import { db } from '../../../../backend/firebase/firebase.config.js';
 import { doc, updateDoc, arrayUnion, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
 import SaveModal from '../SaveTranscript/SaveModal.jsx';
+import Spacing from '../landing_page/spacing/Spacing.jsx'
+
 
 
 const interviewQuestions = interview_questions.basisBehavioralQuestions;
@@ -193,12 +195,12 @@ const Profile = () => {
         if (!currentUser) return;
 
         try {
-
             if (!collection(db, "users", currentUser.uid, selectedFolder)) {
                 setError("Folder could not be found.")
             }
             else {
                 setError("");
+
             }
             const userRef = doc(db, "users", currentUser.uid);
             const folderRef = doc(userRef, `${selectedFolder}`, transcriptName);
@@ -217,10 +219,28 @@ const Profile = () => {
             });
 
 
-            await updateDoc(userRef, {
-                transcripts: arrayUnion(transcriptName)
-            });
 
+
+            const userDoc = await getDoc(userRef);
+            if (!userDoc.exists()) {
+                console.error("User document does not exist");
+                return;
+            }
+            const userData = userDoc.data();
+            let transcriptsData = userData.transcripts || {};
+            console.log(transcriptsData[selectedFolder]);
+
+            let folderTranscripts = transcriptsData[selectedFolder] || []
+            folderTranscripts.push(transcriptName);
+
+            transcriptsData[selectedFolder] = folderTranscripts;
+
+            const updateData = {
+                transcripts: transcriptsData
+            }
+
+            await updateDoc(userRef, updateData);
+            console.log("Successfully updated:", transcriptsData[selectedFolder])
 
             setIsModalOpen(false);
             setAlreadySaved(true);
@@ -258,26 +278,40 @@ const Profile = () => {
         <div>
             {user && (
                 <>
-                    <h1>Welcome, {user.name}</h1>
-                    <p>{user.email}</p>
-                    <button onClick={handleSignout}>Sign Out</button>
-                    <button onClick={toFolders}>Folders</button>
+                    <nav className='navBar-container'>
+                        <div className="navbar">
+                            <div className="brand">
+                                InterviewMe
+                            </div>
+                            <ul className="nav-links">
+                                <li><a type='button' onClick={toFolders}>Folders</a></li>
+
+                                <li><a type='button' onClick={handleSignout} >Logout</a></li>
+
+                            </ul>
+                        </div>
+                    </nav>
+                    <Spacing />
+                    <h1 className='welcome-message'>Welcome to the interview interface page!</h1>
+
                 </>
             )}
             {!interviewStarted ? (
-                <button onClick={startInterview}>Start Interview</button>
+                <div className='start-interview-container'>
+                    <button className='start-interview-btn' onClick={startInterview}>Start Interview</button>
+                </div>
             ) : (
-                <div>
-                    <div>
+                <div className='messages-container'>
+                    <div className='messages'>
                         {messages.map((msg, index) => (
-                            <div key={index}>
+                            <div key={index} className='current-message'>
                                 <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong>
-                                {msg.content == "quit" ? "That concludes your interview. Thank you for using our platform." : msg.content}
+                                <pre className='message-format'>{msg.content == "quit" ? "That concludes your interview. Thank you for using our platform." : ` ${msg.content}`}</pre>
                             </div>
                         ))}
                     </div>
-                    {isLoading && <div>Processing your response...</div>}
-                    {isTranscribing && <div>Transcribing your response...</div>}
+                    {isLoading && <div className='loading-container'><h3 className='loading-message'>Processing your response</h3> <div className="loader"></div></div>}
+                    {isTranscribing && <div className='loading-container'><h3 className='loading-message'>Transcribing your response</h3> <div className="loader"></div></div>}
                     {isUserTurn && !isLoading && !isTranscribing && !isInterviewOver && !isSpeaking &&
                         <Record
                             onTranscriptionComplete={handleTranscription}
@@ -294,13 +328,13 @@ const Profile = () => {
 
                     {isInterviewOver && !isSpeaking && !newInterview && (
                         <div>
-                            <button>View Feedback</button>
+                            <button className='interview-end-btn'>View Feedback</button>
 
                             {!alreadySaved &&
-                                <button onClick={() => setIsModalOpen(true)}>Save Transcript</button>
+                                <button className='interview-end-btn' onClick={() => setIsModalOpen(true)}>Save Transcript</button>
                             }
 
-                            <button onClick={handleNewInterview}>New Interview</button>
+                            <button className='interview-end-btn' onClick={handleNewInterview}>New Interview</button>
                         </div>
                     )}
 

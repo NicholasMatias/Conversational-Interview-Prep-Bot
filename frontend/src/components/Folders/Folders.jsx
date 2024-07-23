@@ -6,6 +6,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import Folder from './Folder.jsx'
 import Spacing from '../landing_page/spacing/Spacing.jsx';
+import { Spinner } from '@chakra-ui/react'
+import { signOut } from '../auth/auth.js'
+
 
 
 
@@ -40,9 +43,11 @@ const Folders = () => {
 
         if (folders.includes(folderName)) {
             setError('A folder with this name already exists.');
+            setTimeout(()=>{
+                setError('')
+            },1000)
             return;
         }
-        setError("")
 
         const thisUserDocRef = doc(db, "users", currentUser.uid);
         try {
@@ -72,26 +77,48 @@ const Folders = () => {
         navigate('/profile')
     }
 
+    const handleSignout = async () => {
+        try {
+            await signOut();
+            navigate('/');
+        } catch (error) {
+            console.error('Error signing out', error);
+        }
+    };
+
     return (
-        <>
+        <div className='folders-page'>
+
+            <nav className='navBar-container'>
+                <div className="navbar">
+                    <div className="brand">
+                        InterviewMe
+                    </div>
+                    <ul className="nav-links">
+                        <li><a type='button' onClick={toInterviewPage}>Interview Page</a></li>
+
+                        <li><a type='button' onClick={handleSignout} >Logout</a></li>
+
+                    </ul>
+                </div>
+            </nav>
             <Spacing />
             <div className='container'>
                 <div className='left-container'>
                     <form onSubmit={handleNewFolder}>
                         <h1>Create a New Folder</h1>
-                        <div>
+                        <div className='form-group'>
                             <label htmlFor="folderName">Folder Name: </label>
-                            <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
-                            {error && <p style={{ color: 'red' }}>{error}</p>}
+                            <input className="input-spacing" type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
+                            {error && <p style={{ color: 'black' }}>{error}</p>}
                         </div>
-                        <button type="submit" >Create Folder</button>
+                        <button type="submit" className='create-folder-btn'>Create Folder</button>
                     </form>
 
-                    <button onClick={toInterviewPage}>Interview Page</button>
                 </div>
 
                 <div className='folder-grid-container'>
-                    {loading ? <p>Loading Folders...</p>
+                    {loading ? <div className='loading-container'><h3>Loading your folders</h3> <div className="loader"></div></div>
                         :
                         <div className='folders-container'>
                             {folders?.map((folderName, index) => (
@@ -104,7 +131,7 @@ const Folders = () => {
                 </div>
 
             </div>
-        </>
+        </div>
     )
 }
 

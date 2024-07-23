@@ -1,6 +1,13 @@
+.folders-page{
+    display: flex;
+    flex-direction: column;
+    background-color: #222831;
+    color: white;
+}
+
 .container{
     display: flex;
-    width: 100%;
+    flex: 1;
     margin: 0 5%;    
 }
 
@@ -9,7 +16,15 @@
     margin-right: 20px;
     background-color: gray;
     border-radius: 5px;
+    text-align: center;
+    height: 300px;
 }
+
+.left-container h1{
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
 
 .folder-grid-container{
     width: 70%;
@@ -22,4 +37,57 @@
     flex-wrap: wrap;
     margin-right: 5%;
     margin-left: 5%;
+}
+.input-spacing{
+    margin-bottom: 5px;
+}
+
+.loader {
+    border: 2px solid #f3f3f3;
+    /* Light grey */
+    border-top: 2px solid #3498db;
+    /* Blue */
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    animation: spin 2s linear infinite;
+    margin-left: 5px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-container{
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.create-folder-btn{
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #008A90;
+    color:white;
+    border: none;
+    border-radius: 3px;
+    outline: black 1px solid;
+}
+
+.create-folder-btn:hover{
+    cursor: pointer;
+    background-color: #0a5357;
+}
+
+.form-group input{
+    padding: 5px;
+    border-radius: 3px;
+    outline:none;
+    border: none;
 }

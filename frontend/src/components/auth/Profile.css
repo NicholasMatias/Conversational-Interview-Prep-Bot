@@ -1,0 +1,100 @@
+.messages-container{
+    width:80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+}
+
+
+.current-message{
+    background-color: #393e46;
+    padding:15px;
+    border-radius: 3px;
+    margin-bottom: 10px;
+    width: 1200px;
+    text-align: left;
+}
+.loader {
+    border: 2px solid #f3f3f3;
+    /* Light grey */
+    border-top: 2px solid #3498db;
+    /* Blue */
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    animation: spin 2s linear infinite;
+    margin-left: 5px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-container{
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.welcome-message{
+    text-align: center;
+    color:white;
+    margin-bottom: 30px;
+}
+
+.loading-message{
+    color:white;
+}
+
+.start-interview-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.start-interview-btn{
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #008A90;
+    color:white;
+    border: none;
+    border-radius: 3px;
+    transform:translateY(-30px);
+}
+
+.start-interview-btn:hover{
+    cursor: pointer;
+    background-color: #0a5357;
+}
+
+.interview-end-btn{
+    padding: 10px;
+    margin: 10px;
+    background-color: #008A90;
+    color:white;
+    border: none;
+    border-radius: 3px;
+    
+}
+
+.interview-end-btn:hover{
+    cursor: pointer;
+    background-color: #0a5357;
+}
+
+.message-format{
+    width: 100%;
+    margin: 5px auto;
+    text-align: left;
+    white-space: pre-wrap;
+    font-style: normal;
+    font-family: sans-serif;
+    line-height: 1.3;
+}
