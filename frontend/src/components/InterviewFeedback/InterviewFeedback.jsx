@@ -73,10 +73,10 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose, freqWords, freqPhras
                                         <div></div>
                                         :
                                         <div className='STAR-container'>
-                                            <div style={{ backgroundColor: colors[message.situation] }} className='star' >S</div>
-                                            <div style={{ backgroundColor: colors[message.task] }} className='star'>T</div>
-                                            <div style={{ backgroundColor: colors[message.action] }} className='star'>A</div>
-                                            <div style={{ backgroundColor: colors[message.result] }} className='star'>R</div>
+                                            <div style={{ backgroundColor: colors[message.situation[0]] }} className='star' >S</div>
+                                            <div style={{ backgroundColor: colors[message.task[0]] }} className='star'>T</div>
+                                            <div style={{ backgroundColor: colors[message.action[0]] }} className='star'>A</div>
+                                            <div style={{ backgroundColor: colors[message.result[0]] }} className='star'>R</div>
                                             <div style={{ backgroundColor: colors[message.relevance] }} className='relevance'>Relevance</div>
                                         </div>
                                     }
