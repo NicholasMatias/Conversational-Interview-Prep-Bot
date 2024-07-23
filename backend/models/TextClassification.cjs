@@ -51,42 +51,48 @@ function getSituation(userResponse) {
 	const situation_model = trainModels("Situation");
 	const situation_prediction = situation_model.predict(userResponse)
 	try {
-		const result = situation_prediction ? situation_prediction[0].confidence : 0
-
+		let result = 0
+		if (situation_prediction.length > 0) {
+			result = situation_prediction ? situation_prediction[0].confidence : 0
+		}
 		if (!result || result <= .2) {
-			return 'last'
+			return ['last', result]
 		} else if (result <= .35) {
-			return 'fourth'
+			return ['fourth', result]
 		} else if (result <= .45) {
-			return 'third'
+			return ['third', result]
 		} else if (result <= .55) {
-			return 'second'
+			return ['second', result]
 		} else {
-			return 'best'
+			return ['best', result]
 		}
 	}
 	catch (error) {
 		console.error("Error getting situation score:", error)
-		return 'last'
+		return ['last', 0]
 	}
 
 }
+
 
 function getTask(userResponse) {
 	const task_model = trainModels("Task");
 	const task_prediction = task_model.predict(userResponse)
 	try {
-		const result = task_prediction.length ? task_prediction[0].confidence : 0;
+		let result = 0
+		if (task_prediction.length > 0) {
+			result = task_prediction.length ? task_prediction[0].confidence : 0;
+		}
 		if (!result || result <= .2) {
-			return 'last'
+			return ['last', result]
 		} else if (result <= .35) {
-			return 'fourth'
+			return ['fourth', result]
 		} else if (result <= .45) {
-			return 'third'
+			return ['third', result]
 		} else if (result <= .55) {
-			return 'second'
+			return ['second', result]
 		} else {
-			return 'best'
+			return ['best', result]
 		}
 	}
 	catch (error) {
@@ -99,18 +105,20 @@ function getAction(userResponse) {
 	const action_model = trainModels("Action");
 	const action_prediction = action_model.predict(userResponse)
 	try {
-		const result = action_prediction.length ? action_prediction[0].confidence : 0;
-
+		let result = 0
+		if (action_prediction.length > 0) {
+			result = action_prediction.length ? action_prediction[0].confidence : 0;
+		}
 		if (!result || result <= .2) {
-			return 'last'
+			return ['last', result]
 		} else if (result <= .35) {
-			return 'fourth'
+			return ['fourth', result]
 		} else if (result <= .45) {
-			return 'third'
+			return ['third', result]
 		} else if (result <= .55) {
-			return 'second'
+			return ['second', result]
 		} else {
-			return 'best'
+			return ['best', result]
 		}
 	}
 	catch (error) {
@@ -123,18 +131,20 @@ function getResult(userResponse) {
 	const result_model = trainModels("Result");
 	const result_prediction = result_model.predict(userResponse)
 	try {
-		const result = result_prediction.length ? result_prediction[0].confidence : 0;
-
+		let result = 0
+		if (result_prediction.length > 0) {
+			result = result_prediction.length ? result_prediction[0].confidence : 0;
+		}
 		if (!result || result <= .2) {
-			return 'last'
+			return ['last', result]
 		} else if (result <= .35) {
-			return 'fourth'
+			return ['fourth', result]
 		} else if (result <= .45) {
-			return 'third'
+			return ['third', result]
 		} else if (result <= .55) {
-			return 'second'
+			return ['second', result]
 		} else {
-			return 'best'
+			return ['best', result]
 		}
 	}
 	catch (error) {
@@ -142,6 +152,10 @@ function getResult(userResponse) {
 		return 'last'
 	}
 }
+
+
+
+
 
 module.exports = {
 	trainModels: trainModels,

@@ -169,8 +169,8 @@ app.post('/relevance', async(req,res) => {
 
 app.post('/frequency' , async(req,res) => {
     try{
-        const {text, number, gramSize } = req.body
-        const results = getFreq(text,number, gramSize)
+        const {responses, number, gramSize } = req.body
+        const results = getFreq(responses,number, gramSize)
         res.json(results)
     }catch(error){
         console.error("Error getting word frequency:", error)

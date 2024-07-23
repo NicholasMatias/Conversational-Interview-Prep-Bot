@@ -21,7 +21,7 @@ const Login = () => {
         e.preventDefault()
         try {
             await signInWithEmailAndPassword(email, password)
-            navigate('/profile')
+            navigate('/home')
         }
         catch (err) {
             const errorMessage = err.message;
@@ -78,7 +78,7 @@ const Login = () => {
                 console.log("Default Folder Created")
             }
 
-            navigate('/profile')
+            navigate('/home')
 
         }
         catch (err) {

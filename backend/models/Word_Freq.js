@@ -6,17 +6,20 @@ export function cleanAndTokenize(text) {
 
     const tokenizer = new WordTokenizer()
     const tokens = tokenizer.tokenize(text.toLowerCase().replace(/[^\w\s]/g, ' '))
-    const baseWords = tokens.map(token => PorterStemmer.stem(token))
-    const removeStopWords = baseWords.filter(word => !stopWords.has(word))
-
+    console.log("Before base conversion:", tokens)
+    // const baseWords = tokens.map(token => PorterStemmer.stem(token))
+    // console.log("After base conversion:", baseWords)
+    const removeStopWords = tokens.filter(word => !stopWords.has(word))
+    console.log("Clean and Tokenize:",removeStopWords)
     return removeStopWords
 }
 
 export function cleanAndTokenizeNGrams(text) {
-    const spaces = new Set([' '])
+    const spaces = new Set([' ', ""," ", ''])
     const lower = text.toLowerCase()
+    console.log("Clean and Tokenize nGrams Lower:", lower)
     const words = lower.replace(/[^\w\s]/g, '').split(/\s+/).filter(word => !spaces.has(word))
-
+    console.log("Clean and Tokenize nGrams:", words)
     return words
 }
 

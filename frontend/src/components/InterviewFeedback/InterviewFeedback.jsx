@@ -1,8 +1,9 @@
 import './InterviewFeedback.css'
 import { Tooltip } from 'react-tooltip'
+import Spacing from '../landing_page/spacing/Spacing';
 
 
-const InterviewFeedback = ({ messagesPass, isOpen, onClose }) => {
+const InterviewFeedback = ({ messagesPass, isOpen, onClose, freqWords, freqPhrases }) => {
 
     if (!isOpen) return null;
 
@@ -15,7 +16,7 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose }) => {
         best: '#00FF00'
     }
 
-    
+
 
 
 
@@ -25,7 +26,38 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose }) => {
                 <div>
                     <h1>Interview Feedback</h1>
                 </div>
+                <Spacing/>
                 
+                <div className='freq-main'>
+                    <div className='freq-header-container'>
+                        <h3 className='freq-header'>Most Frequently Used Words and Phrases</h3>
+                    </div>
+                    <div className='freq-container'>
+                        {
+                            freqWords.length > 0 ? freqWords.map((word, index) => {
+                                return (
+                                    <h3 className='freq-word'>{word[0]}: {word[1]}</h3>
+                                )
+                            })
+                                :
+                                <div>
+
+                                </div>
+                        }
+                        {
+                            freqPhrases.length > 0 ? freqPhrases.map((word, index) => {
+                                return (
+                                    <h3 className='freq-word'>{word[0]}: {word[1]}</h3>
+                                )
+                            })
+                                :
+                                <div>
+
+                                </div>
+                        }
+                    </div>
+                </div>
+
 
                 <div>
                     {messagesPass.length > 0 ? messagesPass?.map((message, index) => {

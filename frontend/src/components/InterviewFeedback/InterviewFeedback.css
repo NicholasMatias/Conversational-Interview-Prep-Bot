@@ -131,3 +131,39 @@
 .message-role {
     text-align: left;
 }
+
+.freq-main{
+    background-color: #393e46;
+    width: 890px;
+    margin: 5px auto;
+    padding: 5px;
+    outline: 1px white solid;
+    border-radius: 5px;
+}
+
+
+.freq-container{
+    display: flex;
+    width: 900px;
+    margin: 15px auto;
+    flex-wrap: wrap;
+
+}
+
+.freq-word{
+    background-color: #393e46;
+    border-radius: 5px;
+    padding: 5px 8px 5px 8px;
+    margin: 3px;
+    outline: 1px white solid;
+}
+
+
+.freq-header-container{
+    width: 900px;
+    display: flex;
+    margin: 5px auto;
+}
+.freq-header{
+    text-align: left;
+}

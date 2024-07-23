@@ -399,6 +399,46 @@ const Profile = () => {
         }
     }
 
+
+    const getFreq = async (responses, number, gramSize) => {
+        try {
+            const response = await fetch('http://localhost:5000/frequency', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                },
+                body: JSON.stringify({ responses: responses, number: number, gramSize: gramSize })
+            })
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+
+            const relevanceScore = await response.json()
+            return relevanceScore
+        }
+        catch (error) {
+            console.error("Error in getFreq:", error)
+            return 0
+        }
+    }
+    const [freqWords, setFreqWords ] = useState([])
+    const [freqPhrases, setFreqPhrases] = useState([])
+
+    const wordFreqPhrases =async () => {
+        const userMessages = messages.filter(message => message.role==="user")
+        const userAnswers = userMessages.map(message => message.content)
+        const singleText = userAnswers.join(" ")
+        const mostFreqWords = await getFreq(singleText,10, 1)
+        const mostFreqPhrases = await getFreq(singleText, 5, 2)
+        console.log(mostFreqPhrases)
+        console.log("Full text:", singleText)
+        console.log(mostFreqWords)
+        setFreqPhrases(mostFreqPhrases)
+        setFreqWords(mostFreqWords)
+
+    }
+
     const [feedbackData, setFeedbackData] = useState([])
 
     const showFeedback = async () => {
@@ -408,7 +448,6 @@ const Profile = () => {
             if (message.role === "user") {
                 try {
                     const messageContent = message.content
-                    // const [situation, task, action, result, relevance]  = await Promise.all([getSituation(messageContent), getTask(messageContent), getAction(messageContent), getResult(messageContent), getRelevance(message[i-1].content, messageContent)])
                     const feedbackItem = {
                         role: "user",
                         content: message.content,
@@ -437,6 +476,7 @@ const Profile = () => {
                 })
             }
         }
+        wordFreqPhrases()
         setFeedbackData(feedback)
         setIsFeedbackTime(true)
     }
@@ -559,6 +599,8 @@ const Profile = () => {
                         messagesPass={feedbackData}
                         isOpen={isFeedbackTime}
                         onClose={() => setIsFeedbackTime(false)}
+                        freqPhrases={freqPhrases}
+                        freqWords={freqWords}
 
                     />
 
