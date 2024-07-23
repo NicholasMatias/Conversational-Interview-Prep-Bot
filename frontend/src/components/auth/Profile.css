@@ -99,3 +99,19 @@
     font-family: sans-serif;
     line-height: 1.3;
 }
+
+.starTip{
+    text-decoration: underline;
+}
+
+.starTip:hover{
+    cursor: pointer;
+}
+
+.situation-tooltip, .task-tooltip, .action-tooltip, .result-tooltip, .star-tooltip, .relevance-tooltip{
+    z-index: 1000;
+}
+
+.tooltipText{
+    width: 300px;
+}

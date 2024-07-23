@@ -12,7 +12,7 @@ import { doc, updateDoc, arrayUnion, getDoc, setDoc, collection, addDoc } from '
 import SaveModal from '../SaveTranscript/SaveModal.jsx';
 import Spacing from '../landing_page/spacing/Spacing.jsx'
 import InterviewFeedback from '../InterviewFeedback/InterviewFeedback.jsx'
-
+import { Tooltip } from 'react-tooltip'
 
 
 const interviewQuestions = interview_questions.basisBehavioralQuestions;
@@ -231,7 +231,6 @@ const Profile = () => {
             }
             const userData = userDoc.data();
             let transcriptsData = userData.transcripts || {};
-            console.log(transcriptsData[selectedFolder]);
 
             let folderTranscripts = transcriptsData[selectedFolder] || []
             folderTranscripts.push(transcriptName);
@@ -243,7 +242,6 @@ const Profile = () => {
             }
 
             await updateDoc(userRef, updateData);
-            console.log("Successfully updated:", transcriptsData[selectedFolder])
 
             setIsModalOpen(false);
             setAlreadySaved(true);
@@ -314,10 +312,9 @@ const Profile = () => {
                 throw new Error(`HTTP error! status: ${response.status}`)
             }
             const taskScore = await response.json()
-            // console.log("task score value:", taskScore)
 
 
-            return taskScore 
+            return taskScore
         }
         catch (error) {
             console.error("Error in getTask:", error)
@@ -339,10 +336,9 @@ const Profile = () => {
                 throw new Error(`HTTP error! status: ${response.status}`)
             }
             const actionScore = await response.json()
-            // console.log("action score value:", actionScore)
 
 
-            return actionScore 
+            return actionScore
         }
         catch (error) {
             console.error("Error in getAction:", error)
@@ -365,10 +361,9 @@ const Profile = () => {
                 throw new Error(`HTTP error! status: ${response.status}`)
             }
             const resultScore = await response.json()
-            // console.log("result score value:", resultScore)
 
 
-            return resultScore 
+            return resultScore
         }
         catch (error) {
             console.error("Error in getResult:", error)
@@ -406,7 +401,6 @@ const Profile = () => {
         const feedback = []
         for (let i = 0; i < messages.length; i++) {
             const message = messages[i];
-            // console.log("Message:",message)
             if (message.role === "user") {
                 try {
                     const messageContent = message.content
@@ -447,6 +441,7 @@ const Profile = () => {
 
     return (
         <div>
+            <a className='my-anchor-element'></a>
             {user && (
                 <>
                     <nav className='navBar-container'>
@@ -464,7 +459,38 @@ const Profile = () => {
                     </nav>
                     <Spacing />
                     <h1 className='welcome-message'>Welcome to the interview interface page!</h1>
-                
+                    <div>
+                        <p className=' welcome-message'>Upon finishing your interview, you are able to save it in a folder of your choosing, view interview specific feedback, or of course start a new interview. </p>
+                        <p className='welcome-message'>Your response to a question will be evaluated on the <a className='star-tooltip starTip'>STAR</a> method (<a className='situation-tooltip starTip'>Situation</a>, <a className='task-tooltip starTip'>Task</a>, <a className='action-tooltip starTip'>Action</a>, and <a className='result-tooltip starTip'>Result</a>) and its <a className='relevance-tooltip starTip'>Relevance</a> to the question asked. </p>
+                        <Tooltip className='relevance-tooltip' anchorSelect='.relevance-tooltip' place='bottom'>
+                            <p className='star-tooltip tooltipText'>Is your response relevant to the question asked?</p>
+                        </Tooltip>
+                        <Tooltip className='star-tooltip' anchorSelect='.star-tooltip' place='bottom'>
+                            <p className='star-tooltip tooltipText'>The STAR method is a structured manner of responding to a behavioral-based interview question by
+                                discussing the specific situation, task, action, and result of the situation you are describing.  </p>
+                        </Tooltip>
+                        <Tooltip className='situation-tooltip' anchorSelect='.situation-tooltip' place='bottom'>
+                            <p className='situation-tooltip tooltipText'>Situation: Describe the situation that you were in or the task that you needed to accomplish. You
+                                must describe a specific event or situation, not a generalized description of what you have done in
+                                the past. Be sure to give enough detail for the interviewer to understand. This situation can be
+                                from a previous job, from a volunteer experience, or any relevant event. </p>
+                        </Tooltip>
+                        <Tooltip className='task-tooltip' anchorSelect='.task-tooltip' place='bottom'>
+                            <p className='task-tooltip tooltipText'>Task: What goal were you working toward? What were you trying to accomplish?</p>
+                        </Tooltip>
+                        <Tooltip className='action-tooltip' anchorSelect='.action-tooltip' place='bottom'>
+                            <p className='action-tooltip tooltipText'>Action: Describe the actions you took to address the situation with an appropriate amount of
+                                detail and keep the focus on YOU. What specific steps did you take and what was your particular
+                                contribution? Be careful that you don’t describe what the team or group did when talking about a
+                                project, but what you actually did. Use the word “I,” not “we” when describing actions. </p>
+                        </Tooltip>
+                        <Tooltip className='result-tooltip' anchorSelect='.result-tooltip' place='bottom'>
+                            <p className='result-tooltip tooltipText'>Result: Describe the outcome of your actions and don’t be shy about taking credit for your
+                                behavior. What happened? How did the event end? What did you accomplish? What did you
+                                learn? Make sure your answer contains multiple positive results. </p>
+                        </Tooltip>
+                    </div>
+                    <Spacing />
                 </>
             )}
             {!interviewStarted ? (

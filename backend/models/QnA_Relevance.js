@@ -47,11 +47,11 @@ export function getRelevanceScore(question, response){
 
     if (!similarity || similarity <= .3) {
 		return 'last'
-	} else if (similarity <= .50) {
+	} else if (similarity <= .60) {
 		return 'fourth'
-	} else if (similarity <= .65) {
+	} else if (similarity <= .85) {
 		return 'third'
-	} else if (similarity <= .80) {
+	} else if (similarity <= .90) {
 		return 'second'
 	} else {
 		return 'best'

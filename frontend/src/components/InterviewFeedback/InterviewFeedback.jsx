@@ -1,20 +1,10 @@
 import './InterviewFeedback.css'
-import { act, useEffect, useState } from 'react';
-
+import { Tooltip } from 'react-tooltip'
 
 
 const InterviewFeedback = ({ messagesPass, isOpen, onClose }) => {
 
     if (!isOpen) return null;
-
-
-
-
-
-    // for (let i = 0; i < messagesPass.length; i++) {
-    //     console.log(`Message ${i}: ${messagesPass[i].result}`)
-    // }
-
 
     const colors = {
         0: '#ff0a0a',
@@ -24,9 +14,8 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose }) => {
         second: '#209c05',
         best: '#00FF00'
     }
-    const textColors = ['#fff', '#fff', '#fff', '#fff', '#fff']
 
-
+    
 
 
 
@@ -36,7 +25,7 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose }) => {
                 <div>
                     <h1>Interview Feedback</h1>
                 </div>
-
+                
 
                 <div>
                     {messagesPass.length > 0 ? messagesPass?.map((message, index) => {
@@ -45,19 +34,9 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose }) => {
 
                                 <div className='header-container'>
                                     <h3 className='messages-transcript message-role'>
-                                        {(message.role === "bot" ? `Interviewer (${index}):` :
-                                            `You (${index}):`)}
+                                        {(message.role === "bot" ? `Interviewer:` :
+                                            `You:`)}
                                     </h3>
-                                    {message.role === "bot" ?
-                                        console.log("Interview Turn")
-                                        :
-                                        console.log(
-                                            `S: ${message.situation}
-                                    T: ${message.task}
-                                    A: ${message.action}
-                                    R: ${message.result}
-                                    Relevance: ${message.relevance}`
-                                        )}
                                     {message.role === "bot" ?
                                         <div></div>
                                         :
