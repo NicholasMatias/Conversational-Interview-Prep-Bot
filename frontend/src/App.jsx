@@ -6,6 +6,7 @@ import Signup from './components/auth/Signup'
 import Profile from './components/auth/Profile'
 import { LandingPage } from './components/landing_page/LandingPage'
 import Folders from './components/Folders/Folders'
+import Home from './components/home/Home'
 function App() {
 
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path='/signup' element={<Signup />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/folders' element={<Folders/>} />
+        <Route path='/home' element={<Home/>}/>
       </Routes>
     </Router>
   )

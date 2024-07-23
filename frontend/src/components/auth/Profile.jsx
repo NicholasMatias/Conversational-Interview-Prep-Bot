@@ -88,6 +88,10 @@ const Profile = () => {
         navigate('/folders')
     }
 
+    const toHome = () => {
+        navigate('/home')
+    }
+
     const handleTranscription = (transcribedText) => {
         setIsTranscribing(false);
         setInput(transcribedText);
@@ -450,6 +454,8 @@ const Profile = () => {
                                 InterviewMe
                             </div>
                             <ul className="nav-links">
+                                <li><a type='button'onClick={toHome}>Home</a></li>
+                                
                                 <li><a type='button' onClick={toFolders}>Folders</a></li>
 
                                 <li><a type='button' onClick={handleSignout} >Logout</a></li>
