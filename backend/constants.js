@@ -79,3 +79,11 @@ export const errorTranscribingAudio = "Error transcribing audio:";
 export const baseURL = `http://localhost:${process.env.PORT}`;
 
 export const PORT = process.env.PORT || 3000
+
+export const relevanceLast = .3;
+
+export const relevanceFourth = .6;
+
+export const relevaneThird = .85;
+
+export const relevanceSecond = .9;

@@ -1,4 +1,5 @@
 import natural from 'natural'
+import {relevanceLast, relevanceFourth, relevaneThird, relevanceSecond} from '../constants.js';
 const TfIdf = natural.TfIdf
 
 
@@ -45,15 +46,17 @@ export function getRelevanceScore(question, response){
 
     const similarity = cosineSimilarity(questionVector, responseVector)
 
-    if (!similarity || similarity <= .3) {
+    if (!similarity || similarity <= relevanceLast) {
 		return ['last',similarity]
-	} else if (similarity <= .60) {
+	} else if (similarity <= relevanceFourth) {
 		return ['fourth',similarity ]
-	} else if (similarity <= .85) {
+	} else if (similarity <= relevaneThird) {
 		return ['third',similarity]
-	} else if (similarity <= .90) {
+	} else if (similarity <= relevanceSecond) {
 		return ['second',similarity]
 	} else {
 		return ['best',similarity]
 	}
 }
+
+

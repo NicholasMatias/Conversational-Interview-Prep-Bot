@@ -3,6 +3,15 @@ const path = require("path")
 const fs = require("fs")
 
 
+//can't put these constants in constants.js bc this file is common js (cjs)
+const last = .2;
+
+const fourth = .35;
+
+const third = .45;
+
+const second = .55;
+
 
 function trainModels(type) {
 	const star_data = JSON.parse(fs.readFileSync(path.join(__dirname, 'STAR_Responses.json'), 'utf-8'))
@@ -30,7 +39,7 @@ function getResults(userResponse) {
 	const action_prediction = action_model.predict(userResponse)
 	const result_prediction = result_model.predict(userResponse)
 
-	
+
 	return [situation_prediction[0].confidence, task_prediction[0].confidence, action_prediction[0].confidence, result_prediction[0].confidence]
 }
 
@@ -42,13 +51,13 @@ function getSituation(userResponse) {
 		if (situation_prediction.length > 0) {
 			result = situation_prediction ? situation_prediction[0].confidence : 0
 		}
-		if (!result || result <= .2) {
+		if (!result || result <= last) {
 			return ['last', result]
-		} else if (result <= .35) {
+		} else if (result <= fourth) {
 			return ['fourth', result]
-		} else if (result <= .45) {
+		} else if (result <= third) {
 			return ['third', result]
-		} else if (result <= .55) {
+		} else if (result <= second) {
 			return ['second', result]
 		} else {
 			return ['best', result]
@@ -70,13 +79,13 @@ function getTask(userResponse) {
 		if (task_prediction.length > 0) {
 			result = task_prediction.length ? task_prediction[0].confidence : 0;
 		}
-		if (!result || result <= .2) {
+		if (!result || result <= last) {
 			return ['last', result]
-		} else if (result <= .35) {
+		} else if (result <= fourth) {
 			return ['fourth', result]
-		} else if (result <= .45) {
+		} else if (result <= third) {
 			return ['third', result]
-		} else if (result <= .55) {
+		} else if (result <= second) {
 			return ['second', result]
 		} else {
 			return ['best', result]
@@ -96,13 +105,13 @@ function getAction(userResponse) {
 		if (action_prediction.length > 0) {
 			result = action_prediction.length ? action_prediction[0].confidence : 0;
 		}
-		if (!result || result <= .2) {
+		if (!result || result <= last) {
 			return ['last', result]
-		} else if (result <= .35) {
+		} else if (result <= fourth) {
 			return ['fourth', result]
-		} else if (result <= .45) {
+		} else if (result <= third) {
 			return ['third', result]
-		} else if (result <= .55) {
+		} else if (result <= second) {
 			return ['second', result]
 		} else {
 			return ['best', result]
@@ -122,13 +131,13 @@ function getResult(userResponse) {
 		if (result_prediction.length > 0) {
 			result = result_prediction.length ? result_prediction[0].confidence : 0;
 		}
-		if (!result || result <= .2) {
+		if (!result || result <= last) {
 			return ['last', result]
-		} else if (result <= .35) {
+		} else if (result <= fourth) {
 			return ['fourth', result]
-		} else if (result <= .45) {
+		} else if (result <= third) {
 			return ['third', result]
-		} else if (result <= .55) {
+		} else if (result <= second) {
 			return ['second', result]
 		} else {
 			return ['best', result]
@@ -139,7 +148,6 @@ function getResult(userResponse) {
 		return 'last'
 	}
 }
-
 
 
 
