@@ -19,6 +19,41 @@ const interviewQuestions = interview_questions.basisBehavioralQuestions;
 
 
 
+
+
+let indexes = []
+let messageQueue = []
+let isProcessing = false
+
+
+function useMessageQueue(msg, index) {
+    const [hasStreamed, setHasStreamed] = useState(false)
+    const messageRef = useRef(null)
+
+    useEffect(() => {
+        if (msg.role !== "user" && !hasStreamed && !indexes.includes(index)) {
+            messageQueue.push({ msg, index, ref: messageRef, setHasStreamed })
+            indexes.push(index)
+            processQueue()
+        }
+    }, [msg, hasStreamed,index])
+
+    return { hasStreamed, messageRef }
+}
+
+function processQueue() {
+    if (isProcessing || messageQueue.length === 0) return;
+
+    isProcessing = true
+    const { msg, ref, setHasStreamed } = messageQueue.shift()
+
+    streamText(msg.content, ref.current).then(() => {
+        setHasStreamed(true)
+        isProcessing = false
+        processQueue()
+    })
+}
+
 function streamText(text, element, delay = 50) {
     return new Promise((resolve) => {
         let i = 0;
@@ -39,33 +74,11 @@ function streamText(text, element, delay = 50) {
 }
 
 
-let indexes = []
-
 function MessageComponent({ msg, index }) {
-    
-    console.log("Indexes:", indexes)
-    const messageRef = useRef(null);
-    const [hasStreamed, setHasStreamed] = useState(false);
+    const { hasStreamed, messageRef } = useMessageQueue(msg, index);
 
-    useEffect(() => {
-        if (msg.role !== "user" && messageRef.current && !hasStreamed && !indexes.includes(index)) {
-            console.log("Starting to stream text for message:", msg.content)
-            if (indexes.includes(index)) {
 
-            }
-            else {
-                indexes.push(index)
-        
-            }
-            streamText(msg.content, messageRef.current).then(() => {
-                console.log("Streaming complete for message:", msg.content)
-                setHasStreamed(true);
-
-            });
-        }
-    }, [msg.content, hasStreamed]);
-
-    if (msg.role === "user") {
+    if (msg.role === "user" ) {
         return (
             <div className='current-message'>
                 <strong>You:</strong>
@@ -75,6 +88,7 @@ function MessageComponent({ msg, index }) {
             </div>
         );
     }
+
     return (
         <div className='current-message'>
             <strong>Interviewer:</strong>
@@ -87,6 +101,58 @@ function MessageComponent({ msg, index }) {
         </div>
     );
 }
+
+
+
+
+// function MessageComponent({ msg, index }) {
+//     const {hasStreamed, messageRef} = useMessageQueue(msg,index);
+//     console.log("Indexes:", indexes)
+
+
+// const messageRef = useRef(null);
+// const [hasStreamed, setHasStreamed] = useState(false);
+
+// useEffect(() => {
+// if (msg.role !== "user" && messageRef.current && !hasStreamed && !indexes.includes(index)) {
+//     console.log("Starting to stream text for message:", msg.content)
+//     if (indexes.includes(index)) {
+
+//     }
+//     else {
+//         indexes.push(index)
+
+//     }
+//     streamText(msg.content, messageRef.current).then(() => {
+//         console.log("Streaming complete for message:", msg.content)
+//         setHasStreamed(true);
+
+//     });
+// }
+// }, [msg.content, hasStreamed]);
+
+//     if (msg.role === "user") {
+//         return (
+//             <div className='current-message'>
+//                 <strong>You:</strong>
+//                 <pre className='message-format'>
+//                     {msg.content === "quit" ? "That concludes your interview. Thank you for using our platform." : ` ${msg.content}`}
+//                 </pre>
+//             </div>
+//         );
+//     }
+//     return (
+//         <div className='current-message'>
+//             <strong>Interviewer:</strong>
+//             <pre
+//                 className='message-format'
+//                 ref={messageRef}
+//             >
+//                 {hasStreamed ? msg.content : ''}
+//             </pre>
+//         </div>
+//     );
+// }
 
 
 
@@ -349,7 +415,7 @@ const Profile = () => {
         setIsModalOpen(false);
         setIsInterviewOver(false);
         setFeedbackMessage("Loading Interview Feedback")
-        indexes=[]
+        indexes = []
     }
 
 
