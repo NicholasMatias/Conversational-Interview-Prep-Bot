@@ -498,7 +498,47 @@ const Profile = () => {
 
     }
 
+    const getFeedbackResponse = async (userResponse, question, scores) => {
+        try {
+            const response = await fetch("http://localhost:5000/feedback", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userResponse: userResponse, question: question, scores: scores }),
+            });
+            const data = await response.json();
+            return data.response
+        }
+        catch (error) {
+            console.error("Error getting feedback:", error)
+            return ""
+        }
+    }
+
     const [feedbackLoading, setFeedbackLoading] = useState(false)
+    const [responseFeedbackItems, setResponseFeedbackItems] = useState([])
+
+    const llamaFeedback = async (feedback) => {
+        const responseFeedback = []
+        for (let i = 0; i < feedback.length; i++) {
+            const message = feedback[i]
+            if (message.role === "user") {
+                try {
+                    const feedbackItem = [message.situation[1], message.task[1], message.action[1], message.result[1], message.relevance[1]]
+                    const currFeedback = await getFeedbackResponse(message.content, feedback[i - 1].content, feedbackItem)
+                    responseFeedback.push(currFeedback)
+                }
+                catch (error) {
+                    console.error("Error getting feedback for user response:", error)
+                }
+            }
+            else {
+                responseFeedback.push("")
+            }
+        }
+        return responseFeedback
+    }
 
     const showFeedback = async () => {
         const feedbackQueue = [];
@@ -512,7 +552,6 @@ const Profile = () => {
             const message = messages[i];
             if (message.role === "user") {
                 try {
-                    const messageContent = message.content
                     const feedbackItem = {
                         role: "user",
                         content: message.content,
@@ -542,9 +581,17 @@ const Profile = () => {
             }
         }
 
+        
+
+
         wordFreqPhrases()
         setFeedbackData(feedback)
         averageScores(feedback)
+
+        const responseFeedback = await llamaFeedback(feedback)
+
+
+        setResponseFeedbackItems(responseFeedback)
 
         feedbackQueue.push("Analyzing user response for STAR method and question relevance");
         feedbackQueue.push('Determining most frequently used words and phrases');
@@ -553,7 +600,7 @@ const Profile = () => {
         while (feedbackQueue.length > 0) {
             const message = feedbackQueue.shift();
             setFeedbackMessage(message);
-            await new Promise(resolve => setTimeout(resolve, 750)); 
+            await new Promise(resolve => setTimeout(resolve, 750));
         }
 
         setFeedbackLoading(false)
@@ -563,6 +610,8 @@ const Profile = () => {
     const toQuestions = () => {
         navigate('/questions')
     }
+
+
 
 
     return (
@@ -696,6 +745,7 @@ const Profile = () => {
                         freqPhrases={freqPhrases}
                         freqWords={freqWords}
                         scoreAverages={scoreAverages}
+                        responseFeedbackItems={responseFeedbackItems}
 
                     />
 

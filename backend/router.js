@@ -7,7 +7,7 @@ import multer from 'multer';
 import fs from 'fs';
 const app = express()
 
-import {doFollowUp_notLastQuestion_prompt, notLastQuestion_notFollowUp_prompt, lastQuestion_prompt, errorChatCompletion, errorTranscribingAudio, baseURL, PORT} from './constants.js';
+import { doFollowUp_notLastQuestion_prompt, notLastQuestion_notFollowUp_prompt, lastQuestion_prompt, errorChatCompletion, errorTranscribingAudio, baseURL, PORT, feedbackPrompt } from './constants.js';
 import { getAction, getResult, getSituation, getTask } from './models/TextClassification.cjs';
 import { getRelevanceScore } from './models/QnA_Relevance.js';
 import { getFreq } from './models/Word_Freq.js';
@@ -29,7 +29,7 @@ app.post('/api/chat', async (req, res) => {
     let lastQuestion = lastQuestionCheck == "quit";
     try {
         const doFollowUp = Math.random() > .65 && !lastQuestion;
-        if (doFollowUp || prevIsFollowUp){
+        if (doFollowUp || prevIsFollowUp) {
             lastQuestion = false;
         }
 
@@ -40,7 +40,7 @@ app.post('/api/chat', async (req, res) => {
 
                     content: doFollowUp && !lastQuestion ? doFollowUp_notLastQuestion_prompt(context, message)
                         : !lastQuestion && !doFollowUp ? notLastQuestion_notFollowUp_prompt(context, message)
-                        : lastQuestion_prompt(context, message)
+                            : lastQuestion_prompt(context, message)
                 }
             ],
             model: "llama3-70b-8192",
@@ -106,77 +106,111 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
     }
 });
 
-app.post('/situation', async(req,res) => {
-    try{
-        const {response} = req.body;
-        const results =  getSituation(response);
+app.post('/situation', async (req, res) => {
+    try {
+        const { response } = req.body;
+        const results = getSituation(response);
         res.json(results);
     }
-    catch(error){
+    catch (error) {
         console.error("Error getting situation metric:", error);
-        res.status(500).json({error: 'Error getting situation metric'})
+        res.status(500).json({ error: 'Error getting situation metric' })
     }
 })
 
-app.post('/task', async(req,res) => {
-    try{
-        const {response} = req.body;
+app.post('/task', async (req, res) => {
+    try {
+        const { response } = req.body;
         const results = getTask(response);
         res.json(results);
     }
-    catch(error){
+    catch (error) {
         console.error("Error getting task metric:", error);
-        res.status(500).json({error: 'Error getting task metric'})
+        res.status(500).json({ error: 'Error getting task metric' })
     }
 })
 
-app.post('/action', async(req,res) => {
-    try{
-        const {response} = req.body;
+app.post('/action', async (req, res) => {
+    try {
+        const { response } = req.body;
         const results = getAction(response);
         res.json(results);
     }
-    catch(error){
+    catch (error) {
         console.error("Error getting action metric:", error);
-        res.status(500).json({error: 'Error getting action metric'})
+        res.status(500).json({ error: 'Error getting action metric' })
     }
 })
 
-app.post('/result', async(req,res) => {
-    try{
-        const {response} = req.body;
+app.post('/result', async (req, res) => {
+    try {
+        const { response } = req.body;
         const results = getResult(response);
         res.json(results);
     }
-    catch(error){
+    catch (error) {
         console.error("Error getting result metric:", error);
-        res.status(500).json({error: 'Error getting result metric'})
+        res.status(500).json({ error: 'Error getting result metric' })
     }
 })
 
-app.post('/relevance', async(req,res) => {
-    try{
-        const {question, response} = req.body
+app.post('/relevance', async (req, res) => {
+    try {
+        const { question, response } = req.body
         const results = getRelevanceScore(question, response)
         res.json(results)
 
     }
-    catch(error){
+    catch (error) {
         console.error("Error getting relevance score:", error)
-        res.status(500).json({error: 'Error getting relevance score.'})
+        res.status(500).json({ error: 'Error getting relevance score.' })
     }
 })
 
-app.post('/frequency' , async(req,res) => {
-    try{
-        const {responses, number, gramSize } = req.body
-        const results = getFreq(responses,number, gramSize)
+app.post('/frequency', async (req, res) => {
+    try {
+        const { responses, number, gramSize } = req.body
+        const results = getFreq(responses, number, gramSize)
         res.json(results)
-    }catch(error){
+    } catch (error) {
         console.error("Error getting word frequency:", error)
-        res.status(500).json({error: "Error getting freauency"})
+        res.status(500).json({ error: "Error getting freauency" })
     }
 })
+
+
+
+
+const groqFeedback = new groq({ apiKey: process.env.GROQ_API_KEY });
+
+app.post('/feedback', async (req, res) => {
+
+    try {
+        const { userResponse, question, scores } = req.body;
+
+        const response = await groqFeedback.chat.completions.create({
+            messages: [
+                {
+                    role: "user",
+
+                    content: feedbackPrompt(userResponse, question, scores)
+                }
+            ],
+            model: "llama3-70b-8192",
+        });
+
+
+        const botResponse = response.choices[0]?.message?.content || "I didn't understand that.";
+
+
+        res.json({
+            response: botResponse
+        });
+    } catch (error) {
+        console.error(errorChatCompletion, error);
+        res.status(500).json({ error: errorChatCompletion });
+    }
+});
 
 const server = app.listen(PORT, () => {
     console.log(`Server is running on ${baseURL}`)

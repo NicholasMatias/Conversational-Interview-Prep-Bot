@@ -2,7 +2,7 @@ import './InterviewFeedback.css'
 import Spacing from '../landing_page/spacing/Spacing';
 
 
-const InterviewFeedback = ({ messagesPass, isOpen, onClose, freqWords, freqPhrases, scoreAverages }) => {
+const InterviewFeedback = ({ messagesPass, isOpen, onClose, freqWords, freqPhrases, scoreAverages, responseFeedbackItems }) => {
 
     if (!isOpen) return null;
 
@@ -65,7 +65,8 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose, freqWords, freqPhras
                                 )
                             })
                                 :
-                                <div>
+
+                                <div key={index}>
 
                                 </div>
                         }
@@ -102,13 +103,25 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose, freqWords, freqPhras
                                                 <div style={{ backgroundColor: colors[message.task[0]] }} className='star'>T</div>
                                                 <div style={{ backgroundColor: colors[message.action[0]] }} className='star'>A</div>
                                                 <div style={{ backgroundColor: colors[message.result[0]] }} className='star'>R</div>
-                                                <div style={{ backgroundColor: colors[message.relevance] }} className='relevance'>Relevance</div>
+                                                <div style={{ backgroundColor: colors[message.relevance[0]] }} className='relevance'>Relevance</div>
                                             </div>
                                         }
                                     </h3>
                                 </div>
                                 <div className='messages-transcript'>
                                     <pre className='messages-transcript-inner'>{message.content.trim()}</pre>
+                                    {
+                                        message.role === "user" ? (
+                                            <>
+                                                <div className='spacing-feedback'></div>
+                                                <h3 className='message-role'>Response Specific Feedback:</h3>
+                                                <pre className='messages-transcript-inner'>{responseFeedbackItems[index]}</pre>
+                                            </>
+                                        ) :
+                                            (
+                                                <div></div>
+                                            )
+                                    }
                                 </div>
                             </div>
                         )
