@@ -93,22 +93,23 @@ const InterviewFeedback = ({ messagesPass, isOpen, onClose, freqWords, freqPhras
                                     <h3 className='messages-transcript message-role'>
                                         {(message.role === "bot" ? `Interviewer:` :
                                             `You:`)}
+
+                                        {message.role === "bot" ?
+                                            <div></div>
+                                            :
+                                            <div className='STAR-container'>
+                                                <div style={{ backgroundColor: colors[message.situation[0]] }} className='star' >S</div>
+                                                <div style={{ backgroundColor: colors[message.task[0]] }} className='star'>T</div>
+                                                <div style={{ backgroundColor: colors[message.action[0]] }} className='star'>A</div>
+                                                <div style={{ backgroundColor: colors[message.result[0]] }} className='star'>R</div>
+                                                <div style={{ backgroundColor: colors[message.relevance] }} className='relevance'>Relevance</div>
+                                            </div>
+                                        }
                                     </h3>
-                                    {message.role === "bot" ?
-                                        <div></div>
-                                        :
-                                        <div className='STAR-container'>
-                                            <div style={{ backgroundColor: colors[message.situation[0]] }} className='star' >S</div>
-                                            <div style={{ backgroundColor: colors[message.task[0]] }} className='star'>T</div>
-                                            <div style={{ backgroundColor: colors[message.action[0]] }} className='star'>A</div>
-                                            <div style={{ backgroundColor: colors[message.result[0]] }} className='star'>R</div>
-                                            <div style={{ backgroundColor: colors[message.relevance] }} className='relevance'>Relevance</div>
-                                        </div>
-                                    }
                                 </div>
-
-                                <pre className='messages-transcript'>{message.content.trim()}</pre>
-
+                                <div className='messages-transcript'>
+                                    <pre className='messages-transcript-inner'>{message.content.trim()}</pre>
+                                </div>
                             </div>
                         )
 

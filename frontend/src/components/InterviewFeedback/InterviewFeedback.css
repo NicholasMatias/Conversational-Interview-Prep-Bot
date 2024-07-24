@@ -63,7 +63,21 @@
     white-space: pre-wrap;
     font-style: normal;
     font-family: sans-serif;
-    /* line-height: 1.3; */
+    background-color: #393e46;
+    border-radius: 5px;
+    align-items: center;
+    outline: 1px white solid;
+    
+}
+
+.messages-transcript-inner{
+    width: 890px;
+    margin: 5px auto;
+    text-align: left;
+    white-space: pre-wrap;
+    font-style: normal;
+    font-family: sans-serif;
+    line-height: 1.3;
 }
 
 
@@ -87,13 +101,8 @@
 .STAR-container {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background-color: #393e46;
-    width: 500px;
     padding-top: 5px;
     padding-bottom: 5px;
-    border-radius: 5px;
-    outline: 1px white solid;
 }
 
 
@@ -131,6 +140,9 @@
 
 .message-role {
     text-align: left;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
 }
 
 .freq-main{
