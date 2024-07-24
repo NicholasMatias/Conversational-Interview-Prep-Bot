@@ -18,6 +18,78 @@ import { Tooltip } from 'react-tooltip'
 const interviewQuestions = interview_questions.basisBehavioralQuestions;
 
 
+
+function streamText(text, element, delay = 50) {
+    return new Promise((resolve) => {
+        let i = 0;
+        element.innerHTML = ''; // Clear the element at the start
+
+        function addNextChar() {
+            if (i < text.length) {
+                element.textContent += text[i]; // Use textContent instead of innerHTML
+                i++;
+                setTimeout(addNextChar, delay);
+            } else {
+                resolve();
+            }
+        }
+
+        addNextChar();
+    });
+}
+
+
+let indexes = []
+
+function MessageComponent({ msg, index }) {
+    
+    console.log("Indexes:", indexes)
+    const messageRef = useRef(null);
+    const [hasStreamed, setHasStreamed] = useState(false);
+
+    useEffect(() => {
+        if (msg.role !== "user" && messageRef.current && !hasStreamed && !indexes.includes(index)) {
+            console.log("Starting to stream text for message:", msg.content)
+            if (indexes.includes(index)) {
+
+            }
+            else {
+                indexes.push(index)
+        
+            }
+            streamText(msg.content, messageRef.current).then(() => {
+                console.log("Streaming complete for message:", msg.content)
+                setHasStreamed(true);
+
+            });
+        }
+    }, [msg.content, hasStreamed]);
+
+    if (msg.role === "user") {
+        return (
+            <div className='current-message'>
+                <strong>You:</strong>
+                <pre className='message-format'>
+                    {msg.content === "quit" ? "That concludes your interview. Thank you for using our platform." : ` ${msg.content}`}
+                </pre>
+            </div>
+        );
+    }
+    return (
+        <div className='current-message'>
+            <strong>Interviewer:</strong>
+            <pre
+                className='message-format'
+                ref={messageRef}
+            >
+                {hasStreamed ? msg.content : ''}
+            </pre>
+        </div>
+    );
+}
+
+
+
 const Profile = () => {
     const { currentUser } = useAuth();
     const [user, setUser] = useState(null);
@@ -67,6 +139,9 @@ const Profile = () => {
             }
         })
     }, [currentUser]);
+
+
+
 
     useEffect(() => {
         const unspokenMessages = messages.filter(msg =>
@@ -274,6 +349,7 @@ const Profile = () => {
         setIsModalOpen(false);
         setIsInterviewOver(false);
         setFeedbackMessage("Loading Interview Feedback")
+        indexes=[]
     }
 
 
@@ -581,7 +657,7 @@ const Profile = () => {
             }
         }
 
-        
+
 
 
         wordFreqPhrases()
@@ -610,8 +686,6 @@ const Profile = () => {
     const toQuestions = () => {
         navigate('/questions')
     }
-
-
 
 
     return (
@@ -685,14 +759,30 @@ const Profile = () => {
                 </div>
             ) : (
                 <div className='messages-container'>
+
+
+
                     <div className='messages'>
-                        {messages.map((msg, index) => (
+                        {/* {messages.map((msg, index) => (
                             <div key={index} className='current-message'>
                                 <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong>
                                 <pre className='message-format'>{msg.content == "quit" ? "That concludes your interview. Thank you for using our platform." : ` ${msg.content}`}</pre>
                             </div>
+                        ))} */}
+
+                        {messages.map((message, index) => (
+                            <>
+                                {
+                                    <MessageComponent key={index} msg={message} index={index} />
+                                }
+                                {console.log("Message Index:", index)}
+                            </>
                         ))}
+
                     </div>
+
+
+
                     {isLoading && <div className='loading-container'><h3 className='loading-message'>Processing your response</h3> <div className="loader"></div></div>}
                     {isTranscribing && <div className='loading-container'><h3 className='loading-message'>Transcribing your response</h3> <div className="loader"></div></div>}
                     {isUserTurn && !isLoading && !isTranscribing && !isInterviewOver && !isSpeaking &&
