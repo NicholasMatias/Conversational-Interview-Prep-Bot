@@ -789,7 +789,6 @@ const Profile = () => {
                                 {
                                     <MessageComponent key={index} msg={message} index={index} />
                                 }
-                                {console.log("Message Index:", index)}
                             </>
                         ))}
 
