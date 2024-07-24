@@ -105,54 +105,6 @@ function MessageComponent({ msg, index }) {
 
 
 
-// function MessageComponent({ msg, index }) {
-//     const {hasStreamed, messageRef} = useMessageQueue(msg,index);
-//     console.log("Indexes:", indexes)
-
-
-// const messageRef = useRef(null);
-// const [hasStreamed, setHasStreamed] = useState(false);
-
-// useEffect(() => {
-// if (msg.role !== "user" && messageRef.current && !hasStreamed && !indexes.includes(index)) {
-//     console.log("Starting to stream text for message:", msg.content)
-//     if (indexes.includes(index)) {
-
-//     }
-//     else {
-//         indexes.push(index)
-
-//     }
-//     streamText(msg.content, messageRef.current).then(() => {
-//         console.log("Streaming complete for message:", msg.content)
-//         setHasStreamed(true);
-
-//     });
-// }
-// }, [msg.content, hasStreamed]);
-
-//     if (msg.role === "user") {
-//         return (
-//             <div className='current-message'>
-//                 <strong>You:</strong>
-//                 <pre className='message-format'>
-//                     {msg.content === "quit" ? "That concludes your interview. Thank you for using our platform." : ` ${msg.content}`}
-//                 </pre>
-//             </div>
-//         );
-//     }
-//     return (
-//         <div className='current-message'>
-//             <strong>Interviewer:</strong>
-//             <pre
-//                 className='message-format'
-//                 ref={messageRef}
-//             >
-//                 {hasStreamed ? msg.content : ''}
-//             </pre>
-//         </div>
-//     );
-// }
 
 
 
@@ -416,6 +368,8 @@ const Profile = () => {
         setIsInterviewOver(false);
         setFeedbackMessage("Loading Interview Feedback")
         indexes = []
+        messageQueue = []
+        isProcessing = false
     }
 
 
@@ -829,12 +783,6 @@ const Profile = () => {
 
 
                     <div className='messages'>
-                        {/* {messages.map((msg, index) => (
-                            <div key={index} className='current-message'>
-                                <strong>{msg.role === "user" ? "You" : "Interviewer"}:</strong>
-                                <pre className='message-format'>{msg.content == "quit" ? "That concludes your interview. Thank you for using our platform." : ` ${msg.content}`}</pre>
-                            </div>
-                        ))} */}
 
                         {messages.map((message, index) => (
                             <>
