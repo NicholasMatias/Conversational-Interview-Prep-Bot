@@ -1,7 +1,22 @@
-// import { getRelevanceScore } from "../QnA_Relevance";
+const {
+    getRelevanceScore,
+    strengthQuestion,
+    strengthQuestionResponse,
+    strengthUnrelatedResponse,
+} = require("./unit_testing_constants.cjs");
 
+test("getRelevanceScore(question, matching response)", () => {
+    const relevanceScore = getRelevanceScore(
+        strengthQuestion,
+        strengthQuestionResponse
+    )[1];
+    expect(relevanceScore).toBeGreaterThan(0.7);
+});
 
-// test("getTask(goodTaskResponse) > getTask(goodSituationResponse)", () => {
-//     const badResponse = 45;
-//     expect(78).toBeGreaterThan(badResponse);
-// });
+test("getRelevanceScore(question, matching response)", () => {
+    const relevanceScore = getRelevanceScore(
+        strengthQuestion,
+        strengthUnrelatedResponse
+    )[1];
+    expect(relevanceScore).toBeLessThan(0.7);
+});
