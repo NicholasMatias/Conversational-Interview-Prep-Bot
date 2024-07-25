@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import './TTS.css'
+import React, { useEffect, useState, useRef } from "react";
+import "./TTS.css";
 
 const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -53,9 +53,8 @@ const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
             audio.onended = () => {
                 isSpeakingRef.current = false;
                 onMessageSpoken(message.content);
-                setQueue(prevQueue => prevQueue.slice(1));
-            }
-
+                setQueue((prevQueue) => prevQueue.slice(1));
+            };
         } catch (error) {
             console.error("Error:", error);
             setError(error.message);
@@ -67,14 +66,15 @@ const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
 
     return (
         <div>
-            {isLoading &&<div className='loading-container'><h3 className='loading-message'>Converting to speech</h3> <div class="loader"></div></div>
-
-            }
+            {isLoading && (
+                <div className="loading-container">
+                    <h3 className="loading-message">Converting to speech</h3>{" "}
+                    <div class="loader"></div>
+                </div>
+            )}
             {error && <p>Error: {error}</p>}
         </div>
     );
 };
 
 export default TTS;
-
-

@@ -8,7 +8,6 @@
     align-items: center;
     padding-left: 15%;
     padding-right: 15%;
-    
 }
 
 .contact-info {
@@ -36,10 +35,9 @@
     margin-bottom: 1em;
     display: flex;
     align-items: flex-start;
-    
 }
 
-.title-specific{
+.title-specific {
     display: flex;
     flex-direction: column;
 }
@@ -47,7 +45,7 @@
 .contact-info i {
     font-size: 1.5em;
     margin-right: 1em;
-    color:#007b7b
+    color: #007b7b;
 }
 
 .contact-info span {
@@ -61,7 +59,8 @@
     font-size: 1em;
     text-decoration: none;
 }
-.contact-info a:hover, .contact-info address:hover{
+.contact-info a:hover,
+.contact-info address:hover {
     text-decoration: underline;
 }
 
@@ -75,7 +74,6 @@
 .contact-form .form-group {
     margin-bottom: 1em;
 }
-
 
 .contact-form label {
     display: block;

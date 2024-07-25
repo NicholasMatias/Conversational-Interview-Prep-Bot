@@ -1,13 +1,10 @@
 {
-    "basisBehavioralQuestions":[
+    "basisBehavioralQuestions": [
         "Can you tell me about a time you worked on a team to complete a project? What was your role, and what did you learn from the experience?",
         "quit"
     ],
-    "intermediateBehavioralQuestions":[
+    "intermediateBehavioralQuestions": [
         "What is your greatest strength and how does it help you in your work?"
-
     ],
-    "advancedBehavioralQuestions":[
-        
-    ]
+    "advancedBehavioralQuestions": []
 }

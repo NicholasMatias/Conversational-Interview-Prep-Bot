@@ -1,9 +1,15 @@
-
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth'
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut,
+    GoogleAuthProvider,
+    FacebookAuthProvider,
+    signInWithPopup,
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
 
 const firebaseConfig = {
     apiKey: "AIzaSyCjFjyMbmiEZDeu9Pb6IluxC3cXydh4E2Q",
@@ -12,13 +18,23 @@ const firebaseConfig = {
     storageBucket: "interviewme-e1d7b.appspot.com",
     messagingSenderId: "37245466823",
     appId: "1:37245466823:web:db8e2d92e3cfcacbc4a6e2",
-    measurementId: "G-VNZQTR221J"
+    measurementId: "G-VNZQTR221J",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const auth = getAuth(app)
-const db = getFirestore(app)
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-export { db,app, auth, GoogleAuthProvider, FacebookAuthProvider,signInWithEmailAndPassword,createUserWithEmailAndPassword,signInWithPopup,signOut }
+export {
+    db,
+    app,
+    auth,
+    GoogleAuthProvider,
+    FacebookAuthProvider,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signInWithPopup,
+    signOut,
+};

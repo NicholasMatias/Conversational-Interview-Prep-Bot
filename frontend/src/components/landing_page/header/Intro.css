@@ -7,7 +7,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
 }
 
 header h1 {
@@ -29,8 +28,6 @@ header p {
     justify-content: center;
 }
 
-
-
 .btn {
     padding: 1em 2em;
     border: none;
@@ -40,7 +37,7 @@ header p {
 }
 
 .btn-signup {
-    background-color: #008A90;
+    background-color: #008a90;
     color: white;
 }
 
@@ -48,13 +45,10 @@ header p {
     background-color: #222831;
     border: 2px solid white;
     transition: background-color 0.3s ease;
-
-
 }
 
-
 .btn-learn-more {
-    background-color: #008A90;
+    background-color: #008a90;
     color: white;
 }
 
@@ -64,9 +58,8 @@ header p {
     transition: background-color 0.3s ease;
 }
 
-
-.btn-login{
-    background-color: #008A90;
+.btn-login {
+    background-color: #008a90;
     color: white;
 }
 
@@ -75,7 +68,6 @@ header p {
     border: 2px solid white;
     transition: background-color 0.3s ease;
 }
-
 
 .image-grid {
     display: flex;
