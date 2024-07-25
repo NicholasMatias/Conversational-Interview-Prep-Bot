@@ -16,6 +16,7 @@ import {
     baseURL,
     PORT,
     feedbackPrompt,
+    followUpQuestionThreshold,
 } from "./constants.js";
 import {
     getAction,
@@ -42,7 +43,8 @@ app.post("/api/chat", async (req, res) => {
 
     let lastQuestion = lastQuestionCheck == "quit";
     try {
-        const doFollowUp = Math.random() > 0.65 && !lastQuestion;
+        const doFollowUp =
+            Math.random() > followUpQuestionThreshold && !lastQuestion;
         if (doFollowUp || prevIsFollowUp) {
             lastQuestion = false;
         }

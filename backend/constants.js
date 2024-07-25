@@ -84,6 +84,8 @@ export const relevaneThird = 0.85;
 
 export const relevanceSecond = 0.9;
 
+export const followUpQuestionThreshold = 0.65;
+
 export const stopWords = new Set([
     " ",
     "m",
