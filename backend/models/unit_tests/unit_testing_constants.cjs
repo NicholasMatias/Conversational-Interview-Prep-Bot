@@ -14,7 +14,7 @@ const goodActionScore = getAction(
     "I conducted research, engaged with experts, and applied new strategies to lead the project successfully."
 )[1];
 const goodResultScore = getResult(
-    "The project was completed on time, and my leadership was praised for its effectiveness."
+    "The project was completed on time, and my leadership was praised for its effectiveness. We were very happy with the end result."
 )[1];
 
 const goodSituationResponse =
@@ -24,7 +24,7 @@ const goodTaskResponse =
 const goodActionResponse =
     "I conducted research, engaged with experts, and applied new strategies to lead the project successfully.";
 const goodResultResponse =
-    "The project was completed on time, and my leadership was praised for its effectiveness.";
+    "The project was completed on time, and my leadership was praised for its effectiveness. We were very happy with the end result. ";
 
 module.exports = {
     goodSituationScore,

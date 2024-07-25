@@ -86,27 +86,6 @@ export const relevanceSecond = 0.9;
 
 export const followUpQuestionThreshold = 0.65;
 
-export const goodSituationScore = getSituation(
-    "I was assigned to lead a project in a domain I was not initially familiar with."
-)[1];
-export const goodTaskScore = getTask(
-    "I needed to quickly get up to speed and effectively lead the project."
-)[1];
-export const goodActionScore = getAction(
-    "I conducted research, engaged with experts, and applied new strategies to lead the project successfully."
-)[1];
-export const goodResultScore = getResult(
-    "The project was completed on time, and my leadership was praised for its effectiveness."
-)[1];
-
-export const goodSituationResponse =
-    "I was assigned to lead a project in a domain I was not initially familiar with.";
-export const goodTaskResponse =
-    "I needed to quickly get up to speed and effectively lead the project.";
-export const goodActionResponse =
-    "I conducted research, engaged with experts, and applied new strategies to lead the project successfully.";
-export const goodResultResponse =
-    "The project was completed on time, and my leadership was praised for its effectiveness.";
 
 export const stopWords = new Set([
     " ",

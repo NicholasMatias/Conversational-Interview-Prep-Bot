@@ -4,7 +4,7 @@ const {
     goodResultScore,
     goodSituationResponse,
     goodActionResponse,
-    goodResultResponse,
+    goodTaskResponse,
 } = require("./unit_testing_constants.cjs");
 
 test("getResult(goodResultResponse) > getResult(goodSituationResponse)", () => {
@@ -16,8 +16,8 @@ test("getResult(goodResultResponse) > getResult(goodActionReponse)", () => {
     const badResponse = getResult(goodActionResponse)[1];
     expect(goodResultScore).toBeGreaterThan(badResponse);
 });
-test("getResult(goodResultResponse) > getResult(goodResultResponse)", () => {
-    const badResponse = getResult(goodResultResponse)[1];
+test("getResult(goodResultResponse) > getResult(goodTaskResponse)", () => {
+    const badResponse = getResult(goodTaskResponse)[1];
     expect(goodResultScore).toBeGreaterThan(badResponse);
 });
 
