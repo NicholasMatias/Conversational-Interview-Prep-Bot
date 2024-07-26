@@ -10,6 +10,8 @@ import {
     arrayRemove,
     collection,
     getDocs,
+    serverTimestamp,
+    addDoc,
 } from "firebase/firestore";
 import { db } from "../../../../backend/firebase/firebase.config";
 import { useAuth } from "../auth/auth.jsx";
@@ -22,6 +24,8 @@ function Questions() {
     const [displayedQuestions, setDisplayedQuestions] = useState([]);
     const [currentCount, setCurrentCount] = useState(10);
     const [showBackToTop, setShowBackToTop] = useState(false);
+    const [newQuestion, setNewQuestion] = useState("");
+    const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
 
     const typeOrder = [
         "Adaptability",
@@ -36,6 +40,49 @@ function Questions() {
     ];
 
     const { currentUser } = useAuth();
+
+    const handleAddQuestion = async (e) => {
+        e.preventDefault();
+        if (newQuestion.trim() === "") return;
+
+        try {
+            const docRef = await addDoc(collection(db, "questions"), {
+                type: "User Added",
+                question: newQuestion,
+                upvotes: 0,
+                upvotedBy: [],
+                createdAt: serverTimestamp(),
+                createdBy: currentUser.uid,
+            });
+
+            const newQuestionObj = {
+                id: docRef.id,
+                type: "User Added",
+                question: newQuestion,
+                upvotes: 0,
+                upvotedBy: [],
+            };
+
+            setQuestions((prevQuestions) => [...prevQuestions, newQuestionObj]);
+            setDisplayedQuestions((prevDisplayed) => [
+                ...prevDisplayed,
+                newQuestionObj,
+            ]);
+            setNewQuestion("");
+            setShowAddQuestionForm(false);
+        } catch (error) {
+            console.error("Error adding new question:", error);
+        }
+    };
+
+    const handleAddQuestionCancel = () => {
+        setNewQuestion('')
+        setShowAddQuestionForm(false)
+    }
+
+    const toggleAddQuestionForm = () => {
+        setShowAddQuestionForm(!showAddQuestionForm);
+    };
 
     const handleUpvote = async (questionId) => {
         const questionIndex = questions.findIndex((q) => q.id === questionId);
@@ -229,6 +276,12 @@ function Questions() {
                         <option value="upvotes">Most Upvotes</option>
                     </select>
                     <button onClick={handleShuffle}>Shuffle Questions</button>
+                    <button
+                        onClick={toggleAddQuestionForm}
+                        className="add-question-btn"
+                    >
+                        {showAddQuestionForm ? "Cancel" : "Add New Question"}
+                    </button>
                 </div>
                 <div className="questions-list">
                     {displayedQuestions.map((q) => (
@@ -263,6 +316,24 @@ function Questions() {
                     <button onClick={scrollTop} className="back-to-top-btn">
                         Back To Top
                     </button>
+                )}
+
+                {showAddQuestionForm && (
+                    <div className="add-question-container">
+                    <form
+                        onSubmit={handleAddQuestion}
+                        className="add-question-form"
+                    >
+                        <textarea
+                            value={newQuestion}
+                            onChange={(e) => setNewQuestion(e.target.value)}
+                            placeholder="Enter your question here..."
+                            required
+                        />
+                        <button type="submit">Submit Question</button>
+                        <button type="button" onClick={handleAddQuestionCancel} className="add-question-cancel-btn">Cancel</button>
+                    </form>
+                    </div>
                 )}
             </div>
         </div>
