@@ -9,7 +9,18 @@ function Questions() {
     const [questions, setQuestions] = useState([]);
     const [sortBy, setSortBy] = useState("type");
 
-    
+    const typeOrder = [
+        "Adaptability",
+        "Leadership",
+        "Communication",
+        "Problem Solving",
+        "Teamwork",
+        "Time Management",
+        "Creativity",
+        "Conflict Resolution",
+        "User Added"
+    ];
+ 
 
     useEffect(() => {
         // Flatten the questions array
@@ -26,9 +37,13 @@ function Questions() {
     const sortQuestions = (questions, sortBy) => {
         return [...questions].sort((a, b) => {
             if (sortBy === "type") {
-                return a.type.localeCompare(b.type);
+                return typeOrder.indexOf(a.type) -typeOrder.indexOf(b.type)
             } else if (sortBy === "upvotes") {
                 return b.upvotes - a.upvotes;
+            } else if(typeOrder.includes(sortBy)){
+                if( a.type === sortBy) return -1;
+                if(b.type === sortBy) return 1;
+                return typeOrder.indexOf(a.type) -typeOrder.indexOf(b.type);
             }
             return 0;
         });
@@ -104,6 +119,11 @@ function Questions() {
                         onChange={handleSort}
                     >
                         <option value="type">Question Type</option>
+                        {
+                            typeOrder.map(type => (
+                                <option key={type} value={type} >{type}</option>
+                            ))
+                        }
                         <option value="upvotes">Most Upvotes</option>
                     </select>
                 </div>
