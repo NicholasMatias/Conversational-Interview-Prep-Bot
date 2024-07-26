@@ -76,9 +76,9 @@ function Questions() {
     };
 
     const handleAddQuestionCancel = () => {
-        setNewQuestion('')
-        setShowAddQuestionForm(false)
-    }
+        setNewQuestion("");
+        setShowAddQuestionForm(false);
+    };
 
     const toggleAddQuestionForm = () => {
         setShowAddQuestionForm(!showAddQuestionForm);
@@ -181,12 +181,16 @@ function Questions() {
     const sortQuestions = (allQuestions, sortBy, count) => {
         const sorted = [...allQuestions].sort((a, b) => {
             if (sortBy === "type") {
+                if (a.type === "User Added") return 1;
+                if (b.type === "User Added") return -1;
                 return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
             } else if (sortBy === "upvotes") {
                 return b.upvotes - a.upvotes;
             } else if (typeOrder.includes(sortBy)) {
                 if (a.type === sortBy) return -1;
                 if (b.type === sortBy) return 1;
+                if (a.type === "User Added") return 1;
+                if (b.type === "User Added") return -1;
                 return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
             }
             return 0;
@@ -320,19 +324,25 @@ function Questions() {
 
                 {showAddQuestionForm && (
                     <div className="add-question-container">
-                    <form
-                        onSubmit={handleAddQuestion}
-                        className="add-question-form"
-                    >
-                        <textarea
-                            value={newQuestion}
-                            onChange={(e) => setNewQuestion(e.target.value)}
-                            placeholder="Enter your question here..."
-                            required
-                        />
-                        <button type="submit">Submit Question</button>
-                        <button type="button" onClick={handleAddQuestionCancel} className="add-question-cancel-btn">Cancel</button>
-                    </form>
+                        <form
+                            onSubmit={handleAddQuestion}
+                            className="add-question-form"
+                        >
+                            <textarea
+                                value={newQuestion}
+                                onChange={(e) => setNewQuestion(e.target.value)}
+                                placeholder="Enter your question here..."
+                                required
+                            />
+                            <button type="submit">Submit Question</button>
+                            <button
+                                type="button"
+                                onClick={handleAddQuestionCancel}
+                                className="add-question-cancel-btn"
+                            >
+                                Cancel
+                            </button>
+                        </form>
                     </div>
                 )}
             </div>
