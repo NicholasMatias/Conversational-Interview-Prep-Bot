@@ -8,6 +8,8 @@ import {
     setDoc,
     collection,
     addDoc,
+    arrayRemove,
+    deleteDoc,
 } from "firebase/firestore";
 import { db } from "../../../../backend/firebase/firebase.config";
 import { useAuth } from "../auth/auth.jsx";
@@ -20,6 +22,7 @@ const Folder = ({ folderName, onDelete }) => {
     const [currentTranscriptName, setCurrentTranscriptName] = useState("");
     const [transcriptData, setTranscriptData] = useState([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [deletingTranscript, setDeletingTranscript] = useState(null);
 
     const getTranscripts = async () => {
         const docRef = doc(db, "users", currentUser.uid);
@@ -39,16 +42,15 @@ const Folder = ({ folderName, onDelete }) => {
     };
 
     const confirmDelete = () => {
-        setIsModalOpen(false)
+        setIsModalOpen(false);
         onDelete();
         setIsDeleteModalOpen(false);
     };
 
     const confirmCancel = () => {
-        setIsModalOpen(false)
-        setIsDeleteModalOpen(false)
-
-    }
+        setIsModalOpen(false);
+        setIsDeleteModalOpen(false);
+    };
 
     const handleOpenModal = async () => {
         getTranscripts();
@@ -77,6 +79,36 @@ const Folder = ({ folderName, onDelete }) => {
         setTranscriptData(docData.transcript);
     };
 
+    const handleDeleteClick = (transcriptName) => {
+        setDeletingTranscript(transcriptName);
+    };
+
+    const cancelDelete = () => {
+        setDeletingTranscript(null);
+    };
+
+    const confirmDeleteTranscript = async (transcriptName) => {
+        try {
+            const userDocRef = doc(db, "users", currentUser.uid);
+            const folderDocRef = doc(userDocRef, folderName, transcriptName);
+
+            // Delete the transcript document
+            await deleteDoc(folderDocRef);
+
+            // Update the transcripts array in the user document
+            await updateDoc(userDocRef, {
+                [`transcripts.${folderName}`]: arrayRemove(transcriptName),
+            });
+
+            // Update the local state
+            setTranscripts(transcripts.filter((t) => t !== transcriptName));
+            setDeletingTranscript(null);
+        } catch (error) {
+            console.error("Error deleting transcript:", error);
+        }
+    };
+
+
     return (
         <div>
             <div className="folder" onClick={handleOpenModal}>
@@ -86,13 +118,10 @@ const Folder = ({ folderName, onDelete }) => {
                     <i className="fa-solid fa-trash"></i>
                 </button>
             </div>
-
             {isModalOpen && !isDeleteModalOpen && (
                 <div className="overlay">
                     <div className="folder-modal-container">
-                        <h1 className="title">
-                            {`${folderName}'s Transcripts`}
-                        </h1>
+                        <h1 className="title">{`${folderName}'s Transcripts`}</h1>
                         <div className="transcripts-container">
                             {transcripts.length > 0 ? (
                                 transcripts?.map((transcriptName, index) => (
@@ -101,13 +130,49 @@ const Folder = ({ folderName, onDelete }) => {
                                         className="transcript-item"
                                     >
                                         <h3>- {transcriptName}'s Transcript</h3>
-                                        <button
-                                            onClick={() =>
-                                                viewTranscript(transcriptName)
-                                            }
-                                        >
-                                            view
-                                        </button>
+                                        <div className="transcript-buttons">
+                                            <button
+                                                onClick={() =>
+                                                    viewTranscript(
+                                                        transcriptName
+                                                    )
+                                                }
+                                            >
+                                                View
+                                            </button>
+                                            {deletingTranscript ===
+                                            transcriptName ? (
+                                                <>
+                                                    <button
+                                                        className="cancel-delete-btn"
+                                                        onClick={cancelDelete}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        className="confirm-delete-btn"
+                                                        onClick={() =>
+                                                            confirmDeleteTranscript(
+                                                                transcriptName
+                                                            )
+                                                        }
+                                                    >
+                                                        Confirm
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button
+                                                    className="delete-transcript-btn"
+                                                    onClick={() =>
+                                                        handleDeleteClick(
+                                                            transcriptName
+                                                        )
+                                                    }
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ))
                             ) : (
@@ -127,6 +192,50 @@ const Folder = ({ folderName, onDelete }) => {
                     </div>
                 </div>
             )}
+
+            {/* {isModalOpen && !isDeleteModalOpen && (
+                <div className="overlay">
+                    <div className="folder-modal-container">
+                        <h1 className="title">
+                            {`${folderName}'s Transcripts`}
+                        </h1>
+                        <div className="transcripts-container"> */}
+            {/* {transcripts.length > 0 ? (
+                                transcripts?.map((transcriptName, index) => (
+                                    <div
+                                        key={index}
+                                        className="transcript-item"
+                                    >
+                                        <h3>- {transcriptName}'s Transcript</h3>
+                                        <button
+                                            onClick={() =>
+                                                viewTranscript(transcriptName)
+                                            }
+                                        >
+                                            view
+                                        </button>
+                                        <button className="delete-transcript-btn" onClick={() => deleteTranscript(transcriptName)}>
+                                            Delete
+                                        </button>
+                                    </div>
+                                ))
+                            ) : (
+                                <div>
+                                    <h3 className="no-transcripts">
+                                        No transcripts saved to this folder.
+                                    </h3>
+                                </div>
+                            )}
+                        </div>
+                        <button
+                            className="btn-close"
+                            onClick={() => setIsModalOpen(false)}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )} */}
 
             {isTranscriptOpen && (
                 <div className="overlay">

@@ -259,6 +259,9 @@ const Profile = () => {
     };
 
     const startInterview = () => {
+        indexes = [];
+        messageQueue = [];
+        isProcessing = false;
         setInterviewStarted(true);
         setNewInterview(false);
         const welcomeMessage = "Hello, I am excited to interview you!";
