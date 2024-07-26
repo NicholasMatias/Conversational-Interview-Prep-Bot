@@ -3,6 +3,16 @@ import "./Questions.css";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "../auth/auth";
 import questionsData from "../../../all-interview-questions.json"; // Assuming you've saved the JSON in a file named questions.json
+import {
+    doc,
+    updateDoc,
+    arrayUnion,
+    arrayRemove,
+    collection,
+    getDocs,
+} from "firebase/firestore";
+import { db } from "../../../../backend/firebase/firebase.config";
+import { useAuth } from "../auth/auth.jsx";
 
 function Questions() {
     const navigate = useNavigate();
@@ -25,6 +35,51 @@ function Questions() {
         "User Added",
     ];
 
+    const { currentUser } = useAuth();
+
+    const handleUpvote = async (questionId) => {
+        const questionIndex = questions.findIndex((q) => q.id === questionId);
+        const question = questions[questionIndex];
+        const userHasUpvoted = question.upvotedBy.includes(currentUser.uid);
+
+        const questionRef = doc(db, "questions", questionId);
+
+        try {
+            if (userHasUpvoted) {
+                await updateDoc(questionRef, {
+                    upvotes: question.upvotes - 1,
+                    upvotedBy: arrayRemove(currentUser.uid),
+                });
+            } else {
+                await updateDoc(questionRef, {
+                    upvotes: question.upvotes + 1,
+                    upvotedBy: arrayUnion(currentUser.uid),
+                });
+            }
+
+            // Update local state
+            const updatedQuestions = [...questions];
+            updatedQuestions[questionIndex] = {
+                ...question,
+                upvotes: userHasUpvoted
+                    ? question.upvotes - 1
+                    : question.upvotes + 1,
+                upvotedBy: userHasUpvoted
+                    ? question.upvotedBy.filter(
+                          (uid) => uid !== currentUser.uid
+                      )
+                    : [...question.upvotedBy, currentUser.uid],
+            };
+
+            setQuestions(updatedQuestions);
+            setDisplayedQuestions(
+                sortQuestions(updatedQuestions, sortBy, currentCount)
+            );
+        } catch (error) {
+            console.error("Error updating upvote:", error);
+        }
+    };
+
     function shuffleArray(array) {
         const shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -35,31 +90,32 @@ function Questions() {
     }
 
     const handleShuffle = () => {
-        const shuffledQuestions = shuffleArray([...questions])
-        setQuestions(shuffledQuestions)
-        setDisplayedQuestions(shuffledQuestions.slice(0,10))
-        setCurrentCount(10)
-        setIsShuffled(true)
-        setSortBy('shuffle')
-
+        const shuffledQuestions = shuffleArray([...questions]);
+        setQuestions(shuffledQuestions);
+        setDisplayedQuestions(shuffledQuestions.slice(0, 10));
+        setCurrentCount(10);
+        setIsShuffled(true);
+        setSortBy("shuffle");
     };
 
     useEffect(() => {
-        const flattenedQuestions = questionsData.flatMap((category) =>
-            category.questions.map((q) => ({
-                type: category.type,
-                question: q[0],
-                upvotes: q[1],
-            }))
-        );
-        setQuestions(flattenedQuestions);
-        setDisplayedQuestions(flattenedQuestions.slice(0, 10));
-        setCurrentCount(10)
+        const fetchQuestions = async () => {
+            const querySnapshot = await getDocs(collection(db, "questions"));
+            const fetchedQuestions = querySnapshot.docs.map((doc) => ({
+                ...doc.data(),
+                id: doc.id,
+            }));
+            setQuestions(fetchedQuestions);
+            setDisplayedQuestions(sortQuestions(fetchedQuestions, "type", 10));
+            setCurrentCount(10);
+        };
+
+        fetchQuestions();
     }, []);
 
     const loadMoreQuestions = () => {
-        const newCount = Math.min(currentCount+10, questions.length);
-        setDisplayedQuestions(questions.slice(0, newCount));
+        const newCount = Math.min(currentCount + 10, questions.length);
+        setDisplayedQuestions(sortQuestions(questions, sortBy, newCount));
         setCurrentCount(newCount);
     };
 
@@ -75,8 +131,8 @@ function Questions() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    const sortQuestions = (questions, sortBy) => {
-        return [...questions].sort((a, b) => {
+    const sortQuestions = (allQuestions, sortBy, count) => {
+        const sorted = [...allQuestions].sort((a, b) => {
             if (sortBy === "type") {
                 return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
             } else if (sortBy === "upvotes") {
@@ -88,13 +144,15 @@ function Questions() {
             }
             return 0;
         });
+        return sorted.slice(0, count);
     };
 
     const handleSort = (e) => {
-        setSortBy(e.target.value);
+        const newSortBy = e.target.value;
+        setSortBy(newSortBy);
         setIsShuffled(false);
-        setDisplayedQuestions(questions.slice(0,10))
-        setCurrentCount(10)
+        setDisplayedQuestions(sortQuestions(questions, newSortBy, 20));
+        setCurrentCount(20);
     };
 
     const sortedQuestions = sortQuestions(questions, sortBy);
@@ -173,15 +231,25 @@ function Questions() {
                     <button onClick={handleShuffle}>Shuffle Questions</button>
                 </div>
                 <div className="questions-list">
-                    {(isShuffled ? displayedQuestions : sortQuestions(displayedQuestions, sortBy)).map(
-                        (q, index) => (
-                            <div key={index} className="question-item">
-                                <h3>{q.type}</h3>
-                                <p>{q.question}</p>
+                    {displayedQuestions.map((q) => (
+                        <div key={q.id} className="question-item">
+                            <h3>{q.type}</h3>
+                            <p>{q.question}</p>
+                            <div className="upvote-container">
+                                <button
+                                    onClick={() => handleUpvote(q.id)}
+                                    className={`upvote-button ${
+                                        q.upvotedBy.includes(currentUser.uid)
+                                            ? "upvoted"
+                                            : ""
+                                    }`}
+                                >
+                                    ▲
+                                </button>
                                 <span>Upvotes: {q.upvotes}</span>
                             </div>
-                        )
-                    )}
+                        </div>
+                    ))}
                 </div>
                 {currentCount < questions.length && (
                     <button

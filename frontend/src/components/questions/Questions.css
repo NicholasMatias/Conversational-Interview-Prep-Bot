@@ -75,3 +75,23 @@
 .back-to-top-btn:hover {
     background-color: #555;
 }
+.upvote-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.upvote-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-right: 10px;
+    color: #888;
+}
+
+.upvote-button.upvoted {
+    color: #ff4500;
+}
+
+
