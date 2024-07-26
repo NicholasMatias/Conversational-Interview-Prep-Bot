@@ -19,7 +19,7 @@
         "questions": [
             ["Can you describe a time when you led a team to achieve a challenging goal?", 0, []],
             ["How do you motivate your team during difficult projects? Can you share an example?", 0, []],
-            ["Tell me about a situation where you had to lead a team through a significant change.", 0, []],
+            ["Tell me about a situation where you had to lead a team through a significant change.", 5, []],
             ["How do you handle conflicts within your team? Can you provide an example?", 0, []],
             ["Describe a time when you had to take charge of a team in a high-pressure situation.", 0, []],
             ["How do you foster a culture of collaboration and teamwork in your team?", 0, []],
