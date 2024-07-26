@@ -3,7 +3,8 @@
 }
 
 html {
-    background-color: #222831;
+    background: #222831;
+    z-index: -200;
 }
 
 .form-container {
