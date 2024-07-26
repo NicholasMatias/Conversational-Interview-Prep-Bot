@@ -46,11 +46,7 @@ const Folder = ({ folderName }) => {
         const docData =   currentTranscript.data()
         setCurrentTranscriptName(transcriptName)
         setTranscriptData(docData.transcript)
-        // transcriptData.map((message, index) => {
-        //     console.log("Message:", message.content);
-        // })
-
-        // console.log(docData.transcript);
+        
 
     }
 
@@ -98,9 +94,7 @@ const Folder = ({ folderName }) => {
                                 <div className="messages-container"key={index}>
                                     <h3 className='messages-transcript'>{message.role==="bot"? "Interviewer:":"You:"}</h3>
                                     <pre className='messages-transcript'>{message.content.trim()}</pre>
-                                    {
-                                        console.log(message.content)
-                                    }
+                                    
                                 </div>
                                 )
                                 

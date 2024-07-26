@@ -39,9 +39,12 @@
     padding: 2em;
     border-radius: 0.5em;
     max-width: 1000px;
+    max-height: 800px;
+    height: 100%;
     width: 100%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 1000;
+    overflow-y: auto;
     /* text-align: center; */
 }
 

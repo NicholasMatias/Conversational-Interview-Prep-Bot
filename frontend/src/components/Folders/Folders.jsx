@@ -86,6 +86,14 @@ const Folders = () => {
         }
     };
 
+    const toHome = () => {
+        navigate('/home')
+    }
+
+    const toQuestions = () => {
+        navigate('/questions')
+    }
+
     return (
         <div className='folders-page'>
 
@@ -95,7 +103,12 @@ const Folders = () => {
                         InterviewMe
                     </div>
                     <ul className="nav-links">
-                        <li><a type='button' onClick={toInterviewPage}>Interview Page</a></li>
+
+                        <li><a type='button' onClick={toHome}>Home</a></li>
+
+                        <li><a type='button' onClick={toQuestions}>Questions</a></li>
+
+                        <li><a type='button' onClick={toInterviewPage}>Interview</a></li>
 
                         <li><a type='button' onClick={handleSignout} >Logout</a></li>
 

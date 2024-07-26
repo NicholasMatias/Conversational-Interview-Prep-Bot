@@ -8,7 +8,9 @@ import fs from 'fs';
 const app = express()
 
 import {doFollowUp_notLastQuestion_prompt, notLastQuestion_notFollowUp_prompt, lastQuestion_prompt, errorChatCompletion, errorTranscribingAudio, baseURL, PORT} from './constants.js';
-
+import { getAction, getResult, getSituation, getTask } from './models/TextClassification.cjs';
+import { getRelevanceScore } from './models/QnA_Relevance.js';
+import { getFreq } from './models/Word_Freq.js';
 
 app.use(cors())
 app.use(express.json())
@@ -104,6 +106,77 @@ app.post('/transcribe', upload.single('file'), async (req, res) => {
     }
 });
 
+app.post('/situation', async(req,res) => {
+    try{
+        const {response} = req.body;
+        const results =  getSituation(response);
+        res.json(results);
+    }
+    catch(error){
+        console.error("Error getting situation metric:", error);
+        res.status(500).json({error: 'Error getting situation metric'})
+    }
+})
+
+app.post('/task', async(req,res) => {
+    try{
+        const {response} = req.body;
+        const results = getTask(response);
+        res.json(results);
+    }
+    catch(error){
+        console.error("Error getting task metric:", error);
+        res.status(500).json({error: 'Error getting task metric'})
+    }
+})
+
+app.post('/action', async(req,res) => {
+    try{
+        const {response} = req.body;
+        const results = getAction(response);
+        res.json(results);
+    }
+    catch(error){
+        console.error("Error getting action metric:", error);
+        res.status(500).json({error: 'Error getting action metric'})
+    }
+})
+
+app.post('/result', async(req,res) => {
+    try{
+        const {response} = req.body;
+        const results = getResult(response);
+        res.json(results);
+    }
+    catch(error){
+        console.error("Error getting result metric:", error);
+        res.status(500).json({error: 'Error getting result metric'})
+    }
+})
+
+app.post('/relevance', async(req,res) => {
+    try{
+        const {question, response} = req.body
+        const results = getRelevanceScore(question, response)
+        res.json(results)
+
+    }
+    catch(error){
+        console.error("Error getting relevance score:", error)
+        res.status(500).json({error: 'Error getting relevance score.'})
+    }
+})
+
+app.post('/frequency' , async(req,res) => {
+    try{
+        const {responses, number, gramSize } = req.body
+        const results = getFreq(responses,number, gramSize)
+        res.json(results)
+    }catch(error){
+        console.error("Error getting word frequency:", error)
+        res.status(500).json({error: "Error getting freauency"})
+    }
+})
 
 const server = app.listen(PORT, () => {
     console.log(`Server is running on ${baseURL}`)

@@ -11,7 +11,8 @@ import { db } from '../../../../backend/firebase/firebase.config.js';
 import { doc, updateDoc, arrayUnion, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
 import SaveModal from '../SaveTranscript/SaveModal.jsx';
 import Spacing from '../landing_page/spacing/Spacing.jsx'
-
+import InterviewFeedback from '../InterviewFeedback/InterviewFeedback.jsx'
+import { Tooltip } from 'react-tooltip'
 
 
 const interviewQuestions = interview_questions.basisBehavioralQuestions;
@@ -42,8 +43,10 @@ const Profile = () => {
     const [alreadySaved, setAlreadySaved] = useState(false);
     const [newInterview, setNewInterview] = useState(false);
 
-    const [error, setError] = useState("")
+    const [error, setError] = useState("");
 
+    const [isFeedbackTime, setIsFeedbackTime] = useState(false);
+    const [feedbackMessage, setFeedbackMessage] = useState('Loading Interview Feedback')
 
 
 
@@ -83,6 +86,10 @@ const Profile = () => {
 
     const toFolders = () => {
         navigate('/folders')
+    }
+
+    const toHome = () => {
+        navigate('/home')
     }
 
     const handleTranscription = (transcribedText) => {
@@ -228,7 +235,6 @@ const Profile = () => {
             }
             const userData = userDoc.data();
             let transcriptsData = userData.transcripts || {};
-            console.log(transcriptsData[selectedFolder]);
 
             let folderTranscripts = transcriptsData[selectedFolder] || []
             folderTranscripts.push(transcriptName);
@@ -240,7 +246,6 @@ const Profile = () => {
             }
 
             await updateDoc(userRef, updateData);
-            console.log("Successfully updated:", transcriptsData[selectedFolder])
 
             setIsModalOpen(false);
             setAlreadySaved(true);
@@ -268,14 +273,301 @@ const Profile = () => {
         setAlreadySaved(false);
         setIsModalOpen(false);
         setIsInterviewOver(false);
-
+        setFeedbackMessage("Loading Interview Feedback")
     }
 
 
 
+    const getSituation = async (userResponse) => {
+        try {
+            const response = await fetch("http://localhost:5000/situation", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ response: userResponse }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const situationScore = await response.json()
+
+
+            return situationScore
+        }
+        catch (error) {
+            console.error("Error in getSituation:", error)
+            return 0
+        }
+    }
+
+    const getTask = async (userResponse) => {
+        try {
+            const response = await fetch("http://localhost:5000/task", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ response: userResponse }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const taskScore = await response.json()
+
+
+            return taskScore
+        }
+        catch (error) {
+            console.error("Error in getTask:", error)
+            return 0
+        }
+    }
+
+    const getAction = async (userResponse) => {
+        try {
+            const response = await fetch("http://localhost:5000/action", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ response: userResponse }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const actionScore = await response.json()
+
+
+            return actionScore
+        }
+        catch (error) {
+            console.error("Error in getAction:", error)
+            return 0
+        }
+    }
+
+
+    const getResult = async (userResponse) => {
+        try {
+            const response = await fetch("http://localhost:5000/result", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ response: userResponse }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const resultScore = await response.json()
+
+
+            return resultScore
+        }
+        catch (error) {
+            console.error("Error in getResult:", error)
+            return 0
+        }
+    }
+
+
+    const getRelevance = async (question, userResponse) => {
+        try {
+            const response = await fetch('http://localhost:5000/relevance', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                },
+                body: JSON.stringify({ response: userResponse, question: question })
+            })
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+
+            const relevanceScore = await response.json()
+            return relevanceScore
+        }
+        catch (error) {
+            console.error("Error in getRelevance:", error)
+            return 0
+        }
+    }
+
+
+    const getFreq = async (responses, number, gramSize) => {
+        try {
+            const response = await fetch('http://localhost:5000/frequency', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                },
+                body: JSON.stringify({ responses: responses, number: number, gramSize: gramSize })
+            })
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+
+            const relevanceScore = await response.json()
+            return relevanceScore
+        }
+        catch (error) {
+            console.error("Error in getFreq:", error)
+            return 0
+        }
+    }
+    const [freqWords, setFreqWords] = useState([])
+    const [freqPhrases, setFreqPhrases] = useState([])
+
+    const wordFreqPhrases = async () => {
+        const userMessages = messages.filter(message => message.role === "user")
+        const userAnswers = userMessages.map(message => message.content)
+        const singleText = userAnswers.join(" ")
+        const mostFreqWords = await getFreq(singleText, 10, 1)
+        const mostFreqPhrases = await getFreq(singleText, 5, 2)
+
+        setFreqPhrases(mostFreqPhrases)
+        setFreqWords(mostFreqWords)
+
+    }
+
+    const [feedbackData, setFeedbackData] = useState([])
+
+    const scoreClassifier = (result) => {
+        if (!result || result <= .2) {
+            return 'last'
+        } else if (result <= .35) {
+            return 'fourth'
+        } else if (result <= .45) {
+            return 'third'
+        } else if (result <= .55) {
+            return 'second'
+        } else {
+            return 'best'
+        }
+    }
+
+    const [scoreAverages, setScoreAverages] = useState([])
+
+    const sumContents = (array) => {
+        let sum = 0
+        array.forEach(element => {
+            sum += element
+        });
+        return sum
+
+    }
+
+    const averageScores = (feedback) => {
+        const situationScores = []
+        const taskScores = []
+        const actionScores = []
+        const resultScores = []
+
+        for (let i = 0; i < feedback.length; i++) {
+            const message = feedback[i]
+            if (message.role === "user") {
+                situationScores.push(message.situation[1])
+                taskScores.push(message.task[1])
+                actionScores.push(message.action[1])
+                resultScores.push(message.result[1])
+            }
+        }
+        const totalResponses = situationScores.length
+
+
+
+        const avgSituationScore = sumContents(situationScores) / totalResponses
+        const avgTaskScore = sumContents(taskScores) / totalResponses
+        const avgActionScore = sumContents(actionScores) / totalResponses
+        const avgResultScore = sumContents(resultScores) / totalResponses
+
+        const avgSituationClass = scoreClassifier(avgSituationScore)
+        const avgTaskClass = scoreClassifier(avgTaskScore)
+        const avgActionClass = scoreClassifier(avgActionScore)
+        const avgResultClass = scoreClassifier(avgResultScore)
+
+        const averages = [avgSituationClass, avgTaskClass, avgActionClass, avgResultClass]
+        setScoreAverages(averages)
+
+    }
+
+    const [feedbackLoading, setFeedbackLoading] = useState(false)
+
+    const showFeedback = async () => {
+        const feedbackQueue = [];
+
+
+        setFeedbackMessage("Loading Interview Feedback")
+        setFeedbackLoading(true)
+        const feedback = []
+
+        for (let i = 0; i < messages.length; i++) {
+            const message = messages[i];
+            if (message.role === "user") {
+                try {
+                    const messageContent = message.content
+                    const feedbackItem = {
+                        role: "user",
+                        content: message.content,
+                        situation: await getSituation(message.content),
+                        task: await getTask(message.content),
+                        action: await getAction(message.content),
+                        result: await getResult(message.content),
+                        relevance: await getRelevance(messages[i - 1].content, message.content)
+                    }
+                    feedback.push(feedbackItem)
+                }
+                catch (error) {
+                    console.error("Error fetching feedback for message", error)
+                    feedback.push({
+                        role: "user",
+                        content: message.content,
+                        error: "Failed to fetch feedback"
+                    })
+                }
+            }
+
+            else {
+                feedback.push({
+                    role: "bot",
+                    content: message.content
+                })
+            }
+        }
+
+        wordFreqPhrases()
+        setFeedbackData(feedback)
+        averageScores(feedback)
+
+        feedbackQueue.push("Analyzing user response for STAR method and question relevance");
+        feedbackQueue.push('Determining most frequently used words and phrases');
+        feedbackQueue.push('Calculating average STAR scores');
+        // Process the queue
+        while (feedbackQueue.length > 0) {
+            const message = feedbackQueue.shift();
+            setFeedbackMessage(message);
+            await new Promise(resolve => setTimeout(resolve, 750)); 
+        }
+
+        setFeedbackLoading(false)
+        setIsFeedbackTime(true)
+    }
+
+    const toQuestions = () => {
+        navigate('/questions')
+    }
+
 
     return (
         <div>
+            <a className='my-anchor-element'></a>
             {user && (
                 <>
                     <nav className='navBar-container'>
@@ -284,6 +576,10 @@ const Profile = () => {
                                 InterviewMe
                             </div>
                             <ul className="nav-links">
+                                <li><a type='button' onClick={toHome}>Home</a></li>
+
+                                <li><a type='button' onClick={toQuestions}>Questions</a></li>
+
                                 <li><a type='button' onClick={toFolders}>Folders</a></li>
 
                                 <li><a type='button' onClick={handleSignout} >Logout</a></li>
@@ -291,9 +587,47 @@ const Profile = () => {
                             </ul>
                         </div>
                     </nav>
+
+
+
+
+
+
+
                     <Spacing />
                     <h1 className='welcome-message'>Welcome to the interview interface page!</h1>
-
+                    <div>
+                        <p className=' welcome-message'>Upon finishing your interview, you are able to save it in a folder of your choosing, view interview specific feedback, or of course start a new interview. </p>
+                        <p className='welcome-message'>Your response to a question will be evaluated on the <a className='star-tooltip starTip'>STAR</a> method (<a className='situation-tooltip starTip'>Situation</a>, <a className='task-tooltip starTip'>Task</a>, <a className='action-tooltip starTip'>Action</a>, and <a className='result-tooltip starTip'>Result</a>) and its <a className='relevance-tooltip starTip'>Relevance</a> to the question asked. </p>
+                        <Tooltip className='relevance-tooltip' anchorSelect='.relevance-tooltip' place='bottom'>
+                            <p className='star-tooltip tooltipText'>Is your response relevant to the question asked?</p>
+                        </Tooltip>
+                        <Tooltip className='star-tooltip' anchorSelect='.star-tooltip' place='bottom'>
+                            <p className='star-tooltip tooltipText'>The STAR method is a structured manner of responding to a behavioral-based interview question by
+                                discussing the specific situation, task, action, and result of the situation you are describing.  </p>
+                        </Tooltip>
+                        <Tooltip className='situation-tooltip' anchorSelect='.situation-tooltip' place='bottom'>
+                            <p className='situation-tooltip tooltipText'>Situation: Describe the situation that you were in or the task that you needed to accomplish. You
+                                must describe a specific event or situation, not a generalized description of what you have done in
+                                the past. Be sure to give enough detail for the interviewer to understand. This situation can be
+                                from a previous job, from a volunteer experience, or any relevant event. </p>
+                        </Tooltip>
+                        <Tooltip className='task-tooltip' anchorSelect='.task-tooltip' place='bottom'>
+                            <p className='task-tooltip tooltipText'>Task: What goal were you working toward? What were you trying to accomplish?</p>
+                        </Tooltip>
+                        <Tooltip className='action-tooltip' anchorSelect='.action-tooltip' place='bottom'>
+                            <p className='action-tooltip tooltipText'>Action: Describe the actions you took to address the situation with an appropriate amount of
+                                detail and keep the focus on YOU. What specific steps did you take and what was your particular
+                                contribution? Be careful that you don’t describe what the team or group did when talking about a
+                                project, but what you actually did. Use the word “I,” not “we” when describing actions. </p>
+                        </Tooltip>
+                        <Tooltip className='result-tooltip' anchorSelect='.result-tooltip' place='bottom'>
+                            <p className='result-tooltip tooltipText'>Result: Describe the outcome of your actions and don’t be shy about taking credit for your
+                                behavior. What happened? How did the event end? What did you accomplish? What did you
+                                learn? Make sure your answer contains multiple positive results. </p>
+                        </Tooltip>
+                    </div>
+                    <Spacing />
                 </>
             )}
             {!interviewStarted ? (
@@ -328,7 +662,7 @@ const Profile = () => {
 
                     {isInterviewOver && !isSpeaking && !newInterview && (
                         <div>
-                            <button className='interview-end-btn'>View Feedback</button>
+                            <button className='interview-end-btn' onClick={showFeedback}>View Feedback</button>
 
                             {!alreadySaved &&
                                 <button className='interview-end-btn' onClick={() => setIsModalOpen(true)}>Save Transcript</button>
@@ -345,6 +679,26 @@ const Profile = () => {
                         onSave={handleSave}
                     />
                     {error && <p>{error}</p>}
+
+
+                    {
+                        feedbackLoading && (
+                            <div className='feedback-loading'>
+                                <h1>{feedbackMessage}</h1><div className='loader-feedback'></div>
+                            </div>
+                        )
+                    }
+
+                    <InterviewFeedback
+                        messagesPass={feedbackData}
+                        isOpen={isFeedbackTime}
+                        onClose={() => setIsFeedbackTime(false)}
+                        freqPhrases={freqPhrases}
+                        freqWords={freqWords}
+                        scoreAverages={scoreAverages}
+
+                    />
+
                 </div>
 
             )}
