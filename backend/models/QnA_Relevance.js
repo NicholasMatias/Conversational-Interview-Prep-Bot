@@ -1,6 +1,11 @@
-import natural from 'natural'
-const TfIdf = natural.TfIdf
-
+import natural from "natural";
+import {
+    relevanceLast,
+    relevanceFourth,
+    relevaneThird,
+    relevanceSecond,
+} from "../constants.js";
+const TfIdf = natural.TfIdf;
 
 export function dotProduct(a, b) {
     let product = 0;
@@ -31,29 +36,31 @@ export function cosineSimilarity(a, b) {
     return cosSim;
 }
 
-export function getRelevanceScore(question, response){
-    const tf_idf = new TfIdf()
+export function getRelevanceScore(question, response) {
+    const tf_idf = new TfIdf();
 
-    tf_idf.addDocument(question)
-    tf_idf.addDocument(response)
+    tf_idf.addDocument(question);
+    tf_idf.addDocument(response);
 
-    const questionVector = tf_idf.listTerms(0).map(term => term.tfidf)
-    const responseVector = tf_idf.listTerms(1).map(term => term.tfidf)
+    const questionVector = tf_idf.listTerms(0).map((term) => term.tfidf);
+    const responseVector = tf_idf.listTerms(1).map((term) => term.tfidf);
 
-    while (questionVector.length < responseVector.length) questionVector.push(0);
-    while (responseVector.length < questionVector.length) responseVector.push(0);
+    while (questionVector.length < responseVector.length)
+        questionVector.push(0);
+    while (responseVector.length < questionVector.length)
+        responseVector.push(0);
 
-    const similarity = cosineSimilarity(questionVector, responseVector)
+    const similarity = cosineSimilarity(questionVector, responseVector);
 
-    if (!similarity || similarity <= .3) {
-		return 'last'
-	} else if (similarity <= .60) {
-		return 'fourth'
-	} else if (similarity <= .85) {
-		return 'third'
-	} else if (similarity <= .90) {
-		return 'second'
-	} else {
-		return 'best'
-	}
+    if (!similarity || similarity <= relevanceLast) {
+        return ["last", similarity];
+    } else if (similarity <= relevanceFourth) {
+        return ["fourth", similarity];
+    } else if (similarity <= relevaneThird) {
+        return ["third", similarity];
+    } else if (similarity <= relevanceSecond) {
+        return ["second", similarity];
+    } else {
+        return ["best", similarity];
+    }
 }

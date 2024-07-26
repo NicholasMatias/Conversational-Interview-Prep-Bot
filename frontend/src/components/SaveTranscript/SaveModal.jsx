@@ -1,21 +1,29 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { db } from '../../../../backend/firebase/firebase.config.js';
-import { doc, updateDoc, arrayUnion, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
-import { useAuth } from '../auth/auth.jsx';
-import './SaveModal.css'
+import React, { useState, useRef, useEffect } from "react";
+import { db } from "../../../../backend/firebase/firebase.config.js";
+import {
+    doc,
+    updateDoc,
+    arrayUnion,
+    getDoc,
+    setDoc,
+    collection,
+    addDoc,
+} from "firebase/firestore";
+import { useAuth } from "../auth/auth.jsx";
+import "./SaveModal.css";
 
 const SaveModal = ({ isOpen, onClose, onSave }) => {
-    const [transcriptName, setTranscriptName] = useState('');
+    const [transcriptName, setTranscriptName] = useState("");
     const folderNameRef = useRef(null);
-    const [error, setError] = useState('');
-    const [folders, setFolders] = useState([])
+    const [error, setError] = useState("");
+    const [folders, setFolders] = useState([]);
     const { currentUser } = useAuth();
-    const [selectedFolder, setSelectedFolder] = useState(folders[0] || `${currentUser.displayName}'s Default Folder`);
+    const [selectedFolder, setSelectedFolder] = useState(
+        folders[0] || `${currentUser.displayName}'s Default Folder`
+    );
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-
     if (!isOpen) return null;
-
 
     const fetchFolders = async () => {
         const userDocRef = doc(db, "users", currentUser.uid);
@@ -23,9 +31,9 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
 
         if (userDoc.exists()) {
             const userData = userDoc.data();
-            setFolders(userData.folderNames || [])
+            setFolders(userData.folderNames || []);
         }
-    }
+    };
     fetchFolders();
 
     const handleNewFolder = async (e) => {
@@ -33,52 +41,60 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
         const folderName = folderNameRef.current.value;
 
         setShowSuccessMessage(true);
-        setTimeout(()=>{
+        setTimeout(() => {
             setShowSuccessMessage(false);
-        }, 1000)
+        }, 1000);
         if (folders.includes(folderName)) {
-            setError('A folder with this name already exists.');
+            setError("A folder with this name already exists.");
             return;
         }
-        setError("")
+        setError("");
 
         const thisUserDocRef = doc(db, "users", currentUser.uid);
         try {
             await updateDoc(thisUserDocRef, {
                 folderNames: arrayUnion(folderName),
-            })
+            });
 
-            const newFolderCollectionRef = collection(thisUserDocRef, folderName);
+            const newFolderCollectionRef = collection(
+                thisUserDocRef,
+                folderName
+            );
 
             await setDoc(doc(newFolderCollectionRef, "initial"), {
                 createdAt: new Date(),
-                name: 'Initial Document'
-            })
+                name: "Initial Document",
+            });
             folderNameRef.current.value = "";
-        }
-
-
-
-
-        catch (error) {
+        } catch (error) {
             console.error("Error creating folder:", error);
         }
-    }
-
+    };
 
     return (
-        <div className='overlay' >
+        <div className="overlay">
             <div className="modal">
                 <form onSubmit={handleNewFolder}>
                     <h3>Save to a New or Preexisting Folder</h3>
                     <div>
                         <label htmlFor="folderName">Folder Name: </label>
-                        <input type="text" placeholder='Enter Folder Name...' id='folderName' name='folderName' ref={folderNameRef} required />
-                        {error && <p style={{ color: 'red' }}>{error}</p>}
+                        <input
+                            type="text"
+                            placeholder="Enter Folder Name..."
+                            id="folderName"
+                            name="folderName"
+                            ref={folderNameRef}
+                            required
+                        />
+                        {error && <p style={{ color: "red" }}>{error}</p>}
                     </div>
-                    <button type="submit" >Create Folder</button>
+                    <button type="submit">Create Folder</button>
                 </form>
-                {showSuccessMessage && <p className='success-message'>Folder Created Successfully</p>}
+                {showSuccessMessage && (
+                    <p className="success-message">
+                        Folder Created Successfully
+                    </p>
+                )}
                 <div className="form-group save-divider">
                     <label>Save Transcript:</label>
                     <input
@@ -88,7 +104,7 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
                         onChange={(e) => setTranscriptName(e.target.value)}
                     />
                 </div>
-                <div className='form-group'>
+                <div className="form-group">
                     <label>Select Folder:</label>
                     <select
                         value={selectedFolder}
@@ -100,7 +116,11 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
                             </option>
                         ))}
                     </select>
-                    <button onClick={() => onSave(transcriptName, selectedFolder)}>Save</button>
+                    <button
+                        onClick={() => onSave(transcriptName, selectedFolder)}
+                    >
+                        Save
+                    </button>
                     <button onClick={onClose}>Cancel</button>
                 </div>
             </div>
@@ -108,8 +128,4 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
     );
 };
 
-
 export default SaveModal;
-
-
-

@@ -1,21 +1,18 @@
-*{
+* {
     margin: 0;
 }
 
-html{
+html {
     background-color: #222831;
-    
 }
 
-.form-container{
+.form-container {
     background-color: #222831;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 14px;
 }
-
-
 
 .login-form {
     background-color: #393e46;
@@ -106,7 +103,7 @@ html{
     background-color: #575c66;
 }
 
-.login-button{
+.login-button {
     margin-top: 10px;
 }
 
@@ -117,27 +114,22 @@ html{
     min-height: 1.5em; /* Added to reserve space for error message */
 }
 
-.google-button{
+.google-button {
     width: 100%;
 }
 
-.google-button i{
+.google-button i {
     margin-right: 10px;
 }
 
-.signup-button{
+.signup-button {
     width: 100%;
     margin-top: 10px;
 }
 
-.form-footer{
+.form-footer {
     text-align: center;
 }
-
-
-
-
-
 
 body {
     margin: 0;
@@ -173,7 +165,6 @@ body {
     text-decoration: none;
     padding: 0.5em 1em;
     transition: background-color 0.3s ease;
-    
 }
 
 .nav-links a:hover {

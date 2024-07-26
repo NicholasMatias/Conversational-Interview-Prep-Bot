@@ -1,17 +1,17 @@
-.folders-page{
+.folders-page {
     display: flex;
     flex-direction: column;
     background-color: #222831;
     color: white;
 }
 
-.container{
+.container {
     display: flex;
     flex: 1;
-    margin: 0 5%;    
+    margin: 0 5%;
 }
 
-.left-container{
+.left-container {
     width: 30%;
     margin-right: 20px;
     background-color: gray;
@@ -20,25 +20,24 @@
     height: 300px;
 }
 
-.left-container h1{
+.left-container h1 {
     margin-bottom: 15px;
     margin-top: 15px;
 }
 
-
-.folder-grid-container{
+.folder-grid-container {
     width: 70%;
     align-items: center;
     margin-left: 20px;
 }
 
-.folders-container{
+.folders-container {
     display: flex;
     flex-wrap: wrap;
     margin-right: 5%;
     margin-left: 5%;
 }
-.input-spacing{
+.input-spacing {
     margin-bottom: 5px;
 }
 
@@ -64,30 +63,30 @@
     }
 }
 
-.loading-container{
+.loading-container {
     display: flex;
     align-items: center;
     width: 100%;
 }
 
-.create-folder-btn{
+.create-folder-btn {
     padding: 10px;
     margin-top: 20px;
-    background-color: #008A90;
-    color:white;
+    background-color: #008a90;
+    color: white;
     border: none;
     border-radius: 3px;
     outline: black 1px solid;
 }
 
-.create-folder-btn:hover{
+.create-folder-btn:hover {
     cursor: pointer;
     background-color: #0a5357;
 }
 
-.form-group input{
+.form-group input {
     padding: 5px;
     border-radius: 3px;
-    outline:none;
+    outline: none;
     border: none;
 }

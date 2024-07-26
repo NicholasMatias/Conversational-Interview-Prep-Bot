@@ -55,7 +55,6 @@
     width: 900px;
 }
 
-
 .messages-transcript {
     width: 100%;
     margin: 5px auto;
@@ -67,10 +66,9 @@
     border-radius: 5px;
     align-items: center;
     outline: 1px white solid;
-    
 }
 
-.messages-transcript-inner{
+.messages-transcript-inner {
     width: 890px;
     margin: 5px auto;
     text-align: left;
@@ -80,7 +78,6 @@
     line-height: 1.3;
 }
 
-
 .feedback-btn {
     padding: 10px 20px 10px 20px;
     background-color: #00adb5;
@@ -88,7 +85,6 @@
     outline: none;
     border-radius: 5px;
     margin-bottom: 20px;
-
 }
 
 .feedback-btn:hover {
@@ -96,15 +92,12 @@
     background-color: #007b7b;
 }
 
-
-
 .STAR-container {
     display: flex;
     align-items: center;
     padding-top: 5px;
     padding-bottom: 5px;
 }
-
 
 .star {
     width: 20px;
@@ -118,9 +111,7 @@
     font-weight: bold;
     margin-right: 10px;
     color: black;
-
 }
-
 
 .relevance {
     padding: 5px 10px;
@@ -135,7 +126,6 @@
     display: flex;
     margin: 5px auto;
     width: 100%;
-
 }
 
 .message-role {
@@ -145,7 +135,7 @@
     padding: 5px;
 }
 
-.freq-main{
+.freq-main {
     background-color: #393e46;
     width: 890px;
     margin: 5px auto;
@@ -154,17 +144,14 @@
     border-radius: 5px;
 }
 
-
-.freq-container{
+.freq-container {
     display: flex;
     width: 850px;
     margin: 15px auto;
     flex-wrap: wrap;
-
 }
 
-
-.freq-word{
+.freq-word {
     background-color: #393e46;
     border-radius: 5px;
     padding: 5px 8px 5px 8px;
@@ -172,18 +159,17 @@
     outline: 1px white solid;
 }
 
-
-.freq-header-container{
+.freq-header-container {
     width: 900px;
     display: flex;
     margin: 5px auto;
 }
-.freq-header{
+.freq-header {
     text-align: left;
-    margin-left:10px;
+    margin-left: 10px;
 }
 
-.average-container{
+.average-container {
     background-color: #393e46;
     width: 890px;
     margin: 5px auto;
@@ -196,7 +182,7 @@
     align-items: center;
 }
 
-.average-star-container{
+.average-star-container {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -208,7 +194,7 @@
     margin: 5px;
 }
 
-.star-average{
+.star-average {
     margin: 10px;
     border-radius: 3px;
     padding: 3px;
@@ -216,21 +202,19 @@
     color: black;
 }
 
-
-
-.color-scale{
+.color-scale {
     margin: 20px;
     background-color: #393e46;
     width: 225px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items:center;
+    align-items: center;
     height: 60px;
     border-radius: 5px;
     outline: 1px white solid;
 }
-.color-titles{
+.color-titles {
     color: white;
     width: 175px;
     display: flex;
@@ -238,15 +222,18 @@
     margin-bottom: 2px;
 }
 
-
-.color-chart{
+.color-chart {
     display: flex;
     outline: 1px white solid;
     width: 175px;
     height: 20px;
 }
 
-.color-value{
+.color-value {
     width: 35px;
     height: 20px;
+}
+
+.spacing-feedback {
+    height: 50px;
 }

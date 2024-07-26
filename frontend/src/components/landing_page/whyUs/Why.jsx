@@ -1,6 +1,6 @@
-import './Why.css'
-import imageOne from '../images_icons/whyOne.png'
-import imageTwo from '../images_icons/whyTwo.png'
+import "./Why.css";
+import imageOne from "../images_icons/whyOne.png";
+import imageTwo from "../images_icons/whyTwo.png";
 
 function Why() {
     return (
@@ -12,20 +12,21 @@ function Why() {
                 </div>
                 <div className="features">
                     <div className="feature">
-                        <img src={imageOne} alt="Personalized Feedback"/>
-                            <h3>Personalized Feedback</h3>
-                            <p>Receive detailed feedback to improve your responses.</p>
+                        <img src={imageOne} alt="Personalized Feedback" />
+                        <h3>Personalized Feedback</h3>
+                        <p>
+                            Receive detailed feedback to improve your responses.
+                        </p>
                     </div>
                     <div className="feature">
-                        <img src={imageTwo} alt="Flexible Practice"/>
-                            <h3>Flexible Practice</h3>
-                            <p>Practice anytime, anywhere at your convenience.</p>
+                        <img src={imageTwo} alt="Flexible Practice" />
+                        <h3>Flexible Practice</h3>
+                        <p>Practice anytime, anywhere at your convenience.</p>
                     </div>
                 </div>
             </div>
         </section>
-
-    )
+    );
 }
 
-export default Why
+export default Why;

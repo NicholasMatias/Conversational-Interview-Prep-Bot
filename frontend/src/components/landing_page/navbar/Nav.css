@@ -1,4 +1,4 @@
-html{
+html {
     scroll-behavior: smooth;
 }
 
@@ -36,7 +36,6 @@ body {
     text-decoration: none;
     padding: 0.5em 1em;
     transition: background-color 0.3s ease;
-    
 }
 
 .nav-links a:hover {
