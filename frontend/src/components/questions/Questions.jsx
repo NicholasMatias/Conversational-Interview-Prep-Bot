@@ -9,6 +9,9 @@ function Questions() {
     const [questions, setQuestions] = useState([]);
     const [sortBy, setSortBy] = useState("type");
     const [isShuffled, setIsShuffled] = useState(false);
+    const [displayedQuestions, setDisplayedQuestions] = useState([]);
+    const [currentCount, setCurrentCount] = useState(10);
+    const [showBackToTop, setShowBackToTop] = useState(false);
 
     const typeOrder = [
         "Adaptability",
@@ -32,13 +35,16 @@ function Questions() {
     }
 
     const handleShuffle = () => {
-        setQuestions(shuffleArray(questions));
+        const shuffledQuestions = shuffleArray([...questions])
+        setQuestions(shuffledQuestions)
+        setDisplayedQuestions(shuffledQuestions.slice(0,10))
+        setCurrentCount(10)
         setIsShuffled(true)
         setSortBy('shuffle')
-    }
+
+    };
 
     useEffect(() => {
-        // Flatten the questions array
         const flattenedQuestions = questionsData.flatMap((category) =>
             category.questions.map((q) => ({
                 type: category.type,
@@ -47,7 +53,27 @@ function Questions() {
             }))
         );
         setQuestions(flattenedQuestions);
+        setDisplayedQuestions(flattenedQuestions.slice(0, 10));
+        setCurrentCount(10)
     }, []);
+
+    const loadMoreQuestions = () => {
+        const newCount = Math.min(currentCount+10, questions.length);
+        setDisplayedQuestions(questions.slice(0, newCount));
+        setCurrentCount(newCount);
+    };
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowBackToTop(window.pageYOffset > 300);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const scrollTop = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
 
     const sortQuestions = (questions, sortBy) => {
         return [...questions].sort((a, b) => {
@@ -65,8 +91,10 @@ function Questions() {
     };
 
     const handleSort = (e) => {
-        setSortBy(e.target.value)
-        setIsShuffled(false)
+        setSortBy(e.target.value);
+        setIsShuffled(false);
+        setDisplayedQuestions(questions.slice(0,10))
+        setCurrentCount(10)
     };
 
     const sortedQuestions = sortQuestions(questions, sortBy);
@@ -145,14 +173,29 @@ function Questions() {
                     <button onClick={handleShuffle}>Shuffle Questions</button>
                 </div>
                 <div className="questions-list">
-                    {(isShuffled? questions: sortedQuestions).map((q, index) => (
-                        <div key={index} className="question-item">
-                            <h3>{q.type}</h3>
-                            <p>{q.question}</p>
-                            <span>Upvotes: {q.upvotes}</span>
-                        </div>
-                    ))}
+                    {(isShuffled ? displayedQuestions : sortQuestions(displayedQuestions, sortBy)).map(
+                        (q, index) => (
+                            <div key={index} className="question-item">
+                                <h3>{q.type}</h3>
+                                <p>{q.question}</p>
+                                <span>Upvotes: {q.upvotes}</span>
+                            </div>
+                        )
+                    )}
                 </div>
+                {currentCount < questions.length && (
+                    <button
+                        onClick={loadMoreQuestions}
+                        className="load-more-btn"
+                    >
+                        Load More Questions
+                    </button>
+                )}
+                {showBackToTop && (
+                    <button onClick={scrollTop} className="back-to-top-btn">
+                        Back To Top
+                    </button>
+                )}
             </div>
         </div>
     );
