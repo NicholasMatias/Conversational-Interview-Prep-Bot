@@ -193,49 +193,6 @@ const Folder = ({ folderName, onDelete }) => {
                 </div>
             )}
 
-            {/* {isModalOpen && !isDeleteModalOpen && (
-                <div className="overlay">
-                    <div className="folder-modal-container">
-                        <h1 className="title">
-                            {`${folderName}'s Transcripts`}
-                        </h1>
-                        <div className="transcripts-container"> */}
-            {/* {transcripts.length > 0 ? (
-                                transcripts?.map((transcriptName, index) => (
-                                    <div
-                                        key={index}
-                                        className="transcript-item"
-                                    >
-                                        <h3>- {transcriptName}'s Transcript</h3>
-                                        <button
-                                            onClick={() =>
-                                                viewTranscript(transcriptName)
-                                            }
-                                        >
-                                            view
-                                        </button>
-                                        <button className="delete-transcript-btn" onClick={() => deleteTranscript(transcriptName)}>
-                                            Delete
-                                        </button>
-                                    </div>
-                                ))
-                            ) : (
-                                <div>
-                                    <h3 className="no-transcripts">
-                                        No transcripts saved to this folder.
-                                    </h3>
-                                </div>
-                            )}
-                        </div>
-                        <button
-                            className="btn-close"
-                            onClick={() => setIsModalOpen(false)}
-                        >
-                            Close
-                        </button>
-                    </div>
-                </div>
-            )} */}
 
             {isTranscriptOpen && (
                 <div className="overlay">
