@@ -8,6 +8,7 @@ function Questions() {
     const navigate = useNavigate();
     const [questions, setQuestions] = useState([]);
     const [sortBy, setSortBy] = useState("type");
+    const [isShuffled, setIsShuffled] = useState(false);
 
     const typeOrder = [
         "Adaptability",
@@ -18,9 +19,23 @@ function Questions() {
         "Time Management",
         "Creativity",
         "Conflict Resolution",
-        "User Added"
+        "User Added",
     ];
- 
+
+    function shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    const handleShuffle = () => {
+        setQuestions(shuffleArray(questions));
+        setIsShuffled(true)
+        setSortBy('shuffle')
+    }
 
     useEffect(() => {
         // Flatten the questions array
@@ -37,20 +52,21 @@ function Questions() {
     const sortQuestions = (questions, sortBy) => {
         return [...questions].sort((a, b) => {
             if (sortBy === "type") {
-                return typeOrder.indexOf(a.type) -typeOrder.indexOf(b.type)
+                return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
             } else if (sortBy === "upvotes") {
                 return b.upvotes - a.upvotes;
-            } else if(typeOrder.includes(sortBy)){
-                if( a.type === sortBy) return -1;
-                if(b.type === sortBy) return 1;
-                return typeOrder.indexOf(a.type) -typeOrder.indexOf(b.type);
+            } else if (typeOrder.includes(sortBy)) {
+                if (a.type === sortBy) return -1;
+                if (b.type === sortBy) return 1;
+                return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
             }
             return 0;
         });
     };
 
     const handleSort = (e) => {
-        setSortBy(e.target.value);
+        setSortBy(e.target.value)
+        setIsShuffled(false)
     };
 
     const sortedQuestions = sortQuestions(questions, sortBy);
@@ -119,16 +135,17 @@ function Questions() {
                         onChange={handleSort}
                     >
                         <option value="type">Question Type</option>
-                        {
-                            typeOrder.map(type => (
-                                <option key={type} value={type} >{type}</option>
-                            ))
-                        }
+                        {typeOrder.map((type) => (
+                            <option key={type} value={type}>
+                                {type}
+                            </option>
+                        ))}
                         <option value="upvotes">Most Upvotes</option>
                     </select>
+                    <button onClick={handleShuffle}>Shuffle Questions</button>
                 </div>
                 <div className="questions-list">
-                    {sortedQuestions.map((q, index) => (
+                    {(isShuffled? questions: sortedQuestions).map((q, index) => (
                         <div key={index} className="question-item">
                             <h3>{q.type}</h3>
                             <p>{q.question}</p>
