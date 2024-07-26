@@ -3,8 +3,11 @@ import {
     setDoc,
     collection,
     getDoc,
+    getDocs,
     doc,
     getFirestore,
+    deleteDoc,
+    arrayRemove,
     updateDoc,
     arrayUnion,
 } from "firebase/firestore";
@@ -26,6 +29,33 @@ const Folders = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    const deleteFolder = async (folderName) => {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        try {
+            // Remove the folder name from the user's folderNames array
+            await updateDoc(userDocRef, {
+                folderNames: arrayRemove(folderName),
+            });
+
+            // Delete all documents within the folder collection
+            const folderCollectionRef = collection(userDocRef, folderName);
+            const querySnapshot = await getDocs(folderCollectionRef);
+            const deletePromises = querySnapshot.docs.map((doc) =>
+                deleteDoc(doc.ref)
+            );
+            await Promise.all(deletePromises);
+            // Delete the folder collection itself
+            await deleteDoc(doc(userDocRef, folderName));
+
+            // Update the state to remove the folder
+            setFolders((prevFolders) =>
+                prevFolders.filter((folder) => folder !== folderName)
+            );
+        } catch (error) {
+            console.error("Error deleting folder:", error);
+        }
+    };
+
     useEffect(() => {
         const fetchFolders = async () => {
             const userDocRef = doc(db, "users", currentUser.uid);
@@ -39,7 +69,7 @@ const Folders = () => {
         };
 
         fetchFolders();
-    }, [currentUser.uid]);
+    }, [currentUser.uid, folders]);
 
     const handleNewFolder = async (e) => {
         e.preventDefault();
@@ -161,7 +191,11 @@ const Folders = () => {
                     ) : (
                         <div className="folders-container">
                             {folders?.map((folderName, index) => (
-                                <Folder key={index} folderName={folderName} />
+                                <Folder
+                                    key={folderName}
+                                    folderName={folderName}
+                                    onDelete={() => deleteFolder(folderName)}
+                                />
                             ))}
                         </div>
                     )}
