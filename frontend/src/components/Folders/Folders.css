@@ -16,7 +16,7 @@
 .left-container {
     margin-top: 30px;
     width: 400px;
-    background: gray;
+    background: #393e46;
     border-radius: 5px;
     text-align: center;
     height: 300px;
@@ -35,7 +35,7 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    background-image: conic-gradient(from var(--angle), transparent 10%,white,black);
+    background-image: conic-gradient(from var(--angle), transparent 10%,white, black);
     top: 50%;
     left: 50%;
     translate: -50% -50%;
@@ -81,6 +81,7 @@
 }
 .input-spacing {
     margin-bottom: 5px;
+    outline: 1px black solid;
 }
 
 .loader {
