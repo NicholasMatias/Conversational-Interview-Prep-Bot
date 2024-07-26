@@ -108,6 +108,10 @@ const Folder = ({ folderName, onDelete }) => {
         }
     };
 
+    const handleFolderModalClose = () => {
+        cancelDelete()
+        setIsTranscriptOpen(false);
+    };
 
     return (
         <div>
@@ -193,7 +197,6 @@ const Folder = ({ folderName, onDelete }) => {
                 </div>
             )}
 
-
             {isTranscriptOpen && (
                 <div className="overlay">
                     <div className="transcript-modal-container">
@@ -226,7 +229,7 @@ const Folder = ({ folderName, onDelete }) => {
 
                         <button
                             className="btn-close-transcript"
-                            onClick={() => setIsTranscriptOpen(false)}
+                            onClick={handleFolderModalClose}
                         >
                             Close
                         </button>
