@@ -1,8 +1,10 @@
 .folders-page {
     display: flex;
     flex-direction: column;
-    background-color: #222831;
+    /* background-color: #222831; */
     color: white;
+    height: max-content;
+    z-index: -100;
 }
 
 .container {
@@ -12,12 +14,54 @@
 }
 
 .left-container {
-    width: 30%;
-    margin-right: 20px;
-    background-color: gray;
+    margin-top: 30px;
+    width: 400px;
+    background: #393e46;
     border-radius: 5px;
     text-align: center;
     height: 300px;
+    position: relative;
+    padding: 2em;
+    outline: 3px black solid;
+}
+@property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+.left-container::after,
+.left-container::before {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-image: conic-gradient(
+        from var(--angle),
+        transparent 10%,
+        white,
+        black
+    );
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    z-index: -1;
+    padding: 7px;
+    border-radius: 10px;
+    animation: 3s moveBorder linear infinite;
+}
+
+.left-container::before {
+    filter: blue(1.5rem);
+    opacity: 0.5;
+}
+
+@keyframes moveBorder {
+    from {
+        --angle: 0deg;
+    }
+    to {
+        --angle: 360deg;
+    }
 }
 
 .left-container h1 {
@@ -39,6 +83,7 @@
 }
 .input-spacing {
     margin-bottom: 5px;
+    outline: 1px black solid;
 }
 
 .loader {
