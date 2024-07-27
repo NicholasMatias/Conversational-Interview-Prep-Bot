@@ -110,7 +110,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-.lineup-modal{
+.lineup-modal {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -183,7 +183,6 @@
     margin-bottom: 5px;
     border-radius: 20px;
     display: flex;
-
 }
 
 .company-tag button {
@@ -193,4 +192,3 @@
     font-size: 18px;
     margin-left: 5px;
 }
-

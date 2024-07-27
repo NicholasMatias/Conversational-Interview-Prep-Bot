@@ -86,8 +86,7 @@ function Questions() {
                 });
                 setUserLineup(updatedLineup);
             } else {
-                console.log("Question already in lineup");
-                // Optionally, you can show a message to the user
+                //may add message display but shouldn't occur now that button no longer appears after being added. 
             }
         }
     };
