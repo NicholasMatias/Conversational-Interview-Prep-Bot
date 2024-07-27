@@ -26,6 +26,10 @@ function Questions() {
     const [showBackToTop, setShowBackToTop] = useState(false);
     const [newQuestion, setNewQuestion] = useState("");
     const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
+    const [currentCompany, setCurrentCompany] = useState("");
+    const [companies, setCompanies] = useState([]);
+    const [sortCompany, setSortCompany] = useState("");
+    const [filterCompany, setFilterCompany] = useState("");
 
     const typeOrder = [
         "Adaptability",
@@ -51,6 +55,7 @@ function Questions() {
                 question: newQuestion,
                 upvotes: 0,
                 upvotedBy: [],
+                companies: companies,
                 createdAt: serverTimestamp(),
                 createdBy: currentUser.uid,
             });
@@ -61,6 +66,7 @@ function Questions() {
                 question: newQuestion,
                 upvotes: 0,
                 upvotedBy: [],
+                companies: companies.length > 0 ? companies: [],
             };
 
             setQuestions((prevQuestions) => [...prevQuestions, newQuestionObj]);
@@ -69,10 +75,100 @@ function Questions() {
                 newQuestionObj,
             ]);
             setNewQuestion("");
+            setCompanies([]);
             setShowAddQuestionForm(false);
         } catch (error) {
             console.error("Error adding new question:", error);
         }
+    };
+
+    const handleFilterByCompany = (e) => {
+        const company = e.target.value;
+        setFilterCompany(company);
+        const filteredAndSortedQuestions = sortQuestions(
+            questions.filter(q => 
+                company === '' || 
+                (q.companies && Array.isArray(q.companies) && q.companies.some(c => c && c.name === company))
+            ),
+            sortBy,
+            currentCount
+        );
+        setDisplayedQuestions(filteredAndSortedQuestions);
+    };
+    
+    
+    
+    
+    const handleCompanyUpvote = async (questionId, companyName) => {
+        const questionIndex = questions.findIndex((q) => q.id === questionId);
+        const question = questions[questionIndex];
+        const companyIndex = question.companies.findIndex(
+            (c) => c.name === companyName
+        );
+
+        if (companyIndex === -1) return;
+
+        const updatedCompanies = [...question.companies];
+        const company = updatedCompanies[companyIndex];
+
+        const userHasUpvoted = company.upvotedBy.includes(currentUser.uid);
+
+        if (userHasUpvoted) {
+            company.upvotes -= 1;
+            company.upvotedBy = company.upvotedBy.filter(
+                (uid) => uid !== currentUser.uid
+            );
+        } else {
+            company.upvotes += 1;
+            company.upvotedBy.push(currentUser.uid);
+        }
+
+        try {
+            await updateDoc(doc(db, "questions", questionId), {
+                companies: updatedCompanies,
+            });
+
+            const updatedQuestions = [...questions];
+            updatedQuestions[questionIndex] = {
+                ...question,
+                companies: updatedCompanies,
+            };
+
+            setQuestions(updatedQuestions);
+            setDisplayedQuestions(
+                sortQuestions(updatedQuestions, sortBy, currentCount)
+            );
+        } catch (error) {
+            console.error("Error toggling company upvote:", error);
+        }
+    };
+
+    const handleAddCompany = (e) => {
+        e.preventDefault();
+        if (currentCompany.trim() !== "") {
+            setCompanies((prevCompanies) => {
+                if (
+                    !prevCompanies.some((c) => c.name === currentCompany.trim())
+                ) {
+                    return [
+                        ...prevCompanies,
+                        {
+                            name: currentCompany.trim(),
+                            upvotes: 0,
+                            upvotedBy: [],
+                        },
+                    ];
+                }
+                return prevCompanies;
+            });
+            setCurrentCompany("");
+        }
+    };
+
+    const handleRemoveCompany = (companyName) => {
+        setCompanies((prevCompanies) =>
+            prevCompanies.filter((company) => company.name !== companyName)
+        );
     };
 
     const handleAddQuestionCancel = () => {
@@ -161,9 +257,18 @@ function Questions() {
     }, []);
 
     const loadMoreQuestions = () => {
-        const newCount = Math.min(currentCount + 10, questions.length);
-        setDisplayedQuestions(sortQuestions(questions, sortBy, newCount));
+        const newCount = Math.min(currentCount + 20, questions.length);
         setCurrentCount(newCount);
+        const filteredAndSortedQuestions = sortQuestions(
+            questions.filter(
+                (q) =>
+                    filterCompany === "" ||
+                    q.companies.some((c) => c.name === filterCompany)
+            ),
+            sortBy,
+            newCount
+        );
+        setDisplayedQuestions(filteredAndSortedQuestions);
     };
 
     useEffect(() => {
@@ -178,23 +283,60 @@ function Questions() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    const sortQuestions = (allQuestions, sortBy, count) => {
-        const sorted = [...allQuestions].sort((a, b) => {
-            if (sortBy === "type") {
+    // const sortQuestions = (allQuestions, sortBy, count) => {
+    //     const sorted = [...allQuestions].sort((a, b) => {
+    //         if (sortBy === "type") {
+    //             if (a.type === "User Added") return 1;
+    //             if (b.type === "User Added") return -1;
+    //             return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
+    //         } else if (sortBy === "upvotes") {
+    //             return b.upvotes - a.upvotes;
+    //         } else if (typeOrder.includes(sortBy)) {
+    //             if (a.type === sortBy) return -1;
+    //             if (b.type === sortBy) return 1;
+    //             if (a.type === "User Added") return 1;
+    //             if (b.type === "User Added") return -1;
+    //             return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
+    //         }
+    //         return 0;
+    //     });
+    //     return sorted.slice(0, count);
+    // };
+
+    const sortQuestions = (allQuestions, sortBy, count, sortCompany) => {
+        let sorted = [...allQuestions];
+
+        if (sortBy === "company") {
+            sorted = sorted
+                .filter((q) =>
+                    q.companies.some(
+                        (c) =>
+                            c.name.toLowerCase() === sortCompany.toLowerCase()
+                    )
+                )
+                .sort((a, b) => {
+                    const companyA = a.companies.find(
+                        (c) =>
+                            c.name.toLowerCase() === sortCompany.toLowerCase()
+                    );
+                    const companyB = b.companies.find(
+                        (c) =>
+                            c.name.toLowerCase() === sortCompany.toLowerCase()
+                    );
+                    return companyB.upvotes - companyA.upvotes;
+                });
+        } else if (sortBy === "type") {
+            sorted.sort((a, b) => {
                 if (a.type === "User Added") return 1;
                 if (b.type === "User Added") return -1;
                 return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
-            } else if (sortBy === "upvotes") {
-                return b.upvotes - a.upvotes;
-            } else if (typeOrder.includes(sortBy)) {
-                if (a.type === sortBy) return -1;
-                if (b.type === sortBy) return 1;
-                if (a.type === "User Added") return 1;
-                if (b.type === "User Added") return -1;
-                return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
-            }
-            return 0;
-        });
+            });
+        } else if (sortBy === "upvotes") {
+            sorted.sort((a, b) => b.upvotes - a.upvotes);
+        } else if (typeOrder.includes(sortBy)) {
+            sorted = sorted.filter((q) => q.type === sortBy);
+        }
+
         return sorted.slice(0, count);
     };
 
@@ -202,8 +344,25 @@ function Questions() {
         const newSortBy = e.target.value;
         setSortBy(newSortBy);
         setIsShuffled(false);
-        setDisplayedQuestions(sortQuestions(questions, newSortBy, 20));
-        setCurrentCount(20);
+        const filteredAndSortedQuestions = sortQuestions(
+            questions.filter(
+                (q) =>
+                    filterCompany === "" ||
+                    q.companies.some((c) => c.name === filterCompany)
+            ),
+            newSortBy,
+            currentCount
+        );
+        setDisplayedQuestions(filteredAndSortedQuestions);
+    };
+
+    const handleSortByCompany = (e) => {
+        const company = e.target.value;
+        setSortCompany(company);
+        setSortBy("company");
+        setDisplayedQuestions(
+            sortQuestions(questions, "company", currentCount, company)
+        );
     };
 
     const sortedQuestions = sortQuestions(questions, sortBy);
@@ -264,34 +423,100 @@ function Questions() {
 
             <div className="questions-container">
                 <h1>Interview Questions</h1>
-                <div className="sort-container">
-                    <label htmlFor="sort-select">Sort by: </label>
-                    <select
-                        id="sort-select"
-                        value={sortBy}
-                        onChange={handleSort}
-                    >
-                        <option value="type">Question Type</option>
-                        {typeOrder.map((type) => (
-                            <option key={type} value={type}>
-                                {type}
-                            </option>
-                        ))}
-                        <option value="upvotes">Most Upvotes</option>
-                    </select>
-                    <button onClick={handleShuffle}>Shuffle Questions</button>
-                    <button
-                        onClick={toggleAddQuestionForm}
-                        className="add-question-btn"
-                    >
-                        {showAddQuestionForm ? "Cancel" : "Add New Question"}
-                    </button>
+                <div className="sort-and-filter-container">
+                    <div className="sort-container">
+                        <label htmlFor="sort-select">Sort by: </label>
+                        <select
+                            id="sort-select"
+                            value={sortBy}
+                            onChange={handleSort}
+                        >
+                            <option value="type">Question Type</option>
+                            {typeOrder.map((type) => (
+                                <option key={type} value={type}>
+                                    {type}
+                                </option>
+                            ))}
+                            <option value="upvotes">Most Upvotes</option>
+                        </select>
+                        <button onClick={handleShuffle}>
+                            Shuffle Questions
+                        </button>
+                        <button
+                            onClick={toggleAddQuestionForm}
+                            className="add-question-btn"
+                        >
+                            {showAddQuestionForm
+                                ? "Cancel"
+                                : "Add New Question"}
+                        </button>
+                    </div>
+                    <div className="filter-container">
+                        <label htmlFor="company-filter">
+                            Filter by Company:{" "}
+                        </label>
+                        <select
+                            id="company-filter"
+                            value={filterCompany}
+                            onChange={handleFilterByCompany}
+                        >
+                            <option value="">All Companies</option>
+                            {Array.from(
+                                new Set(
+                                    questions
+                                        .filter(
+                                            (q) =>
+                                                q.companies &&
+                                                Array.isArray(q.companies)
+                                        )
+                                        .flatMap((q) =>
+                                            q.companies.map((c) => c.name)
+                                        )
+                                )
+                            )
+                                .sort()
+                                .map((company) => (
+                                    <option key={company} value={company}>
+                                        {company}
+                                    </option>
+                                ))}
+                        </select>
+                    </div>
                 </div>
                 <div className="questions-list">
                     {displayedQuestions.map((q) => (
                         <div key={q.id} className="question-item">
                             <h3>{q.type}</h3>
                             <p>{q.question}</p>
+                            {q.companies && q.companies.length > 0 && (
+                                <div className="question-companies">
+                                    {q.companies.map((company, index) => (
+                                        <span
+                                            key={index}
+                                            className="company-tag"
+                                        >
+                                            {company.name} ({company.upvotes})
+                                            <button
+                                                onClick={() =>
+                                                    handleCompanyUpvote(
+                                                        q.id,
+                                                        company.name
+                                                    )
+                                                }
+                                                className={`upvote-button ${
+                                                    company.upvotedBy.includes(
+                                                        currentUser.uid
+                                                    )
+                                                        ? "upvoted"
+                                                        : ""
+                                                }`}
+                                            >
+                                                ▲
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
                             <div className="upvote-container">
                                 <button
                                     onClick={() => handleUpvote(q.id)}
@@ -334,6 +559,40 @@ function Questions() {
                                 placeholder="Enter your question here..."
                                 required
                             />
+                            <div className="company-input">
+                                <input
+                                    type="text"
+                                    value={currentCompany}
+                                    onChange={(e) =>
+                                        setCurrentCompany(e.target.value)
+                                    }
+                                    placeholder="Enter company tag..."
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAddCompany}
+                                >
+                                    Add Company
+                                </button>
+                            </div>
+                            <div className="company-tags">
+                                {companies.map((company, index) => (
+                                    <span key={index} className="company-tag">
+                                        {company.name}
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                handleRemoveCompany(
+                                                    company.name
+                                                )
+                                            }
+                                        >
+                                            ×
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+
                             <button type="submit">Submit Question</button>
                             <button
                                 type="button"
