@@ -11,7 +11,7 @@ const InterviewFeedback = ({
     responseFeedbackItems,
 }) => {
     if (!isOpen) return null;
-
+    // color coding key-value matching
     const colors = {
         0: "#ff0a0a",
         last: "#ff0a0a",
@@ -20,7 +20,7 @@ const InterviewFeedback = ({
         second: "#209c05",
         best: "#00FF00",
     };
-
+    // displays the interview feedback
     return (
         <div className="overlay ">
             <div className="transcript-modal-container">

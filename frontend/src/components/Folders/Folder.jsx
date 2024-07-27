@@ -24,6 +24,7 @@ const Folder = ({ folderName, onDelete }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [deletingTranscript, setDeletingTranscript] = useState(null);
 
+    // gets transcript names to be displayed in the folder modal
     const getTranscripts = async () => {
         const docRef = doc(db, "users", currentUser.uid);
         const userDoc = await getDoc(docRef);
@@ -36,30 +37,36 @@ const Folder = ({ folderName, onDelete }) => {
         setTranscripts(transcriptNames || []);
     };
 
+    // displays popup => do you really want to delete the folder
     const handleDelete = () => {
         setIsModalOpen(false);
         setIsDeleteModalOpen(true);
     };
 
+    // deletes folder upon confirmation button click
     const confirmDelete = () => {
         setIsModalOpen(false);
         onDelete();
         setIsDeleteModalOpen(false);
     };
 
+    // cancel in popup => cancels deletion
     const confirmCancel = () => {
         setIsModalOpen(false);
         setIsDeleteModalOpen(false);
     };
 
+    // opens the folder modal
     const handleOpenModal = async () => {
         getTranscripts();
         setIsModalOpen(true);
     };
+
     useEffect(() => {
         setTranscripts([]);
     }, [folderName]);
 
+    // on view button click => displays transcript in modal
     const viewTranscript = async (transcriptName) => {
         setIsModalOpen(false);
         setIsTranscriptOpen(true);
@@ -79,14 +86,17 @@ const Folder = ({ folderName, onDelete }) => {
         setTranscriptData(docData.transcript);
     };
 
+    // sets which transript is to be deleted.
     const handleDeleteClick = (transcriptName) => {
         setDeletingTranscript(transcriptName);
     };
 
+    // cancels deletion upon cancel button press
     const cancelDelete = () => {
         setDeletingTranscript(null);
     };
 
+    // deletes transcript upon confirmation button click
     const confirmDeleteTranscript = async (transcriptName) => {
         try {
             const userDocRef = doc(db, "users", currentUser.uid);
@@ -108,8 +118,9 @@ const Folder = ({ folderName, onDelete }) => {
         }
     };
 
+    // closes modal
     const handleFolderModalClose = () => {
-        cancelDelete()
+        cancelDelete();
         setIsTranscriptOpen(false);
     };
 

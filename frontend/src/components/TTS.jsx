@@ -7,16 +7,19 @@ const TTS = ({ messages, onMessageSpoken, onSpeakingStart }) => {
     const [queue, setQueue] = useState([]);
     const isSpeakingRef = useRef(false);
 
+    // establishes queue => what needs to be said => maintains order
     useEffect(() => {
         setQueue(messages);
     }, [messages]);
 
+    // starts to say the first message in the queue => only if not currently already speaking => ensures no overlap
     useEffect(() => {
         if (!isSpeakingRef.current && queue.length > 0) {
             speak(queue[0]);
         }
     }, [queue]);
 
+    // makes api call to tts => says messags out loud
     const speak = async (message) => {
         if (isSpeakingRef.current || message.content == "quit") return;
         isSpeakingRef.current = true;

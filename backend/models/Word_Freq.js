@@ -15,7 +15,6 @@ export function cleanAndTokenize(text) {
 export function cleanAndTokenizeNGrams(text) {
     const spaces = new Set([" ", "", " ", ""]);
     const lower = text.toLowerCase();
-    //replace(/[^\w\s]/g, '') before split
     const words = lower.split(/\s+/).filter((word) => !spaces.has(word));
     return words;
 }

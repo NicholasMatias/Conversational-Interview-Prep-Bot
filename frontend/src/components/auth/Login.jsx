@@ -25,7 +25,7 @@ const Login = () => {
         e.preventDefault();
         try {
             await signInWithEmailAndPassword(email, password);
-            navigate("/home");
+            navigate("/profile");
         } catch (err) {
             const errorMessage = err.message;
             const errorCode = err.code;
@@ -88,7 +88,7 @@ const Login = () => {
                 });
             }
 
-            navigate("/home");
+            navigate("/profile");
         } catch (err) {
             const errorMessage = err.message;
             const errorCode = err.code;
@@ -178,8 +178,7 @@ const Login = () => {
                         </button>
                     </form>
                     {error && <p className="error-message">{errorMessage}</p>}
-                    {/* TODO: finish up meta developers authentication. Must file business authentication. (takes minimum 5 days) */}
-                    {/* <button onClick={handleFacebookLogin}>Login with Facebook</button> */}
+
                     <button
                         className="google-button"
                         onClick={handleGoogleLogin}

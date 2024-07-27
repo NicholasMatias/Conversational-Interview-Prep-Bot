@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./Questions.css";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "../auth/auth";
-import questionsData from "../../../all-interview-questions.json"; // Assuming you've saved the JSON in a file named questions.json
 import {
     doc,
     updateDoc,
@@ -36,6 +35,7 @@ function Questions() {
     const [userLineup, setUserLineup] = useState([]);
     const [showLineupModal, setShowLineupModal] = useState(false);
 
+    // used to set default older for category sorting
     const typeOrder = [
         "Adaptability",
         "Leadership",
@@ -50,6 +50,7 @@ function Questions() {
 
     const { currentUser } = useAuth();
 
+    // fetches lineup questions to be displayed in modal
     useEffect(() => {
         const fetchUserLineup = async () => {
             if (currentUser) {
@@ -70,6 +71,7 @@ function Questions() {
         fetchUserLineup();
     }, [currentUser]);
 
+    //enables users to add questions to the lineup
     const handleAddToLineup = async (question) => {
         if (currentUser) {
             const lineupRef = doc(
@@ -86,11 +88,12 @@ function Questions() {
                 });
                 setUserLineup(updatedLineup);
             } else {
-                //may add message display but shouldn't occur now that button no longer appears after being added. 
+                //may add message display but shouldn't occur now that button no longer appears after being added.
             }
         }
     };
 
+    // allows users to remove question from the lineup
     const handleRemoveFromLineup = async (questionId) => {
         if (currentUser) {
             const lineupRef = doc(
@@ -106,10 +109,12 @@ function Questions() {
         }
     };
 
+    // toggles modal for lineup
     const toggleLineupModal = () => {
         setShowLineupModal(!showLineupModal);
     };
 
+    // allows the user to add a new question to bank => type: user added
     const handleAddQuestion = async (e) => {
         e.preventDefault();
         if (newQuestion.trim() === "") return;
@@ -147,6 +152,7 @@ function Questions() {
         }
     };
 
+    // users can search question bank
     const handleSearch = (e) => {
         const term = e.target.value;
         setSearchTerm(term);
@@ -179,6 +185,7 @@ function Questions() {
         setDisplayedQuestions(sortedQuestions.slice(0, currentCount));
     };
 
+    // users can filter questions by company tag
     const handleFilterByCompany = (e) => {
         const company = e.target.value;
         setFilterCompany(company);
@@ -216,6 +223,7 @@ function Questions() {
         setDisplayedQuestions(sortedQuestions.slice(0, currentCount));
     };
 
+    // allow the user to upvote a company tag
     const handleCompanyUpvote = async (questionId, companyName) => {
         const questionIndex = questions.findIndex((q) => q.id === questionId);
         const question = questions[questionIndex];
@@ -276,6 +284,7 @@ function Questions() {
         }
     };
 
+    // in modal => users can add company tag when adding a new question
     const handleAddCompany = (e) => {
         e.preventDefault();
         if (currentCompany.trim() !== "") {
@@ -298,21 +307,25 @@ function Questions() {
         }
     };
 
+    // users can remove company tag in modal before pressing save new question
     const handleRemoveCompany = (companyName) => {
         setCompanies((prevCompanies) =>
             prevCompanies.filter((company) => company.name !== companyName)
         );
     };
 
+    // user presses cancel button => close modal and reset new question
     const handleAddQuestionCancel = () => {
         setNewQuestion("");
         setShowAddQuestionForm(false);
     };
 
+    // toggles add question modal
     const toggleAddQuestionForm = () => {
         setShowAddQuestionForm(!showAddQuestionForm);
     };
 
+    // allows the users to upvote a question
     const handleUpvote = async (questionId) => {
         const questionIndex = questions.findIndex((q) => q.id === questionId);
         const question = questions[questionIndex];
@@ -372,6 +385,7 @@ function Questions() {
         }
     };
 
+    // shuffle questions => randomly displayed
     function shuffleArray(array) {
         const shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -381,6 +395,7 @@ function Questions() {
         return shuffled;
     }
 
+    // calls shuffle method => randomly displayed
     const handleShuffle = () => {
         setIsShuffled(true);
         setSortBy("shuffle");
@@ -391,6 +406,7 @@ function Questions() {
         setDisplayedQuestions(shuffledQuestions.slice(0, currentCount));
     };
 
+    // gets question documents from questions collection in firestore database
     useEffect(() => {
         const fetchQuestions = async () => {
             const querySnapshot = await getDocs(collection(db, "questions"));
@@ -406,6 +422,7 @@ function Questions() {
         fetchQuestions();
     }, []);
 
+    // allows the user to load 20 more questions or until there are no more questions left
     const loadMoreQuestions = () => {
         const newCount = Math.min(currentCount + 20, questions.length);
         setCurrentCount(newCount);
@@ -453,6 +470,7 @@ function Questions() {
         setDisplayedQuestions(sortedQuestions.slice(0, newCount));
     };
 
+    // applies the given filter => displays desired questions
     const applyFiltersAndSort = (questionsToFilter) => {
         let filteredQuestions = questionsToFilter;
 
@@ -499,6 +517,8 @@ function Questions() {
         return sortedQuestions;
     };
 
+    // back to top button => smooth scroll
+    // only displays button once you have scolled down more than 300 px
     useEffect(() => {
         const handleScroll = () => {
             setShowBackToTop(window.pageYOffset > 300);
@@ -507,10 +527,12 @@ function Questions() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    // button functionality to go back to the top
     const scrollTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
+    // sorts questions
     const sortQuestions = (allQuestions, sortBy, count, sortCompany) => {
         let sorted = [...allQuestions];
 
@@ -548,6 +570,7 @@ function Questions() {
         return sorted.slice(0, count);
     };
 
+    // handles both sort drop downs
     const handleSort = (e) => {
         const newSortBy = e.target.value;
         setSortBy(newSortBy);
@@ -600,6 +623,7 @@ function Questions() {
         setDisplayedQuestions(sortedQuestions.slice(0, currentCount));
     };
 
+    // sortsby company
     const handleSortByCompany = (e) => {
         const company = e.target.value;
         setSortCompany(company);

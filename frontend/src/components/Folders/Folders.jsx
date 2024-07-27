@@ -29,6 +29,7 @@ const Folders = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    // users can delete a folder when in the folder page
     const deleteFolder = async (folderName) => {
         const userDocRef = doc(db, "users", currentUser.uid);
         try {
@@ -56,6 +57,7 @@ const Folders = () => {
         }
     };
 
+    // gets current folders => updates display if folder deleted or added
     useEffect(() => {
         const fetchFolders = async () => {
             const userDocRef = doc(db, "users", currentUser.uid);
@@ -71,6 +73,7 @@ const Folders = () => {
         fetchFolders();
     }, [currentUser.uid, folders]);
 
+    // users can create a new folder => must be different name
     const handleNewFolder = async (e) => {
         e.preventDefault();
         const folderName = folderNameRef.current.value;

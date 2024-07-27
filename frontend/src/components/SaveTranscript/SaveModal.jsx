@@ -25,6 +25,7 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
 
     if (!isOpen) return null;
 
+    // gets folder names so they can be displayed in folder selection drop down
     const fetchFolders = async () => {
         const userDocRef = doc(db, "users", currentUser.uid);
         const userDoc = await getDoc(userDocRef);
@@ -32,11 +33,14 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
         if (userDoc.exists()) {
             const userData = userDoc.data();
             setFolders(userData.folderNames || []);
-            setSelectedFolder(folders[0]||"You have no folders. Please create one. ")
+            setSelectedFolder(
+                folders[0] || "You have no folders. Please create one. "
+            );
         }
     };
     fetchFolders();
 
+    // users can create a new folder in the save transcript modal
     const handleNewFolder = async (e) => {
         e.preventDefault();
         const folderName = folderNameRef.current.value;
