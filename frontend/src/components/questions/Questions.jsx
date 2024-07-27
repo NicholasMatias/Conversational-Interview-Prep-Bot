@@ -188,11 +188,15 @@ function Questions() {
             };
 
             setQuestions(updatedQuestions);
+
+            // Apply current filters and sort
+            const filteredAndSortedQuestions =
+                applyFiltersAndSort(updatedQuestions);
             setDisplayedQuestions(
-                sortQuestions(updatedQuestions, sortBy, currentCount)
+                filteredAndSortedQuestions.slice(0, currentCount)
             );
         } catch (error) {
-            console.error("Error toggling company upvote:", error);
+            console.error("Error upvoting company:", error);
         }
     };
 
@@ -268,8 +272,12 @@ function Questions() {
             };
 
             setQuestions(updatedQuestions);
+
+            // Apply current filters and sort
+            const filteredAndSortedQuestions =
+                applyFiltersAndSort(updatedQuestions);
             setDisplayedQuestions(
-                sortQuestions(updatedQuestions, sortBy, currentCount)
+                filteredAndSortedQuestions.slice(0, currentCount)
             );
         } catch (error) {
             console.error("Error updating upvote:", error);
@@ -355,6 +363,49 @@ function Questions() {
         }
 
         setDisplayedQuestions(sortedQuestions.slice(0, newCount));
+    };
+
+    const applyFiltersAndSort = (questionsToFilter) => {
+        let filteredQuestions = questionsToFilter;
+
+        // Apply search filter
+        if (searchTerm !== "") {
+            filteredQuestions = filteredQuestions.filter((q) =>
+                q.question.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        // Apply company filter
+        if (filterCompany !== "") {
+            filteredQuestions = filteredQuestions.filter(
+                (q) =>
+                    q.companies &&
+                    Array.isArray(q.companies) &&
+                    q.companies.some((c) => c && c.name === filterCompany)
+            );
+        }
+
+        // Apply sorting
+        let sortedQuestions;
+        if (sortBy === "type") {
+            sortedQuestions = filteredQuestions.sort((a, b) => {
+                if (a.type === "User Added") return 1;
+                if (b.type === "User Added") return -1;
+                return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
+            });
+        } else if (sortBy === "upvotes") {
+            sortedQuestions = filteredQuestions.sort(
+                (a, b) => b.upvotes - a.upvotes
+            );
+        } else if (typeOrder.includes(sortBy)) {
+            sortedQuestions = filteredQuestions.filter(
+                (q) => q.type === sortBy
+            );
+        } else {
+            sortedQuestions = filteredQuestions;
+        }
+
+        return sortedQuestions;
     };
 
     useEffect(() => {
