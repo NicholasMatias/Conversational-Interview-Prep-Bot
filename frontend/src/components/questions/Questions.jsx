@@ -34,6 +34,7 @@ function Questions() {
     const [filterCompany, setFilterCompany] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [userLineup, setUserLineup] = useState([]);
+    const [showLineupModal, setShowLineupModal] = useState(false);
 
     const typeOrder = [
         "Adaptability",
@@ -89,6 +90,25 @@ function Questions() {
                 // Optionally, you can show a message to the user
             }
         }
+    };
+
+    const handleRemoveFromLineup = async (questionId) => {
+        if (currentUser) {
+            const lineupRef = doc(
+                db,
+                "InterviewQuestionsLineup",
+                currentUser.uid
+            );
+            const updatedLineup = userLineup.filter((q) => q.id !== questionId);
+            await updateDoc(lineupRef, {
+                questions: updatedLineup,
+            });
+            setUserLineup(updatedLineup);
+        }
+    };
+
+    const toggleLineupModal = () => {
+        setShowLineupModal(!showLineupModal);
     };
 
     const handleAddQuestion = async (e) => {
@@ -727,6 +747,9 @@ function Questions() {
                         </div>
                     </div>
                 </div>
+                <button onClick={toggleLineupModal} className="view-lineup-btn">
+                    View Lineup
+                </button>
                 <div className="questions-list">
                     {displayedQuestions.map((q) => (
                         <div key={q.id} className="question-item">
@@ -777,12 +800,16 @@ function Questions() {
                                     </button>
                                     <span>Upvotes: {q.upvotes}</span>
                                 </div>
-                                <button
-                                    onClick={() => handleAddToLineup(q)}
-                                    className="add-to-lineup-button"
-                                >
-                                    Add to Lineup
-                                </button>
+                                {!userLineup.some(
+                                    (lineupQ) => lineupQ.id === q.id
+                                ) && (
+                                    <button
+                                        onClick={() => handleAddToLineup(q)}
+                                        className="add-to-lineup-button"
+                                    >
+                                        Add to Lineup
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -856,6 +883,30 @@ function Questions() {
                                 Cancel
                             </button>
                         </form>
+                    </div>
+                )}
+
+                {showLineupModal && (
+                    <div className="lineup-modal">
+                        <div className="lineup-modal-content">
+                            <h2>Your Question Lineup</h2>
+                            {userLineup.map((q) => (
+                                <div
+                                    key={q.id}
+                                    className="lineup-question-item"
+                                >
+                                    <p>{q.question}</p>
+                                    <button
+                                        onClick={() =>
+                                            handleRemoveFromLineup(q.id)
+                                        }
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            ))}
+                            <button onClick={toggleLineupModal}>Close</button>
+                        </div>
                     </div>
                 )}
             </div>
