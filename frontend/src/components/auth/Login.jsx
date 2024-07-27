@@ -178,7 +178,7 @@ const Login = () => {
                         </button>
                     </form>
                     {error && <p className="error-message">{errorMessage}</p>}
-                    
+
                     <button
                         className="google-button"
                         onClick={handleGoogleLogin}

@@ -18,18 +18,18 @@ import {
     addDoc,
     getDocs,
     limit,
-    query
+    query,
 } from "firebase/firestore";
 import SaveModal from "../SaveTranscript/SaveModal.jsx";
 import Spacing from "../landing_page/spacing/Spacing.jsx";
 import InterviewFeedback from "../InterviewFeedback/InterviewFeedback.jsx";
 import { Tooltip } from "react-tooltip";
 
-
 let indexes = [];
 let messageQueue = [];
 let isProcessing = false;
 
+// creates queue to stream messages one at a time in sequential order.
 function useMessageQueue(msg, index) {
     const [hasStreamed, setHasStreamed] = useState(false);
     const messageRef = useRef(null);
@@ -45,6 +45,7 @@ function useMessageQueue(msg, index) {
     return { hasStreamed, messageRef };
 }
 
+// streams the messages by popping messages from the queue
 function processQueue() {
     if (isProcessing || messageQueue.length === 0) return;
 
@@ -57,8 +58,8 @@ function processQueue() {
         processQueue();
     });
 }
-
-function streamText(text, element, delay = 50) {
+// function to stream the text
+function streamText(text, element, delay = 50.8) {
     return new Promise((resolve) => {
         let i = 0;
         element.innerHTML = ""; // Clear the element at the start
@@ -76,7 +77,7 @@ function streamText(text, element, delay = 50) {
         addNextChar();
     });
 }
-
+// messaeg component => displays message to screen
 function MessageComponent({ msg, index }) {
     const { hasStreamed, messageRef } = useMessageQueue(msg, index);
 
@@ -144,6 +145,7 @@ const Profile = () => {
 
     const navigate = useNavigate();
 
+    // sets the current user information => to be used later on => activates on currentUser change
     useEffect(() => {
         if (currentUser) {
             setUser({
@@ -159,7 +161,7 @@ const Profile = () => {
             }
         });
     }, [currentUser]);
-
+    // gets the lineup questions from the database for that specific user
     const fetchLineupQuestions = async () => {
         if (currentUser) {
             const lineupRef = doc(
@@ -177,7 +179,7 @@ const Profile = () => {
         }
     };
     fetchLineupQuestions();
-
+    // keeps track of messages that have already been said/ not said => used to make sure each message is only streamed once/ said once
     useEffect(() => {
         const unspokenMessages = messages.filter(
             (msg) => msg.role === "bot" && !spokenMessages.includes(msg.content)
@@ -185,6 +187,7 @@ const Profile = () => {
         setNewMessages(unspokenMessages);
     }, [messages, spokenMessages]);
 
+    //signs the user out
     const handleSignout = async () => {
         try {
             await signOut();
@@ -194,14 +197,17 @@ const Profile = () => {
         }
     };
 
+    // nav to folders page
     const toFolders = () => {
         navigate("/folders");
     };
 
+    // nav to home page
     const toHome = () => {
         navigate("/home");
     };
 
+    // done transcribing => now handle message => displays on the screen => tts and stream activates if interviewer response
     const handleTranscription = (transcribedText) => {
         setIsTranscribing(false);
         setInput(transcribedText);
@@ -249,11 +255,12 @@ const Profile = () => {
                 setMessages([...messages, userMessage, botMessage]);
                 setInput("");
                 setIsLoading(false);
-
+                // if last question => ends interview after this question and makes sure mic no longer appears
                 if (isLastQuestion) {
                     setIsInterviewOver(true);
                     setIsUserTurn(false);
                 }
+                // gives user chance to respond to follow-up question before asking next question
                 else if (data.followUp) {
                     setPrevIsFollowUp(true);
                     setIsUserTurn(true);
@@ -283,14 +290,18 @@ const Profile = () => {
             }
         }
     };
+
+    // toggles the lineup modal
     const toggleLineupModal = () => {
         setShowLineupModal(!showLineupModal);
     };
 
+    // nav to questions page
     const goToQuestionsPage = () => {
         navigate("/questions");
     };
 
+    // clears the questions lineup in database and frontend display using useState var
     const clearLineup = async () => {
         if (currentUser) {
             const lineupRef = doc(
@@ -303,6 +314,7 @@ const Profile = () => {
         }
     };
 
+    // deletes question from question lineup
     const handleDeleteQuestion = async (index) => {
         const updatedQuestions = interviewQuestions.filter(
             (_, i) => i !== index
@@ -321,6 +333,7 @@ const Profile = () => {
         }
     };
 
+    // gets 5 questions at random and adds them to the lineup
     const getRandomQuestions = async () => {
         const questionsRef = collection(db, "questions");
         const q = query(questionsRef, limit(5));
@@ -344,6 +357,8 @@ const Profile = () => {
 
     const [isInterviewQuestionsEmpty, setIsInterviewQuestionsEmpty] =
         useState(false);
+
+    // initializes interview environment.
     const startInterview = () => {
         if (interviewQuestions[0] === "quit") {
             setIsInterviewQuestionsEmpty(true);
@@ -352,7 +367,7 @@ const Profile = () => {
             }, 1000);
             return;
         }
-        
+
         indexes = [];
         messageQueue = [];
         isProcessing = false;
@@ -374,15 +389,19 @@ const Profile = () => {
         setIsSpeaking(false);
     };
 
+    // once message said => set is speaking to false => means mic can now appear so the user can respond
+    // adds to said messages => each interviewer message only said once
     const handleSpokenMessage = (spokenContent) => {
         setSpokenMessages((prev) => [...prev, spokenContent]);
         setIsSpeaking(false);
     };
 
+    // sets is speaking to true => mic no longer appears
     const handleTTSStart = () => {
         setIsSpeaking(true);
     };
 
+    // allows the user to save interview transcript in a folder of their choosing
     const handleSave = async (transcriptName, selectedFolder) => {
         if (!currentUser) return;
 
@@ -434,6 +453,7 @@ const Profile = () => {
         }
     };
 
+    // sets up the environment for a new interview
     const handleNewInterview = () => {
         clearLineup();
         setNewInterview(true);
@@ -458,6 +478,7 @@ const Profile = () => {
         isProcessing = false;
     };
 
+    //gets situation color category and score
     const getSituation = async (userResponse) => {
         try {
             const response = await fetch("http://localhost:5000/situation", {
@@ -480,6 +501,7 @@ const Profile = () => {
         }
     };
 
+    // gets task color category and score
     const getTask = async (userResponse) => {
         try {
             const response = await fetch("http://localhost:5000/task", {
@@ -502,6 +524,7 @@ const Profile = () => {
         }
     };
 
+    // gets action color category and score
     const getAction = async (userResponse) => {
         try {
             const response = await fetch("http://localhost:5000/action", {
@@ -524,6 +547,7 @@ const Profile = () => {
         }
     };
 
+    // gets result color category and score
     const getResult = async (userResponse) => {
         try {
             const response = await fetch("http://localhost:5000/result", {
@@ -546,6 +570,7 @@ const Profile = () => {
         }
     };
 
+    //gets relevance score
     const getRelevance = async (question, userResponse) => {
         try {
             const response = await fetch("http://localhost:5000/relevance", {
@@ -571,6 +596,7 @@ const Profile = () => {
         }
     };
 
+    //gets freq for word or phrase depending on teh gramSize
     const getFreq = async (responses, number, gramSize) => {
         try {
             const response = await fetch("http://localhost:5000/frequency", {
@@ -599,6 +625,7 @@ const Profile = () => {
     const [freqWords, setFreqWords] = useState([]);
     const [freqPhrases, setFreqPhrases] = useState([]);
 
+    // makes calls to get most freq words and phrases
     const wordFreqPhrases = async () => {
         const userMessages = messages.filter(
             (message) => message.role === "user"
@@ -613,7 +640,7 @@ const Profile = () => {
     };
 
     const [feedbackData, setFeedbackData] = useState([]);
-
+    // will be used to classify average scores for STAR and relevance
     const scoreClassifier = (result) => {
         if (!result || result <= 0.2) {
             return "last";
@@ -630,6 +657,7 @@ const Profile = () => {
 
     const [scoreAverages, setScoreAverages] = useState([]);
 
+    // sums items in array
     const sumContents = (array) => {
         let sum = 0;
         array.forEach((element) => {
@@ -638,6 +666,7 @@ const Profile = () => {
         return sum;
     };
 
+    //gets average scores for STAR
     const averageScores = (feedback) => {
         const situationScores = [];
         const taskScores = [];
@@ -674,6 +703,7 @@ const Profile = () => {
         setScoreAverages(averages);
     };
 
+    //sends question, response, and metrics to backend to get question specific feedback
     const getFeedbackResponse = async (userResponse, question, scores) => {
         try {
             const response = await fetch("http://localhost:5000/feedback", {
@@ -698,6 +728,7 @@ const Profile = () => {
     const [feedbackLoading, setFeedbackLoading] = useState(false);
     const [responseFeedbackItems, setResponseFeedbackItems] = useState([]);
 
+    //prepares messages to be sent to backend for llama3 feed back => question specific feedback
     const llamaFeedback = async (feedback) => {
         const responseFeedback = [];
         for (let i = 0; i < feedback.length; i++) {
@@ -730,6 +761,7 @@ const Profile = () => {
         return responseFeedback;
     };
 
+    // sets up everything so that it can be displayed in feedback modal
     const showFeedback = async () => {
         const feedbackQueue = [];
 
@@ -796,6 +828,7 @@ const Profile = () => {
         setIsFeedbackTime(true);
     };
 
+    // nav to questions
     const toQuestions = () => {
         navigate("/questions");
     };
@@ -1031,13 +1064,13 @@ const Profile = () => {
                     <div className="messages">
                         {messages.map((message, index) => (
                             <>
-                                {message!=="quit" &&
+                                {message !== "quit" && (
                                     <MessageComponent
                                         key={index}
                                         msg={message}
                                         index={index}
                                     />
-                                }
+                                )}
                             </>
                         ))}
                     </div>

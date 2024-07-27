@@ -7,6 +7,7 @@ const Record = ({ onTranscriptionComplete, onTranscriptionStart }) => {
 
     const [isRecording, setIsRecording] = useState(false);
 
+    // gets audio after used has pressed end recording button
     const addAudioElement = async (blob) => {
         setIsRecording(true);
         onTranscriptionStart();
