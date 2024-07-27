@@ -84,52 +84,33 @@ function Questions() {
     };
 
     const handleSearch = (e) => {
-        const term = e.target.value.toLowerCase();
+        const term = e.target.value;
         setSearchTerm(term);
 
-        if(term !=='' && (sortBy !== 'type' || filterCompany !=='')){
-            setSortBy('type')
-            setFilterCompany('')
+        // Reset type and company filters when user starts typing
+        if (term !== "" && (sortBy !== "type" || filterCompany !== "")) {
+            setSortBy("type");
+            setFilterCompany("");
         }
 
-        let filteredQuestions = questions;
+        let filteredQuestions;
 
-        // Apply company filter if active
-        if (filterCompany !== "") {
-            filteredQuestions = filteredQuestions.filter(
-                (q) =>
-                    q.companies &&
-                    Array.isArray(q.companies) &&
-                    q.companies.some((c) => c && c.name === filterCompany)
-            );
-        }
-
-        // Apply search term filter
-        if (term !== "") {
-            filteredQuestions = filteredQuestions.filter((q) =>
-                q.question.toLowerCase().includes(term)
-            );
-        }
-
-        // Apply sorting
-        let sortedQuestions;
-        if (sortBy === "type") {
-            sortedQuestions = filteredQuestions.sort((a, b) => {
-                if (a.type === "User Added") return 1;
-                if (b.type === "User Added") return -1;
-                return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
-            });
-        } else if (sortBy === "upvotes") {
-            sortedQuestions = filteredQuestions.sort(
-                (a, b) => b.upvotes - a.upvotes
-            );
-        } else if (typeOrder.includes(sortBy)) {
-            sortedQuestions = filteredQuestions.filter(
-                (q) => q.type === sortBy
-            );
+        if (term === "") {
+            // If search bar is cleared, show all questions
+            filteredQuestions = questions;
         } else {
-            sortedQuestions = filteredQuestions;
+            // Only show questions that match the search term
+            filteredQuestions = questions.filter((q) =>
+                q.question.toLowerCase().includes(term.toLowerCase())
+            );
         }
+
+        // Apply sorting (always by type when searching or when search is cleared)
+        let sortedQuestions = filteredQuestions.sort((a, b) => {
+            if (a.type === "User Added") return 1;
+            if (b.type === "User Added") return -1;
+            return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
+        });
 
         setDisplayedQuestions(sortedQuestions.slice(0, currentCount));
     };
@@ -333,26 +314,29 @@ function Questions() {
         const newCount = Math.min(currentCount + 20, questions.length);
         setCurrentCount(newCount);
 
-        // Apply current filter and sort
-        let filteredQuestions = questions;
-        if (filterCompany !== "") {
-            filteredQuestions = questions.filter(
-                (q) =>
-                    q.companies &&
-                    Array.isArray(q.companies) &&
-                    q.companies.some((c) => c && c.name === filterCompany)
-            );
-        }
+        let filteredQuestions;
 
-        // Apply search term filter
-        if (searchTerm !== "") {
-            filteredQuestions = filteredQuestions.filter((q) =>
+        if (searchTerm === "") {
+            // If no search term, apply normal filters
+            filteredQuestions = questions;
+            if (filterCompany !== "") {
+                filteredQuestions = filteredQuestions.filter(
+                    (q) =>
+                        q.companies &&
+                        Array.isArray(q.companies) &&
+                        q.companies.some((c) => c && c.name === filterCompany)
+                );
+            }
+        } else {
+            // If there's a search term, only show matching questions
+            filteredQuestions = questions.filter((q) =>
                 q.question.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
+        // Apply sorting
         let sortedQuestions;
-        if (sortBy === "type") {
+        if (sortBy === "type" || searchTerm !== "") {
             sortedQuestions = filteredQuestions.sort((a, b) => {
                 if (a.type === "User Added") return 1;
                 if (b.type === "User Added") return -1;
@@ -367,7 +351,7 @@ function Questions() {
                 (q) => q.type === sortBy
             );
         } else {
-            sortedQuestions = filteredQuestions; // Default case, no sorting
+            sortedQuestions = filteredQuestions;
         }
 
         setDisplayedQuestions(sortedQuestions.slice(0, newCount));
