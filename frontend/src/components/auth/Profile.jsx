@@ -16,6 +16,9 @@ import {
     setDoc,
     collection,
     addDoc,
+    getDocs,
+    limit,
+    query
 } from "firebase/firestore";
 import SaveModal from "../SaveTranscript/SaveModal.jsx";
 import Spacing from "../landing_page/spacing/Spacing.jsx";
@@ -135,6 +138,11 @@ const Profile = () => {
     const [interviewQuestions, setInterviewQuestions] = useState([]);
     const [showLineupModal, setShowLineupModal] = useState(false);
 
+    const showRandomQuestionsButton =
+        interviewQuestions.length === 0 ||
+        (interviewQuestions.length > 0 &&
+            interviewQuestions[0].toLowerCase() === "quit");
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -162,10 +170,10 @@ const Profile = () => {
             );
             const lineupSnap = await getDoc(lineupRef);
             if (lineupSnap.exists()) {
-                const questionObjects = lineupSnap.data().questions || []
-                const questionTexts = questionObjects.map(q => q.question)
-                setInterviewQuestions(questionTexts)
-                setInterviewQuestions((prevArray) => [...prevArray,"quit"])
+                const questionObjects = lineupSnap.data().questions || [];
+                const questionTexts = questionObjects.map((q) => q.question);
+                setInterviewQuestions(questionTexts);
+                setInterviewQuestions((prevArray) => [...prevArray, "quit"]);
             }
         }
     };
@@ -297,15 +305,56 @@ const Profile = () => {
         }
     };
 
-    const [isInterviewQuestionsEmpty, setIsInterviewQuestionsEmpty] = useState(false)
-    const startInterview = () => {
-        if(interviewQuestions[0]==="quit"){
-            setIsInterviewQuestionsEmpty(true)
-            setTimeout(() => {
-                setIsInterviewQuestionsEmpty(false)
-            }, 1000);
-            return
+    const handleDeleteQuestion = async (index) => {
+        const updatedQuestions = interviewQuestions.filter(
+            (_, i) => i !== index
+        );
+        setInterviewQuestions(updatedQuestions);
+
+        if (currentUser) {
+            const lineupRef = doc(
+                db,
+                "InterviewQuestionsLineup",
+                currentUser.uid
+            );
+            await updateDoc(lineupRef, {
+                questions: updatedQuestions.map((q) => ({ question: q })),
+            });
         }
+    };
+
+    const getRandomQuestions = async () => {
+        const questionsRef = collection(db, "questions");
+        const q = query(questionsRef, limit(2));
+        const querySnapshot = await getDocs(q);
+        const randomQuestions = querySnapshot.docs.map(
+            (doc) => doc.data().question
+        );
+        setInterviewQuestions(randomQuestions);
+
+        if (currentUser) {
+            const lineupRef = doc(
+                db,
+                "InterviewQuestionsLineup",
+                currentUser.uid
+            );
+            await updateDoc(lineupRef, {
+                questions: randomQuestions.map((q) => ({ question: q })),
+            });
+        }
+    };
+
+    const [isInterviewQuestionsEmpty, setIsInterviewQuestionsEmpty] =
+        useState(false);
+    const startInterview = () => {
+        if (interviewQuestions[0] === "quit") {
+            setIsInterviewQuestionsEmpty(true);
+            setTimeout(() => {
+                setIsInterviewQuestionsEmpty(false);
+            }, 1000);
+            return;
+        }
+        
         indexes = [];
         messageQueue = [];
         isProcessing = false;
@@ -388,7 +437,7 @@ const Profile = () => {
     };
 
     const handleNewInterview = () => {
-        clearLineup()
+        clearLineup();
         setNewInterview(true);
         setInterviewStarted(false);
         setMessages([]);
@@ -906,12 +955,11 @@ const Profile = () => {
                     >
                         Start Interview
                     </button>
-                    {
-                        isInterviewQuestionsEmpty && (
-                                <h2 className="interview-questions-empty">Please Add Some Interview Questions First.</h2>
-                            
-                        )
-                    }
+                    {isInterviewQuestionsEmpty && (
+                        <h2 className="interview-questions-empty">
+                            Please Add Some Interview Questions First.
+                        </h2>
+                    )}
 
                     <button
                         onClick={toggleLineupModal}
@@ -926,12 +974,28 @@ const Profile = () => {
                                 {interviewQuestions.length > 0 ? (
                                     interviewQuestions.map((q, index) => (
                                         <div
-                                            key={q.id}
+                                            key={index}
                                             className="lineup-question-item"
                                         >
-                                            {q!=="quit" ? <p>
-                                                {index + 1}. {q}
-                                            </p>:""}
+                                            {q !== "quit" ? (
+                                                <>
+                                                    <p>
+                                                        {index + 1}. {q}
+                                                    </p>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleDeleteQuestion(
+                                                                index
+                                                            )
+                                                        }
+                                                        className="delete-question-btn"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                ""
+                                            )}
                                         </div>
                                     ))
                                 ) : (
@@ -946,6 +1010,14 @@ const Profile = () => {
                                 >
                                     Add More Questions
                                 </button>
+                                {showRandomQuestionsButton && (
+                                    <button
+                                        onClick={getRandomQuestions}
+                                        className="random-questions-btn"
+                                    >
+                                        Random Questions
+                                    </button>
+                                )}
                                 <button
                                     onClick={toggleLineupModal}
                                     className="close-modal-btn"
@@ -961,7 +1033,7 @@ const Profile = () => {
                     <div className="messages">
                         {messages.map((message, index) => (
                             <>
-                                {
+                                {message!=="quit" &&
                                     <MessageComponent
                                         key={index}
                                         msg={message}
