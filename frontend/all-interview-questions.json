@@ -1,0 +1,130 @@
+[
+    {
+        "type": "Adaptability",
+        "questions": [
+            ["Can you describe a situation where you had to quickly adapt to a significant change at work?", 0, []],
+            ["How did you handle a situation where you had to adapt to a sudden change in priorities?", 0, []],
+            ["Tell me about a time when you had to adjust your work style to accommodate new policies.", 0, []],
+            ["How do you typically respond to changes in the workplace? Can you give an example?", 0, []],
+            ["Describe a time when you had to learn a new tool or software quickly. How did you manage?", 0, []],
+            ["Have you ever had to adapt to a new team or management style? How did you handle it?", 0, []],
+            ["How do you stay adaptable in a fast-paced environment? Provide an example.", 0, []],
+            ["Can you share an experience where you had to adapt to a new role or responsibilities?", 0, []],
+            ["Describe a challenging change you faced at work and how you dealt with it.", 0, []],
+            ["How do you handle uncertainty and ambiguity in your job? Give an example.", 0, []]
+        ]
+    },
+    {
+        "type": "Leadership",
+        "questions": [
+            ["Can you describe a time when you led a team to achieve a challenging goal?", 0, []],
+            ["How do you motivate your team during difficult projects? Can you share an example?", 0, []],
+            ["Tell me about a situation where you had to lead a team through a significant change.", 5, []],
+            ["How do you handle conflicts within your team? Can you provide an example?", 0, []],
+            ["Describe a time when you had to take charge of a team in a high-pressure situation.", 0, []],
+            ["How do you foster a culture of collaboration and teamwork in your team?", 0, []],
+            ["Can you give an example of how you have developed leadership skills in others?", 0, []],
+            ["How do you balance the needs of your team with the goals of the organization?", 0, []],
+            ["Describe a time when you had to make a difficult decision as a leader.", 0, []],
+            ["How do you ensure that your team stays motivated and focused on their goals?", 0, []]
+        ]
+    },
+    {
+        "type": "Communication",
+        "questions": [
+            ["Can you describe a time when you had to explain a complex idea to someone? How did you ensure they understood?", 0, []],
+            ["How do you handle situations where there is a communication breakdown? Can you give an example?", 0, []],
+            ["Tell me about a time when you had to communicate difficult news to your team.", 0, []],
+            ["How do you tailor your communication style to different audiences?", 0, []],
+            ["Can you give an example of a time when effective communication resolved a conflict?", 0, []],
+            ["Describe a situation where your communication skills made a positive impact.", 0, []],
+            ["How do you ensure that your team is kept informed about important information?", 0, []],
+            ["Can you share an experience where you had to present to a difficult audience?", 0, []],
+            ["How do you handle misunderstandings in communication? Can you give an example?", 0, []],
+            ["Describe a time when you had to persuade others to see your point of view.", 0, []]
+        ]
+    },
+    {
+        "type": "Problem Solving",
+        "questions": [
+            ["Can you describe a challenging problem you faced at work and how you resolved it?", 0, []],
+            ["How do you approach problems that don't have a clear solution?", 0, []],
+            ["Tell me about a time when you had to analyze data to make a decision.", 0, []],
+            ["How do you prioritize issues when faced with multiple problems?", 0, []],
+            ["Can you give an example of a creative solution you came up with for a problem?", 0, []],
+            ["Describe a situation where you had to solve a problem quickly.", 0, []],
+            ["How do you handle situations where the solution isn't immediately clear?", 0, []],
+            ["Can you share an experience where you had to troubleshoot a technical issue?", 0, []],
+            ["How do you involve others in solving problems?", 0, []],
+            ["Describe a time when you had to change your approach to solving a problem.", 0, []]
+        ]
+    },
+    {
+        "type": "Teamwork",
+        "questions": [
+            ["Can you describe a successful project you worked on as part of a team?", 0, []],
+            ["How do you handle conflicts within a team? Can you provide an example?", 0, []],
+            ["Tell me about a time when you had to collaborate with others to achieve a common goal.", 0, []],
+            ["How do you ensure effective communication within a team?", 0, []],
+            ["Describe a time when you had to work with a difficult team member.", 0, []],
+            ["How do you build strong working relationships with your team?", 0, []],
+            ["Can you share an experience where teamwork led to a better outcome than individual work?", 0, []],
+            ["How do you handle differing opinions within a team?", 0, []],
+            ["Describe a time when you had to support a team member who was struggling.", 0, []],
+            ["How do you ensure that all team members are engaged and contributing?", 0, []]
+        ]
+    },
+    {
+        "type": "Time Management",
+        "questions": [
+            ["Can you describe a time when you had to manage multiple tasks and deadlines?", 0, []],
+            ["How do you prioritize your tasks when everything seems urgent?", 0, []],
+            ["Tell me about a time when you had to balance work and personal responsibilities.", 0, []],
+            ["How do you ensure productivity in your day-to-day work?", 0, []],
+            ["Describe a situation where you had to manage your time effectively to meet a deadline.", 0, []],
+            ["How do you handle interruptions and distractions?", 0, []],
+            ["Can you share an experience where effective time management helped you achieve a goal?", 0, []],
+            ["How do you adjust your schedule to accommodate unexpected changes?", 0, []],
+            ["Describe a time when you had to delegate tasks to manage your workload.", 0, []],
+            ["How do you ensure that you meet your deadlines?", 0, []]
+        ]
+    },
+    {
+        "type": "Creativity",
+        "questions": [
+            ["Can you describe a time when you had to come up with a creative solution to a problem?", 0, []],
+            ["How do you foster creativity in your work environment?", 0, []],
+            ["Tell me about a time when you had to think outside the box to complete a task.", 0, []],
+            ["How do you approach tasks that require innovative thinking?", 0, []],
+            ["Describe a situation where your creativity led to a successful outcome.", 0, []],
+            ["Can you give an example of a project where you used creativity to overcome a challenge?", 0, []],
+            ["How do you encourage creative thinking in others?", 0, []],
+            ["Can you share an experience where a creative approach led to a significant improvement?", 0, []],
+            ["Describe a time when you had to adapt a traditional solution to a new situation.", 0, []],
+            ["How do you stay creative under pressure?", 0, []]
+        ]
+    },
+    {
+        "type": "Conflict Resolution",
+        "questions": [
+            ["Can you describe a time when you had to resolve a conflict between team members?", 0, []],
+            ["How do you handle disagreements in the workplace?", 0, []],
+            ["Tell me about a time when you had to mediate a dispute.", 0, []],
+            ["How do you approach conflicts that arise from differences in opinion?", 0, []],
+            ["Describe a situation where you had to handle a difficult customer or client.", 0, []],
+            ["How do you ensure that conflicts are resolved constructively?", 0, []],
+            ["Can you share an experience where you had to negotiate a compromise?", 0, []],
+            ["How do you address conflicts head-on?", 0, []],
+            ["Describe a time when you helped others resolve a disagreement.", 0, []],
+            ["How do you prevent conflicts from escalating?", 0, []]
+        ]
+    },
+    {
+        "type" :"User Added",
+        "questions":[
+            
+        ]
+    }
+]
+
+
