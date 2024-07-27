@@ -66,7 +66,7 @@ function Questions() {
                 question: newQuestion,
                 upvotes: 0,
                 upvotedBy: [],
-                companies: companies.length > 0 ? companies: [],
+                companies: companies.length > 0 ? companies : [],
             };
 
             setQuestions((prevQuestions) => [...prevQuestions, newQuestionObj]);
@@ -85,20 +85,40 @@ function Questions() {
     const handleFilterByCompany = (e) => {
         const company = e.target.value;
         setFilterCompany(company);
-        const filteredAndSortedQuestions = sortQuestions(
-            questions.filter(q => 
-                company === '' || 
-                (q.companies && Array.isArray(q.companies) && q.companies.some(c => c && c.name === company))
-            ),
-            sortBy,
-            currentCount
-        );
-        setDisplayedQuestions(filteredAndSortedQuestions);
+    
+    
+        // Reset sort type to "All Types" when a company is selected
+        if (company !== '') {
+            setSortBy('type');
+        }
+    
+    
+        // Apply filtering
+        let filteredQuestions = questions;
+        if (company !== '') {
+            filteredQuestions = questions.filter(q => 
+                q.companies && 
+                Array.isArray(q.companies) && 
+                q.companies.some(c => c && c.name === company)
+            );
+        }
+    
+    
+        // Apply sorting (always by type when a company is selected)
+        let sortedQuestions = filteredQuestions.sort((a, b) => {
+            if (a.type === 'User Added') return 1;
+            if (b.type === 'User Added') return -1;
+            return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
+        });
+    
+    
+        setDisplayedQuestions(sortedQuestions.slice(0, currentCount));
     };
     
     
     
     
+
     const handleCompanyUpvote = async (questionId, companyName) => {
         const questionIndex = questions.findIndex((q) => q.id === questionId);
         const question = questions[questionIndex];
@@ -259,16 +279,38 @@ function Questions() {
     const loadMoreQuestions = () => {
         const newCount = Math.min(currentCount + 20, questions.length);
         setCurrentCount(newCount);
-        const filteredAndSortedQuestions = sortQuestions(
-            questions.filter(
+
+        // Apply current filter and sort
+        let filteredQuestions = questions;
+        if (filterCompany !== "") {
+            filteredQuestions = questions.filter(
                 (q) =>
-                    filterCompany === "" ||
-                    q.companies.some((c) => c.name === filterCompany)
-            ),
-            sortBy,
-            newCount
-        );
-        setDisplayedQuestions(filteredAndSortedQuestions);
+                    q.companies &&
+                    Array.isArray(q.companies) &&
+                    q.companies.some((c) => c && c.name === filterCompany)
+            );
+        }
+
+        let sortedQuestions;
+        if (sortBy === "type") {
+            sortedQuestions = filteredQuestions.sort((a, b) => {
+                if (a.type === "User Added") return 1;
+                if (b.type === "User Added") return -1;
+                return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
+            });
+        } else if (sortBy === "upvotes") {
+            sortedQuestions = filteredQuestions.sort(
+                (a, b) => b.upvotes - a.upvotes
+            );
+        } else if (typeOrder.includes(sortBy)) {
+            sortedQuestions = filteredQuestions.filter(
+                (q) => q.type === sortBy
+            );
+        } else {
+            sortedQuestions = filteredQuestions; // Default case, no sorting
+        }
+
+        setDisplayedQuestions(sortedQuestions.slice(0, newCount));
     };
 
     useEffect(() => {
@@ -283,25 +325,6 @@ function Questions() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    // const sortQuestions = (allQuestions, sortBy, count) => {
-    //     const sorted = [...allQuestions].sort((a, b) => {
-    //         if (sortBy === "type") {
-    //             if (a.type === "User Added") return 1;
-    //             if (b.type === "User Added") return -1;
-    //             return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
-    //         } else if (sortBy === "upvotes") {
-    //             return b.upvotes - a.upvotes;
-    //         } else if (typeOrder.includes(sortBy)) {
-    //             if (a.type === sortBy) return -1;
-    //             if (b.type === sortBy) return 1;
-    //             if (a.type === "User Added") return 1;
-    //             if (b.type === "User Added") return -1;
-    //             return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
-    //         }
-    //         return 0;
-    //     });
-    //     return sorted.slice(0, count);
-    // };
 
     const sortQuestions = (allQuestions, sortBy, count, sortCompany) => {
         let sorted = [...allQuestions];
@@ -344,16 +367,44 @@ function Questions() {
         const newSortBy = e.target.value;
         setSortBy(newSortBy);
         setIsShuffled(false);
-        const filteredAndSortedQuestions = sortQuestions(
-            questions.filter(
+
+        // Reset company filter if a type filter is selected
+        if (newSortBy !== "type" && newSortBy !== "upvotes") {
+            setFilterCompany("");
+        }
+
+        // Apply filtering and sorting
+        let filteredQuestions = questions;
+        if (newSortBy !== "type" && newSortBy !== "upvotes") {
+            // If a specific type is selected, filter by that type
+            filteredQuestions = questions.filter((q) => q.type === newSortBy);
+        } else if (filterCompany !== "") {
+            // If no specific type is selected but a company filter is active, apply company filter
+            filteredQuestions = questions.filter(
                 (q) =>
-                    filterCompany === "" ||
-                    q.companies.some((c) => c.name === filterCompany)
-            ),
-            newSortBy,
-            currentCount
-        );
-        setDisplayedQuestions(filteredAndSortedQuestions);
+                    q.companies &&
+                    Array.isArray(q.companies) &&
+                    q.companies.some((c) => c && c.name === filterCompany)
+            );
+        }
+
+        // Apply sorting
+        let sortedQuestions;
+        if (newSortBy === "type") {
+            sortedQuestions = filteredQuestions.sort((a, b) => {
+                if (a.type === "User Added") return 1;
+                if (b.type === "User Added") return -1;
+                return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
+            });
+        } else if (newSortBy === "upvotes") {
+            sortedQuestions = filteredQuestions.sort(
+                (a, b) => b.upvotes - a.upvotes
+            );
+        } else {
+            sortedQuestions = filteredQuestions; // For specific type filters, no additional sorting needed
+        }
+
+        setDisplayedQuestions(sortedQuestions.slice(0, currentCount));
     };
 
     const handleSortByCompany = (e) => {
