@@ -30,6 +30,7 @@ function Questions() {
     const [companies, setCompanies] = useState([]);
     const [sortCompany, setSortCompany] = useState("");
     const [filterCompany, setFilterCompany] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
     const typeOrder = [
         "Adaptability",
@@ -82,42 +83,93 @@ function Questions() {
         }
     };
 
+    const handleSearch = (e) => {
+        const term = e.target.value.toLowerCase();
+        setSearchTerm(term);
+
+        if(term !=='' && (sortBy !== 'type' || filterCompany !=='')){
+            setSortBy('type')
+            setFilterCompany('')
+        }
+
+        let filteredQuestions = questions;
+
+        // Apply company filter if active
+        if (filterCompany !== "") {
+            filteredQuestions = filteredQuestions.filter(
+                (q) =>
+                    q.companies &&
+                    Array.isArray(q.companies) &&
+                    q.companies.some((c) => c && c.name === filterCompany)
+            );
+        }
+
+        // Apply search term filter
+        if (term !== "") {
+            filteredQuestions = filteredQuestions.filter((q) =>
+                q.question.toLowerCase().includes(term)
+            );
+        }
+
+        // Apply sorting
+        let sortedQuestions;
+        if (sortBy === "type") {
+            sortedQuestions = filteredQuestions.sort((a, b) => {
+                if (a.type === "User Added") return 1;
+                if (b.type === "User Added") return -1;
+                return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
+            });
+        } else if (sortBy === "upvotes") {
+            sortedQuestions = filteredQuestions.sort(
+                (a, b) => b.upvotes - a.upvotes
+            );
+        } else if (typeOrder.includes(sortBy)) {
+            sortedQuestions = filteredQuestions.filter(
+                (q) => q.type === sortBy
+            );
+        } else {
+            sortedQuestions = filteredQuestions;
+        }
+
+        setDisplayedQuestions(sortedQuestions.slice(0, currentCount));
+    };
+
     const handleFilterByCompany = (e) => {
         const company = e.target.value;
         setFilterCompany(company);
-    
-    
+        setSearchTerm("");
+
         // Reset sort type to "All Types" when a company is selected
-        if (company !== '') {
-            setSortBy('type');
+        if (company !== "") {
+            setSortBy("type");
         }
-    
-    
+
         // Apply filtering
         let filteredQuestions = questions;
-        if (company !== '') {
-            filteredQuestions = questions.filter(q => 
-                q.companies && 
-                Array.isArray(q.companies) && 
-                q.companies.some(c => c && c.name === company)
+        if (company !== "") {
+            filteredQuestions = questions.filter(
+                (q) =>
+                    q.companies &&
+                    Array.isArray(q.companies) &&
+                    q.companies.some((c) => c && c.name === company)
             );
         }
-    
-    
+
         // Apply sorting (always by type when a company is selected)
         let sortedQuestions = filteredQuestions.sort((a, b) => {
-            if (a.type === 'User Added') return 1;
-            if (b.type === 'User Added') return -1;
+            if (a.type === "User Added") return 1;
+            if (b.type === "User Added") return -1;
             return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
         });
-    
-    
+        // Apply search term filter
+        if (searchTerm !== "") {
+            filteredQuestions = filteredQuestions.filter((q) =>
+                q.question.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
         setDisplayedQuestions(sortedQuestions.slice(0, currentCount));
     };
-    
-    
-    
-    
 
     const handleCompanyUpvote = async (questionId, companyName) => {
         const questionIndex = questions.findIndex((q) => q.id === questionId);
@@ -253,12 +305,13 @@ function Questions() {
     }
 
     const handleShuffle = () => {
-        const shuffledQuestions = shuffleArray([...questions]);
-        setQuestions(shuffledQuestions);
-        setDisplayedQuestions(shuffledQuestions.slice(0, 10));
-        setCurrentCount(10);
         setIsShuffled(true);
         setSortBy("shuffle");
+        setFilterCompany("");
+        setSearchTerm(""); // Clear the search term
+
+        const shuffledQuestions = shuffleArray([...questions]);
+        setDisplayedQuestions(shuffledQuestions.slice(0, currentCount));
     };
 
     useEffect(() => {
@@ -288,6 +341,13 @@ function Questions() {
                     q.companies &&
                     Array.isArray(q.companies) &&
                     q.companies.some((c) => c && c.name === filterCompany)
+            );
+        }
+
+        // Apply search term filter
+        if (searchTerm !== "") {
+            filteredQuestions = filteredQuestions.filter((q) =>
+                q.question.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
@@ -324,7 +384,6 @@ function Questions() {
     const scrollTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
-
 
     const sortQuestions = (allQuestions, sortBy, count, sortCompany) => {
         let sorted = [...allQuestions];
@@ -367,6 +426,7 @@ function Questions() {
         const newSortBy = e.target.value;
         setSortBy(newSortBy);
         setIsShuffled(false);
+        setSearchTerm("");
 
         // Reset company filter if a type filter is selected
         if (newSortBy !== "type" && newSortBy !== "upvotes") {
@@ -402,6 +462,13 @@ function Questions() {
             );
         } else {
             sortedQuestions = filteredQuestions; // For specific type filters, no additional sorting needed
+        }
+
+        // Apply search term filter
+        if (searchTerm !== "") {
+            filteredQuestions = filteredQuestions.filter((q) =>
+                q.question.toLowerCase().includes(searchTerm.toLowerCase())
+            );
         }
 
         setDisplayedQuestions(sortedQuestions.slice(0, currentCount));
@@ -475,6 +542,26 @@ function Questions() {
             <div className="questions-container">
                 <h1>Interview Questions</h1>
                 <div className="sort-and-filter-container">
+                    <div className="search-and-filter-container">
+                        <div className="search-container">
+                            <input
+                                type="text"
+                                placeholder="Search questions..."
+                                value={searchTerm}
+                                onChange={handleSearch}
+                                className="search-input"
+                            />
+                        </div>
+                        <div className="sort-and-filter-container">
+                            <div className="sort-container">
+                                {/* ... existing sort dropdown ... */}
+                            </div>
+                            <div className="filter-container">
+                                {/* ... existing company filter dropdown ... */}
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="sort-container">
                         <label htmlFor="sort-select">Sort by: </label>
                         <select
