@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./Questions.css";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "../auth/auth";
-import questionsData from "../../../all-interview-questions.json"; // Assuming you've saved the JSON in a file named questions.json
 import {
     doc,
     updateDoc,
@@ -86,7 +85,7 @@ function Questions() {
                 });
                 setUserLineup(updatedLineup);
             } else {
-                //may add message display but shouldn't occur now that button no longer appears after being added. 
+                //may add message display but shouldn't occur now that button no longer appears after being added.
             }
         }
     };

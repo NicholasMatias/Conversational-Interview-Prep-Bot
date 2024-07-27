@@ -32,7 +32,9 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
         if (userDoc.exists()) {
             const userData = userDoc.data();
             setFolders(userData.folderNames || []);
-            setSelectedFolder(folders[0]||"You have no folders. Please create one. ")
+            setSelectedFolder(
+                folders[0] || "You have no folders. Please create one. "
+            );
         }
     };
     fetchFolders();

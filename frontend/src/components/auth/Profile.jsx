@@ -25,7 +25,6 @@ import Spacing from "../landing_page/spacing/Spacing.jsx";
 import InterviewFeedback from "../InterviewFeedback/InterviewFeedback.jsx";
 import { Tooltip } from "react-tooltip";
 
-// const interviewQuestions = interview_questions.basisBehavioralQuestions;
 
 let indexes = [];
 let messageQueue = [];
@@ -255,7 +254,6 @@ const Profile = () => {
                     setIsInterviewOver(true);
                     setIsUserTurn(false);
                 }
-                // if there is a followup question, don't do to next question in interviewQuestions json file, allow user to respond to follow-up question.
                 else if (data.followUp) {
                     setPrevIsFollowUp(true);
                     setIsUserTurn(true);
@@ -325,7 +323,7 @@ const Profile = () => {
 
     const getRandomQuestions = async () => {
         const questionsRef = collection(db, "questions");
-        const q = query(questionsRef, limit(2));
+        const q = query(questionsRef, limit(5));
         const querySnapshot = await getDocs(q);
         const randomQuestions = querySnapshot.docs.map(
             (doc) => doc.data().question

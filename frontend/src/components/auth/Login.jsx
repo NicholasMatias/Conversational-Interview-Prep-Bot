@@ -25,7 +25,7 @@ const Login = () => {
         e.preventDefault();
         try {
             await signInWithEmailAndPassword(email, password);
-            navigate("/home");
+            navigate("/profile");
         } catch (err) {
             const errorMessage = err.message;
             const errorCode = err.code;
@@ -88,7 +88,7 @@ const Login = () => {
                 });
             }
 
-            navigate("/home");
+            navigate("/profile");
         } catch (err) {
             const errorMessage = err.message;
             const errorCode = err.code;
