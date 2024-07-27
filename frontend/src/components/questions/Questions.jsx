@@ -189,12 +189,24 @@ function Questions() {
 
             setQuestions(updatedQuestions);
 
-            // Apply current filters and sort
+            // Apply current filters and sort, respecting shuffle state
             const filteredAndSortedQuestions =
                 applyFiltersAndSort(updatedQuestions);
-            setDisplayedQuestions(
-                filteredAndSortedQuestions.slice(0, currentCount)
-            );
+
+            // If shuffled, we need to update the shuffled order
+            if (isShuffled) {
+                const shuffledIndex = displayedQuestions.findIndex(
+                    (q) => q.id === questionId
+                );
+                const updatedDisplayedQuestions = [...displayedQuestions];
+                updatedDisplayedQuestions[shuffledIndex] =
+                    updatedQuestions[questionIndex];
+                setDisplayedQuestions(updatedDisplayedQuestions);
+            } else {
+                setDisplayedQuestions(
+                    filteredAndSortedQuestions.slice(0, currentCount)
+                );
+            }
         } catch (error) {
             console.error("Error upvoting company:", error);
         }
@@ -273,12 +285,24 @@ function Questions() {
 
             setQuestions(updatedQuestions);
 
-            // Apply current filters and sort
+            // Apply current filters and sort, respecting shuffle state
             const filteredAndSortedQuestions =
                 applyFiltersAndSort(updatedQuestions);
-            setDisplayedQuestions(
-                filteredAndSortedQuestions.slice(0, currentCount)
-            );
+
+            // If shuffled, we need to update the shuffled order
+            if (isShuffled) {
+                const shuffledIndex = displayedQuestions.findIndex(
+                    (q) => q.id === questionId
+                );
+                const updatedDisplayedQuestions = [...displayedQuestions];
+                updatedDisplayedQuestions[shuffledIndex] =
+                    updatedQuestions[questionIndex];
+                setDisplayedQuestions(updatedDisplayedQuestions);
+            } else {
+                setDisplayedQuestions(
+                    filteredAndSortedQuestions.slice(0, currentCount)
+                );
+            }
         } catch (error) {
             console.error("Error updating upvote:", error);
         }
@@ -385,9 +409,12 @@ function Questions() {
             );
         }
 
-        // Apply sorting
+        // Apply sorting or maintain shuffle
         let sortedQuestions;
-        if (sortBy === "type") {
+        if (isShuffled) {
+            // If shuffled, maintain the current order
+            sortedQuestions = filteredQuestions;
+        } else if (sortBy === "type") {
             sortedQuestions = filteredQuestions.sort((a, b) => {
                 if (a.type === "User Added") return 1;
                 if (b.type === "User Added") return -1;
