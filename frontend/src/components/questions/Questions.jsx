@@ -12,6 +12,8 @@ import {
     getDocs,
     serverTimestamp,
     addDoc,
+    setDoc,
+    getDoc,
 } from "firebase/firestore";
 import { db } from "../../../../backend/firebase/firebase.config";
 import { useAuth } from "../auth/auth.jsx";
@@ -31,6 +33,8 @@ function Questions() {
     const [sortCompany, setSortCompany] = useState("");
     const [filterCompany, setFilterCompany] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const [userLineup, setUserLineup] = useState([]);
+    const [showLineupModal, setShowLineupModal] = useState(false);
 
     const typeOrder = [
         "Adaptability",
@@ -45,6 +49,66 @@ function Questions() {
     ];
 
     const { currentUser } = useAuth();
+
+    useEffect(() => {
+        const fetchUserLineup = async () => {
+            if (currentUser) {
+                const lineupRef = doc(
+                    db,
+                    "InterviewQuestionsLineup",
+                    currentUser.uid
+                );
+                const lineupSnap = await getDoc(lineupRef);
+                if (lineupSnap.exists()) {
+                    setUserLineup(lineupSnap.data().questions || []);
+                } else {
+                    await setDoc(lineupRef, { questions: [] });
+                }
+            }
+        };
+
+        fetchUserLineup();
+    }, [currentUser]);
+
+    const handleAddToLineup = async (question) => {
+        if (currentUser) {
+            const lineupRef = doc(
+                db,
+                "InterviewQuestionsLineup",
+                currentUser.uid
+            );
+
+            // Check if the question is already in the lineup
+            if (!userLineup.some((q) => q.id === question.id)) {
+                const updatedLineup = [...userLineup, question];
+                await updateDoc(lineupRef, {
+                    questions: arrayUnion(question),
+                });
+                setUserLineup(updatedLineup);
+            } else {
+                //may add message display but shouldn't occur now that button no longer appears after being added. 
+            }
+        }
+    };
+
+    const handleRemoveFromLineup = async (questionId) => {
+        if (currentUser) {
+            const lineupRef = doc(
+                db,
+                "InterviewQuestionsLineup",
+                currentUser.uid
+            );
+            const updatedLineup = userLineup.filter((q) => q.id !== questionId);
+            await updateDoc(lineupRef, {
+                questions: updatedLineup,
+            });
+            setUserLineup(updatedLineup);
+        }
+    };
+
+    const toggleLineupModal = () => {
+        setShowLineupModal(!showLineupModal);
+    };
 
     const handleAddQuestion = async (e) => {
         e.preventDefault();
@@ -579,19 +643,16 @@ function Questions() {
                                 Home
                             </a>
                         </li>
-
                         <li>
                             <a type="button" onClick={toInterview}>
                                 Interview
                             </a>
                         </li>
-
                         <li>
                             <a type="button" onClick={toFolders}>
                                 Folders
                             </a>
                         </li>
-
                         <li>
                             <a type="button" onClick={handleSignout}>
                                 Logout
@@ -616,73 +677,78 @@ function Questions() {
                         </div>
                         <div className="sort-and-filter-container">
                             <div className="sort-container">
-                                {/* ... existing sort dropdown ... */}
+                                <label htmlFor="sort-select">Sort by: </label>
+                                <select
+                                    id="sort-select"
+                                    value={sortBy}
+                                    onChange={handleSort}
+                                >
+                                    <option value="type">Question Type</option>
+                                    {typeOrder.map((type) => (
+                                        <option key={type} value={type}>
+                                            {type}
+                                        </option>
+                                    ))}
+                                    <option value="upvotes">
+                                        Most Upvotes
+                                    </option>
+                                </select>
+                                <button onClick={handleShuffle}>
+                                    Shuffle Questions
+                                </button>
+                                <button
+                                    onClick={toggleAddQuestionForm}
+                                    className="add-question-btn"
+                                >
+                                    {showAddQuestionForm
+                                        ? "Cancel"
+                                        : "Add New Question"}
+                                </button>
                             </div>
                             <div className="filter-container">
-                                {/* ... existing company filter dropdown ... */}
+                                <label htmlFor="company-filter">
+                                    Filter by Company:{" "}
+                                </label>
+                                <select
+                                    id="company-filter"
+                                    value={filterCompany}
+                                    onChange={handleFilterByCompany}
+                                >
+                                    <option value="">All Companies</option>
+                                    {Array.from(
+                                        new Set(
+                                            questions
+                                                .filter(
+                                                    (q) =>
+                                                        q.companies &&
+                                                        Array.isArray(
+                                                            q.companies
+                                                        )
+                                                )
+                                                .flatMap((q) =>
+                                                    q.companies.map(
+                                                        (c) => c.name
+                                                    )
+                                                )
+                                        )
+                                    )
+                                        .sort()
+                                        .map((company) => (
+                                            <option
+                                                key={company}
+                                                value={company}
+                                            >
+                                                {company}
+                                            </option>
+                                        ))}
+                                </select>
                             </div>
                         </div>
                     </div>
-
-                    <div className="sort-container">
-                        <label htmlFor="sort-select">Sort by: </label>
-                        <select
-                            id="sort-select"
-                            value={sortBy}
-                            onChange={handleSort}
-                        >
-                            <option value="type">Question Type</option>
-                            {typeOrder.map((type) => (
-                                <option key={type} value={type}>
-                                    {type}
-                                </option>
-                            ))}
-                            <option value="upvotes">Most Upvotes</option>
-                        </select>
-                        <button onClick={handleShuffle}>
-                            Shuffle Questions
-                        </button>
-                        <button
-                            onClick={toggleAddQuestionForm}
-                            className="add-question-btn"
-                        >
-                            {showAddQuestionForm
-                                ? "Cancel"
-                                : "Add New Question"}
-                        </button>
-                    </div>
-                    <div className="filter-container">
-                        <label htmlFor="company-filter">
-                            Filter by Company:{" "}
-                        </label>
-                        <select
-                            id="company-filter"
-                            value={filterCompany}
-                            onChange={handleFilterByCompany}
-                        >
-                            <option value="">All Companies</option>
-                            {Array.from(
-                                new Set(
-                                    questions
-                                        .filter(
-                                            (q) =>
-                                                q.companies &&
-                                                Array.isArray(q.companies)
-                                        )
-                                        .flatMap((q) =>
-                                            q.companies.map((c) => c.name)
-                                        )
-                                )
-                            )
-                                .sort()
-                                .map((company) => (
-                                    <option key={company} value={company}>
-                                        {company}
-                                    </option>
-                                ))}
-                        </select>
-                    </div>
                 </div>
+                <button onClick={toggleLineupModal} className="view-lineup-btn">
+                    View Lineup
+                </button>
                 <div className="questions-list">
                     {displayedQuestions.map((q) => (
                         <div key={q.id} className="question-item">
@@ -717,18 +783,32 @@ function Questions() {
                                     ))}
                                 </div>
                             )}
-                            <div className="upvote-container">
-                                <button
-                                    onClick={() => handleUpvote(q.id)}
-                                    className={`upvote-button ${
-                                        q.upvotedBy.includes(currentUser.uid)
-                                            ? "upvoted"
-                                            : ""
-                                    }`}
-                                >
-                                    ▲
-                                </button>
-                                <span>Upvotes: {q.upvotes}</span>
+                            <div className="question-actions">
+                                <div className="upvote-container">
+                                    <button
+                                        onClick={() => handleUpvote(q.id)}
+                                        className={`upvote-button ${
+                                            q.upvotedBy.includes(
+                                                currentUser.uid
+                                            )
+                                                ? "upvoted"
+                                                : ""
+                                        }`}
+                                    >
+                                        ▲
+                                    </button>
+                                    <span>Upvotes: {q.upvotes}</span>
+                                </div>
+                                {!userLineup.some(
+                                    (lineupQ) => lineupQ.id === q.id
+                                ) && (
+                                    <button
+                                        onClick={() => handleAddToLineup(q)}
+                                        className="add-to-lineup-button"
+                                    >
+                                        Add to Lineup
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -802,6 +882,30 @@ function Questions() {
                                 Cancel
                             </button>
                         </form>
+                    </div>
+                )}
+
+                {showLineupModal && (
+                    <div className="lineup-modal">
+                        <div className="lineup-modal-content">
+                            <h2>Your Question Lineup</h2>
+                            {userLineup.map((q) => (
+                                <div
+                                    key={q.id}
+                                    className="lineup-question-item"
+                                >
+                                    <p>{q.question}</p>
+                                    <button
+                                        onClick={() =>
+                                            handleRemoveFromLineup(q.id)
+                                        }
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            ))}
+                            <button onClick={toggleLineupModal}>Close</button>
+                        </div>
                     </div>
                 )}
             </div>
