@@ -22,7 +22,7 @@ import Spacing from "../landing_page/spacing/Spacing.jsx";
 import InterviewFeedback from "../InterviewFeedback/InterviewFeedback.jsx";
 import { Tooltip } from "react-tooltip";
 
-const interviewQuestions = interview_questions.basisBehavioralQuestions;
+// const interviewQuestions = interview_questions.basisBehavioralQuestions;
 
 let indexes = [];
 let messageQueue = [];
@@ -132,6 +132,8 @@ const Profile = () => {
     const [feedbackMessage, setFeedbackMessage] = useState(
         "Loading Interview Feedback"
     );
+    const [interviewQuestions, setInterviewQuestions] = useState([]);
+    const [showLineupModal, setShowLineupModal] = useState(false);
 
     const navigate = useNavigate();
 
@@ -150,6 +152,24 @@ const Profile = () => {
             }
         });
     }, [currentUser]);
+
+    const fetchLineupQuestions = async () => {
+        if (currentUser) {
+            const lineupRef = doc(
+                db,
+                "InterviewQuestionsLineup",
+                currentUser.uid
+            );
+            const lineupSnap = await getDoc(lineupRef);
+            if (lineupSnap.exists()) {
+                const questionObjects = lineupSnap.data().questions || []
+                const questionTexts = questionObjects.map(q => q.question)
+                setInterviewQuestions(questionTexts)
+                setInterviewQuestions((prevArray) => [...prevArray,"quit"])
+            }
+        }
+    };
+    fetchLineupQuestions();
 
     useEffect(() => {
         const unspokenMessages = messages.filter(
@@ -257,8 +277,35 @@ const Profile = () => {
             }
         }
     };
+    const toggleLineupModal = () => {
+        setShowLineupModal(!showLineupModal);
+    };
 
+    const goToQuestionsPage = () => {
+        navigate("/questions");
+    };
+
+    const clearLineup = async () => {
+        if (currentUser) {
+            const lineupRef = doc(
+                db,
+                "InterviewQuestionsLineup",
+                currentUser.uid
+            );
+            await updateDoc(lineupRef, { questions: [] });
+            setInterviewQuestions([]);
+        }
+    };
+
+    const [isInterviewQuestionsEmpty, setIsInterviewQuestionsEmpty] = useState(false)
     const startInterview = () => {
+        if(interviewQuestions[0]==="quit"){
+            setIsInterviewQuestionsEmpty(true)
+            setTimeout(() => {
+                setIsInterviewQuestionsEmpty(false)
+            }, 1000);
+            return
+        }
         indexes = [];
         messageQueue = [];
         isProcessing = false;
@@ -341,6 +388,7 @@ const Profile = () => {
     };
 
     const handleNewInterview = () => {
+        clearLineup()
         setNewInterview(true);
         setInterviewStarted(false);
         setMessages([]);
@@ -858,6 +906,55 @@ const Profile = () => {
                     >
                         Start Interview
                     </button>
+                    {
+                        isInterviewQuestionsEmpty && (
+                                <h2 className="interview-questions-empty">Please Add Some Interview Questions First.</h2>
+                            
+                        )
+                    }
+
+                    <button
+                        onClick={toggleLineupModal}
+                        className="view-lineup-btn"
+                    >
+                        View Lineup
+                    </button>
+                    {showLineupModal && (
+                        <div className="lineup-modal">
+                            <div className="lineup-modal-content">
+                                <h2>Your Question Lineup</h2>
+                                {interviewQuestions.length > 0 ? (
+                                    interviewQuestions.map((q, index) => (
+                                        <div
+                                            key={q.id}
+                                            className="lineup-question-item"
+                                        >
+                                            {q!=="quit" ? <p>
+                                                {index + 1}. {q}
+                                            </p>:""}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>
+                                        Your lineup is empty. Add some questions
+                                        to get started!
+                                    </p>
+                                )}
+                                <button
+                                    onClick={goToQuestionsPage}
+                                    className="add-questions-btn"
+                                >
+                                    Add More Questions
+                                </button>
+                                <button
+                                    onClick={toggleLineupModal}
+                                    className="close-modal-btn"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="messages-container">
