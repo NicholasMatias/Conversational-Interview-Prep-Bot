@@ -171,7 +171,18 @@
 .lineup-modal {
     max-height: 800px;
     height: auto;
-    overflow-y: auto;
+    overflow-y: auto;   
+    outline: 1px white solid;
+    z-index: 1000;
+}
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
 }
 
 /* Question Styles */

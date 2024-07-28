@@ -1016,6 +1016,7 @@ const Profile = () => {
                         </button>
                     </div>
                     {showLineupModal && (
+                        <div className="overlay">
                         <div className="lineup-modal">
                             <div className="lineup-modal-content">
                                 <h2>Your Question Lineup</h2>
@@ -1075,6 +1076,7 @@ const Profile = () => {
                                 </button>
                                 </div>
                             </div>
+                        </div>
                         </div>
                     )}
                 </div>
