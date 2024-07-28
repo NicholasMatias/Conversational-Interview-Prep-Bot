@@ -174,7 +174,9 @@ const Profile = () => {
                 const questionObjects = lineupSnap.data().questions || [];
                 const questionTexts = questionObjects.map((q) => q.question);
                 setInterviewQuestions(questionTexts);
+                if(!interviewQuestions.includes("quit")){
                 setInterviewQuestions((prevArray) => [...prevArray, "quit"]);
+                }
             }
         }
     };
@@ -313,6 +315,12 @@ const Profile = () => {
             setInterviewQuestions([]);
         }
     };
+    useEffect(()=> {
+        if (interviewQuestions[0] ==="quit"){
+            handleDeleteQuestion(0);
+        }
+    },[interviewQuestions])
+
 
     // deletes question from question lineup
     const handleDeleteQuestion = async (index) => {
@@ -349,6 +357,7 @@ const Profile = () => {
                 "InterviewQuestionsLineup",
                 currentUser.uid
             );
+            
             await updateDoc(lineupRef, {
                 questions: randomQuestions.map((q) => ({ question: q })),
             });
@@ -360,7 +369,7 @@ const Profile = () => {
 
     // initializes interview environment.
     const startInterview = () => {
-        if (interviewQuestions[0] === "quit") {
+        if (interviewQuestions[0] === "quit" || interviewQuestions.length===0) {
             setIsInterviewQuestionsEmpty(true);
             setTimeout(() => {
                 setIsInterviewQuestionsEmpty(false);
@@ -785,6 +794,10 @@ const Profile = () => {
                             message.content
                         ),
                     };
+                    if(feedbackItem.situation[1]+ feedbackItem.task[1] + feedbackItem.action[1] + feedbackItem.result[1] < 1.2){
+                        feedbackItem.relevance = ['fourth', 0]
+                    }
+
                     feedback.push(feedbackItem);
                 } catch (error) {
                     console.error("Error fetching feedback for message", error);
@@ -980,36 +993,40 @@ const Profile = () => {
             )}
             {!interviewStarted ? (
                 <div className="start-interview-container">
-                    <button
-                        className="start-interview-btn"
-                        onClick={startInterview}
-                    >
-                        Start Interview
-                    </button>
-                    {isInterviewQuestionsEmpty && (
-                        <h2 className="interview-questions-empty">
-                            Please Add Some Interview Questions First.
-                        </h2>
-                    )}
+                    <div className="interview-btn-container">
+                        <button
+                            className="start-interview-btn"
+                            onClick={startInterview}
+                        >
+                            Start Interview
+                        </button>
+                        {isInterviewQuestionsEmpty && (
+                            <div className="interview-questions-empty">
+                                <h2>
+                                    Please Add Some Interview Questions First.
+                                </h2>
+                            </div>
+                        )}
 
-                    <button
-                        onClick={toggleLineupModal}
-                        className="view-lineup-btn"
-                    >
-                        View Lineup
-                    </button>
+                        <button
+                            onClick={toggleLineupModal}
+                            className="view-lineup-btn"
+                        >
+                            View Lineup
+                        </button>
+                    </div>
                     {showLineupModal && (
                         <div className="lineup-modal">
                             <div className="lineup-modal-content">
                                 <h2>Your Question Lineup</h2>
-                                {interviewQuestions.length > 0 ? (
+                                {interviewQuestions.length > 0 && interviewQuestions[0] !=='quit'? (
                                     interviewQuestions.map((q, index) => (
                                         <div
                                             key={index}
                                             className="lineup-question-item"
                                         >
                                             {q !== "quit" ? (
-                                                <>
+                                                <div className="question-container">
                                                     <p>
                                                         {index + 1}. {q}
                                                     </p>
@@ -1023,38 +1040,40 @@ const Profile = () => {
                                                     >
                                                         Delete
                                                     </button>
-                                                </>
+                                                </div>
                                             ) : (
                                                 ""
                                             )}
                                         </div>
                                     ))
                                 ) : (
-                                    <p>
+                                    <p className="modal-lineup-empty-message">
                                         Your lineup is empty. Add some questions
                                         to get started!
                                     </p>
                                 )}
+                                <div className="questions-modal-button-container">
                                 <button
                                     onClick={goToQuestionsPage}
-                                    className="add-questions-btn"
+                                    className="add-questions-btn question-modal-btn"
                                 >
                                     Add More Questions
                                 </button>
                                 {showRandomQuestionsButton && (
                                     <button
                                         onClick={getRandomQuestions}
-                                        className="random-questions-btn"
+                                        className="random-questions-btn question-modal-btn"
                                     >
                                         Random Questions
                                     </button>
                                 )}
                                 <button
                                     onClick={toggleLineupModal}
-                                    className="close-modal-btn"
+                                    className="close-modal-btn question-modal-btn"
                                 >
                                     Close
                                 </button>
+                                </div>
                             </div>
                         </div>
                     )}

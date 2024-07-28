@@ -913,12 +913,13 @@ function Questions() {
                     <div className="lineup-modal">
                         <div className="lineup-modal-content">
                             <h2>Your Question Lineup</h2>
-                            {userLineup.map((q) => (
+                            {userLineup.map((q, index) => (
+                                
                                 <div
                                     key={q.id}
                                     className="lineup-question-item"
                                 >
-                                    <p>{q.question}</p>
+                                    <p>{index+1}. {q.question}</p>
                                     <button
                                         onClick={() =>
                                             handleRemoveFromLineup(q.id)
