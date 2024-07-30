@@ -687,106 +687,98 @@ function Questions() {
             </nav>
 
             <div className="questions-container">
-                <h1>Interview Questions</h1>
-                <div className="sort-and-filter-container">
-                    <div className="search-and-filter-container">
-                        <div className="search-container">
-                            <input
-                                type="text"
-                                placeholder="Search questions..."
-                                value={searchTerm}
-                                onChange={handleSearch}
-                                className="search-input"
-                            />
-                        </div>
-                        <div className="sort-and-filter-container">
-                            <div className="sort-container">
-                                <label htmlFor="sort-select">Sort by: </label>
-                                <select
-                                    id="sort-select"
-                                    value={sortBy}
-                                    onChange={handleSort}
-                                >
-                                    <option value="type">Question Type</option>
-                                    {typeOrder.map((type) => (
-                                        <option key={type} value={type}>
-                                            {type}
-                                        </option>
-                                    ))}
-                                    <option value="upvotes">
-                                        Most Upvotes
-                                    </option>
-                                </select>
-                                <button onClick={handleShuffle}>
-                                    Shuffle Questions
-                                </button>
-                                <button
-                                    onClick={toggleAddQuestionForm}
-                                    className="add-question-btn"
-                                >
-                                    {showAddQuestionForm
-                                        ? "Cancel"
-                                        : "Add New Question"}
-                                </button>
-                            </div>
-                            <div className="filter-container">
-                                <label htmlFor="company-filter">
-                                    Filter by Company:{" "}
-                                </label>
-                                <select
-                                    id="company-filter"
-                                    value={filterCompany}
-                                    onChange={handleFilterByCompany}
-                                >
-                                    <option value="">All Companies</option>
-                                    {Array.from(
-                                        new Set(
-                                            questions
-                                                .filter(
-                                                    (q) =>
-                                                        q.companies &&
-                                                        Array.isArray(
-                                                            q.companies
-                                                        )
-                                                )
-                                                .flatMap((q) =>
-                                                    q.companies.map(
-                                                        (c) => c.name
-                                                    )
-                                                )
-                                        )
-                                    )
-                                        .sort()
-                                        .map((company) => (
-                                            <option
-                                                key={company}
-                                                value={company}
-                                            >
-                                                {company}
-                                            </option>
-                                        ))}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                <h1 className="questions-title">Interview Questions</h1>
+                <div className="search-container">
+                    <input
+                        type="search"
+                        placeholder="Search questions..."
+                        value={searchTerm}
+                        onChange={handleSearch}
+                        className="search-input"
+                    />
                 </div>
-                <button onClick={toggleLineupModal} className="view-lineup-btn">
-                    View Lineup
-                </button>
+                <div className="sort-container">
+                    <select
+                        id="sort-select"
+                        value={sortBy}
+                        onChange={handleSort}
+                        className="questions-btns"
+                    >
+                        <option value="type">Question Type</option>
+                        {typeOrder.map((type) => (
+                            <option key={type} value={type}>
+                                {type}
+                            </option>
+                        ))}
+                        <option value="upvotes">Most Upvotes</option>
+                    </select>
+
+
+                    <select
+                        id="company-filter"
+                        className="questions-btns"
+                        value={filterCompany}
+                        onChange={handleFilterByCompany}
+                    >
+                        <option value="">All Companies</option>
+                        {Array.from(
+                            new Set(
+                                questions
+                                    .filter(
+                                        (q) =>
+                                            q.companies &&
+                                            Array.isArray(q.companies)
+                                    )
+                                    .flatMap((q) =>
+                                        q.companies.map((c) => c.name)
+                                    )
+                            )
+                        )
+                            .sort()
+                            .map((company) => (
+                                <option key={company} value={company}>
+                                    {company}
+                                </option>
+                            ))}
+                    </select>
+
+                    
+
+                    
+
+
+                    <button onClick={handleShuffle} className="questions-btns">
+                        Shuffle Questions
+                    </button>
+
+
+                    <button
+                        onClick={toggleAddQuestionForm}
+                        className="questions-btns"
+                    >
+                        {showAddQuestionForm ? "Cancel" : "Add New Question"}
+                    </button>
+
+                    <button
+                        onClick={toggleLineupModal}
+                        className="questions-btns"
+                    >
+                        View Lineup
+                    </button>
+                </div>
+
                 <div className="questions-list">
                     {displayedQuestions.map((q) => (
                         <div key={q.id} className="question-item">
-                            <h3>{q.type}</h3>
-                            <p>{q.question}</p>
+                            <h3 className="question-title">{q.type}</h3>
+                            <p className="question-text">{q.question}</p>
+                            <div className="question-btns-container">
                             {q.companies && q.companies.length > 0 && (
-                                <div className="question-companies">
+                                <>
                                     {q.companies.map((company, index) => (
-                                        <span
+                                        <div className="question-companies">
+                                        <button
                                             key={index}
-                                            className="company-tag"
-                                        >
-                                            {company.name} ({company.upvotes})
-                                            <button
                                                 onClick={() =>
                                                     handleCompanyUpvote(
                                                         q.id,
@@ -803,11 +795,12 @@ function Questions() {
                                             >
                                                 ▲
                                             </button>
-                                        </span>
+                                            {company.name} ({company.upvotes})
+                                            </div>
                                     ))}
-                                </div>
+                                    </>
+                                
                             )}
-                            <div className="question-actions">
                                 <div className="upvote-container">
                                     <button
                                         onClick={() => handleUpvote(q.id)}
@@ -821,7 +814,7 @@ function Questions() {
                                     >
                                         ▲
                                     </button>
-                                    <span>Upvotes: {q.upvotes}</span>
+                                    <span>Upvotes ({q.upvotes})</span>
                                 </div>
                                 {!userLineup.some(
                                     (lineupQ) => lineupQ.id === q.id
@@ -833,7 +826,8 @@ function Questions() {
                                         Add to Lineup
                                     </button>
                                 )}
-                            </div>
+    </div>
+                            
                         </div>
                     ))}
                 </div>
@@ -852,11 +846,13 @@ function Questions() {
                 )}
 
                 {showAddQuestionForm && (
+                    <div className="overlay">
                     <div className="add-question-container">
                         <form
                             onSubmit={handleAddQuestion}
                             className="add-question-form"
                         >
+                            <h2 className="add-question-title">Add a Question</h2>
                             <textarea
                                 value={newQuestion}
                                 onChange={(e) => setNewQuestion(e.target.value)}
@@ -881,7 +877,7 @@ function Questions() {
                             </div>
                             <div className="company-tags">
                                 {companies.map((company, index) => (
-                                    <span key={index} className="company-tag">
+                                    <span key={index} className="company-tag-button">
                                         {company.name}
                                         <button
                                             type="button"
@@ -891,7 +887,7 @@ function Questions() {
                                                 )
                                             }
                                         >
-                                            ×
+                                            <h3>X</h3>
                                         </button>
                                     </span>
                                 ))}
@@ -907,19 +903,22 @@ function Questions() {
                             </button>
                         </form>
                     </div>
+                    </div>
                 )}
 
                 {showLineupModal && (
+                    <div className="overlay">
                     <div className="lineup-modal">
                         <div className="lineup-modal-content">
                             <h2>Your Question Lineup</h2>
                             {userLineup.map((q, index) => (
-                                
                                 <div
                                     key={q.id}
                                     className="lineup-question-item"
                                 >
-                                    <p>{index+1}. {q.question}</p>
+                                    <p>
+                                        {index + 1}. {q.question}
+                                    </p>
                                     <button
                                         onClick={() =>
                                             handleRemoveFromLineup(q.id)
@@ -931,6 +930,7 @@ function Questions() {
                             ))}
                             <button onClick={toggleLineupModal}>Close</button>
                         </div>
+                    </div>
                     </div>
                 )}
             </div>
