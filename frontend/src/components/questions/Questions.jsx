@@ -1043,7 +1043,7 @@ function Questions() {
                         <div className="lineup-modal">
                             <div className="lineup-modal-content">
                                 <h2>Your Question Lineup</h2>
-                                {userLineup.map((q, index) => (
+                                {userLineup.length>0 ? userLineup.map((q, index) => (
                                     <div
                                         key={q.id}
                                         className="lineup-question-item"
@@ -1059,8 +1059,12 @@ function Questions() {
                                             Remove
                                         </button>
                                     </div>
-                                ))}
-                                <button onClick={toggleLineupModal}>
+                                )):
+                                <p className="modal-lineup-empty-message additional">Your lineup is empty. Add some questions to get started!
+
+                                </p>}
+                                <button onClick={toggleLineupModal}
+                                className="question-modal-btn">
                                     Close
                                 </button>
                             </div>
