@@ -395,6 +395,68 @@ function Questions() {
         return shuffled;
     }
 
+    // add company tag to existing question
+    const handleAddCompanyToQuestion = async (questionId, companyName) => {
+        if (companyName.trim() === "") return;
+
+        try {
+            const questionRef = doc(db, "questions", questionId);
+            const questionDoc = await getDoc(questionRef);
+
+            if (questionDoc.exists()) {
+                const currentCompanies = questionDoc.data().companies || [];
+
+                // Check if the company already exists (case-insensitive)
+                const companyExists = currentCompanies.some(
+                    (company) =>
+                        company.name.toLowerCase() ===
+                        companyName.trim().toLowerCase()
+                );
+
+                if (companyExists) {
+                    alert(
+                        "This company has already been added to the question."
+                    );
+                    return;
+                }
+
+                const newCompanyObject = {
+                    name: companyName.trim(),
+                    upvotes: 0,
+                    upvotedBy: [],
+                };
+
+                const updatedCompanies = [
+                    ...currentCompanies,
+                    newCompanyObject,
+                ];
+
+                await updateDoc(questionRef, { companies: updatedCompanies });
+
+                // Update local state
+                setQuestions((prevQuestions) =>
+                    prevQuestions.map((q) =>
+                        q.id === questionId
+                            ? { ...q, companies: updatedCompanies }
+                            : q
+                    )
+                );
+
+                // Update displayed questions
+                setDisplayedQuestions((prevDisplayed) =>
+                    prevDisplayed.map((q) =>
+                        q.id === questionId
+                            ? { ...q, companies: updatedCompanies }
+                            : q
+                    )
+                );
+            }
+            toggleAddCompanyInput(questionId);
+        } catch (error) {
+            console.error("Error adding company to question:", error);
+        }
+    };
+
     // calls shuffle method => randomly displayed
     const handleShuffle = () => {
         setIsShuffled(true);
@@ -413,6 +475,8 @@ function Questions() {
             const fetchedQuestions = querySnapshot.docs.map((doc) => ({
                 ...doc.data(),
                 id: doc.id,
+                companies: doc.data().companies || [],
+                showAddCompany: false,
             }));
             setQuestions(fetchedQuestions);
             setDisplayedQuestions(sortQuestions(fetchedQuestions, "type", 10));
@@ -633,6 +697,16 @@ function Questions() {
         );
     };
 
+    const toggleAddCompanyInput = (questionId) => {
+        setDisplayedQuestions((prevQuestions) =>
+            prevQuestions.map((q) =>
+                q.id === questionId
+                    ? { ...q, showAddCompany: !q.showAddCompany }
+                    : q
+            )
+        );
+    };
+
     const sortedQuestions = sortQuestions(questions, sortBy);
 
     const toHome = () => {
@@ -713,7 +787,6 @@ function Questions() {
                         <option value="upvotes">Most Upvotes</option>
                     </select>
 
-
                     <select
                         id="company-filter"
                         className="questions-btns"
@@ -742,15 +815,9 @@ function Questions() {
                             ))}
                     </select>
 
-                    
-
-                    
-
-
                     <button onClick={handleShuffle} className="questions-btns">
                         Shuffle Questions
                     </button>
-
 
                     <button
                         onClick={toggleAddQuestionForm}
@@ -773,34 +840,34 @@ function Questions() {
                             <h3 className="question-title">{q.type}</h3>
                             <p className="question-text">{q.question}</p>
                             <div className="question-btns-container">
-                            {q.companies && q.companies.length > 0 && (
-                                <>
-                                    {q.companies.map((company, index) => (
-                                        <div className="question-companies">
-                                        <button
-                                            key={index}
-                                                onClick={() =>
-                                                    handleCompanyUpvote(
-                                                        q.id,
-                                                        company.name
-                                                    )
-                                                }
-                                                className={`upvote-button ${
-                                                    company.upvotedBy.includes(
-                                                        currentUser.uid
-                                                    )
-                                                        ? "upvoted"
-                                                        : ""
-                                                }`}
-                                            >
-                                                ▲
-                                            </button>
-                                            {company.name} ({company.upvotes})
+                                {q.companies && q.companies.length > 0 && (
+                                    <>
+                                        {q.companies.map((company, index) => (
+                                            <div className="question-companies">
+                                                <button
+                                                    key={index}
+                                                    onClick={() =>
+                                                        handleCompanyUpvote(
+                                                            q.id,
+                                                            company.name
+                                                        )
+                                                    }
+                                                    className={`upvote-button ${
+                                                        company.upvotedBy.includes(
+                                                            currentUser.uid
+                                                        )
+                                                            ? "upvoted"
+                                                            : ""
+                                                    }`}
+                                                >
+                                                    ▲
+                                                </button>
+                                                {company.name} (
+                                                {company.upvotes})
                                             </div>
-                                    ))}
+                                        ))}
                                     </>
-                                
-                            )}
+                                )}
                                 <div className="upvote-container">
                                     <button
                                         onClick={() => handleUpvote(q.id)}
@@ -816,6 +883,65 @@ function Questions() {
                                     </button>
                                     <span>Upvotes ({q.upvotes})</span>
                                 </div>
+
+                                <button
+                                    onClick={() => toggleAddCompanyInput(q.id)}
+                                    className="add-company-button"
+                                >
+                                    <h1>+</h1>
+                                </button>
+
+                                {q.showAddCompany && (
+                                    <div className="add-company-container">
+                                        <input
+                                            type="text"
+                                            value={q.newCompany || ""}
+                                            onChange={(e) => {
+                                                const updatedQuestion = {
+                                                    ...q,
+                                                    newCompany: e.target.value,
+                                                };
+                                                setDisplayedQuestions(
+                                                    (prevQuestions) =>
+                                                        prevQuestions.map(
+                                                            (prevQ) =>
+                                                                prevQ.id ===
+                                                                q.id
+                                                                    ? updatedQuestion
+                                                                    : prevQ
+                                                        )
+                                                );
+                                            }}
+                                            placeholder="Enter company name"
+                                        />
+                                        <button
+                                            onClick={() => {
+                                                handleAddCompanyToQuestion(
+                                                    q.id,
+                                                    q.newCompany
+                                                );
+                                                const updatedQuestion = {
+                                                    ...q,
+                                                    newCompany: "",
+                                                };
+                                                setDisplayedQuestions(
+                                                    (prevQuestions) =>
+                                                        prevQuestions.map(
+                                                            (prevQ) =>
+                                                                prevQ.id ===
+                                                                q.id
+                                                                    ? updatedQuestion
+                                                                    : prevQ
+                                                        )
+                                                );
+                                            }}
+                                            className="add-company-button-confirm"
+                                        >
+                                            Add Company
+                                        </button>
+                                    </div>
+                                )}
+
                                 {!userLineup.some(
                                     (lineupQ) => lineupQ.id === q.id
                                 ) && (
@@ -826,8 +952,7 @@ function Questions() {
                                         Add to Lineup
                                     </button>
                                 )}
-    </div>
-                            
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -847,90 +972,99 @@ function Questions() {
 
                 {showAddQuestionForm && (
                     <div className="overlay">
-                    <div className="add-question-container">
-                        <form
-                            onSubmit={handleAddQuestion}
-                            className="add-question-form"
-                        >
-                            <h2 className="add-question-title">Add a Question</h2>
-                            <textarea
-                                value={newQuestion}
-                                onChange={(e) => setNewQuestion(e.target.value)}
-                                placeholder="Enter your question here..."
-                                required
-                            />
-                            <div className="company-input">
-                                <input
-                                    type="text"
-                                    value={currentCompany}
+                        <div className="add-question-container">
+                            <form
+                                onSubmit={handleAddQuestion}
+                                className="add-question-form"
+                            >
+                                <h2 className="add-question-title">
+                                    Add a Question
+                                </h2>
+                                <textarea
+                                    value={newQuestion}
                                     onChange={(e) =>
-                                        setCurrentCompany(e.target.value)
+                                        setNewQuestion(e.target.value)
                                     }
-                                    placeholder="Enter company tag..."
+                                    placeholder="Enter your question here..."
+                                    required
                                 />
+                                <div className="company-input">
+                                    <input
+                                        type="text"
+                                        value={currentCompany}
+                                        onChange={(e) =>
+                                            setCurrentCompany(e.target.value)
+                                        }
+                                        placeholder="Enter company tag..."
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleAddCompany}
+                                    >
+                                        Add Company
+                                    </button>
+                                </div>
+                                <div className="company-tags">
+                                    {companies.map((company, index) => (
+                                        <span
+                                            key={index}
+                                            className="company-tag-button"
+                                        >
+                                            {company.name}
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleRemoveCompany(
+                                                        company.name
+                                                    )
+                                                }
+                                            >
+                                                <h3>X</h3>
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <button type="submit">Submit Question</button>
                                 <button
                                     type="button"
-                                    onClick={handleAddCompany}
+                                    onClick={handleAddQuestionCancel}
+                                    className="add-question-cancel-btn"
                                 >
-                                    Add Company
+                                    Cancel
                                 </button>
-                            </div>
-                            <div className="company-tags">
-                                {companies.map((company, index) => (
-                                    <span key={index} className="company-tag-button">
-                                        {company.name}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleRemoveCompany(
-                                                    company.name
-                                                )
-                                            }
-                                        >
-                                            <h3>X</h3>
-                                        </button>
-                                    </span>
-                                ))}
-                            </div>
-
-                            <button type="submit">Submit Question</button>
-                            <button
-                                type="button"
-                                onClick={handleAddQuestionCancel}
-                                className="add-question-cancel-btn"
-                            >
-                                Cancel
-                            </button>
-                        </form>
-                    </div>
+                            </form>
+                        </div>
                     </div>
                 )}
 
                 {showLineupModal && (
                     <div className="overlay">
-                    <div className="lineup-modal">
-                        <div className="lineup-modal-content">
-                            <h2>Your Question Lineup</h2>
-                            {userLineup.map((q, index) => (
-                                <div
-                                    key={q.id}
-                                    className="lineup-question-item"
-                                >
-                                    <p>
-                                        {index + 1}. {q.question}
-                                    </p>
-                                    <button
-                                        onClick={() =>
-                                            handleRemoveFromLineup(q.id)
-                                        }
+                        <div className="lineup-modal">
+                            <div className="lineup-modal-content">
+                                <h2>Your Question Lineup</h2>
+                                {userLineup.map((q, index) => (
+                                    <div
+                                        key={q.id}
+                                        className="lineup-question-item"
                                     >
-                                        Remove
-                                    </button>
-                                </div>
-                            ))}
-                            <button onClick={toggleLineupModal}>Close</button>
+                                        <p>
+                                            {index + 1}. {q.question}
+                                        </p>
+                                        <button
+                                            onClick={() =>
+                                                handleRemoveFromLineup(q.id)
+                                            }
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                ))}
+                                <button onClick={toggleLineupModal}>
+                                    Close
+                                </button>
+                            </div>
                         </div>
-                    </div>
                     </div>
                 )}
             </div>

@@ -4,26 +4,28 @@
     padding: 20px;
 }
 
-.filter-container{
-    width:auto;
+.filter-container {
+    width: auto;
 }
 
 .questions-list {
     display: grid;
     gap: 20px;
 }
-.question-item{
+.question-item {
     background-color: white;
     border-radius: 5px;
     outline: 2px black solid;
     padding: 5px;
 }
 
-.question-btns-container{
+.question-btns-container {
     display: flex;
+    flex-wrap: wrap;
 }
 
-.question-companies, .upvote-container{
+.question-companies,
+.upvote-container {
     width: auto;
     max-width: 130px;
     padding: 5px;
@@ -61,7 +63,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    outline:2px black solid;
+    outline: 2px black solid;
 }
 
 .back-to-top-btn:hover {
@@ -118,7 +120,11 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-.questions-btns, .add-to-lineup-button, .add-question-form button, .lineup-modal-content button{
+.questions-btns,
+.add-to-lineup-button,
+.add-question-form button,
+.lineup-modal-content button,
+.add-company-button-confirm {
     height: 40px;
     padding: 5px 15px 5px 15px;
     border-radius: 5px;
@@ -128,45 +134,73 @@
     outline: 2px black solid;
 }
 
-.add-question-form button{
+.add-company-button-confirm {
     margin: 5px;
 }
 
-.lineup-question-item button{
+.add-company-container input {
+    height: 40px;
+    border-radius: 4px;
+    outline: none;
+}
+
+.add-company-button {
+    height: 40px;
+    width: 40px;
+    margin: 5px;
+    outline: 2px black solid;
+    background-color: #008a90;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    color: white;
+}
+.add-company-button-confirm:hover{
+    cursor: pointer;
+}
+
+.add-question-form button {
+    margin: 5px;
+}
+
+.lineup-question-item button {
     margin-left: 10px;
     height: 25px;
 }
 
-.questions-btns:hover ,.add-to-lineup-button:hover, .add-question-form button:hover, .lineup-modal-content button:hover{
+.questions-btns:hover,
+.add-to-lineup-button:hover,
+.add-question-form button:hover,
+.lineup-modal-content button:hover {
     background-color: #0a5357;
     cursor: pointer;
 }
-.add-to-lineup-button{
-    margin:5px;
+.add-to-lineup-button {
+    margin: 5px;
 }
 
-.sort-container{
+.sort-container {
     display: flex;
-    justify-content:space-evenly;
+    justify-content: space-evenly;
     margin: 15px;
 }
 
-.search-container{
+.search-container {
     margin: 15px 30px 15px 30px;
     width: 740px;
 }
 
-.search-input{
+.search-input {
     width: 100%;
     height: 40px;
     outline: 1px black solid;
 }
 
-.search-container input[type="search"]:focus{
+.search-container input[type="search"]:focus {
     outline: 3.5px black solid;
 }
 
-.questions-title{
+.questions-title {
     text-align: center;
     color: white;
     font-size: 40px;
@@ -187,7 +221,6 @@
     outline: 2px black solid;
 }
 
-
 .company-input {
     display: flex;
     margin-bottom: 10px;
@@ -207,41 +240,40 @@
     margin-bottom: 10px;
     margin-left: 5px;
     gap: 5px;
-    
 }
 
-.company-tag-button{
+.company-tag-button {
     background-color: #008a90;
     outline: 2px black solid;
     color: black;
     padding: 0px 10px 0px 10px;
     border-radius: 4px;
     color: white;
-
 }
-.company-tag-button button{
+.company-tag-button button {
     outline: none;
     padding: 0;
     color: white;
     background-color: #008a90;
     height: 15px;
-
 }
-.company-tag-button button:hover{
+.company-tag-button button:hover {
     color: red;
     background-color: #008a90;
 }
 
-.add-question-title{
+.add-question-title {
     text-align: center;
 }
 
-
-.question-title,.question-text, .add-question-title{
+.question-title,
+.question-text,
+.add-question-title {
     margin: 5px;
 }
 
-.lineup-question-item{
+.lineup-question-item {
     display: flex;
-    margin: 10px;
+    margin: 15px;
+    align-items: center;
 }
