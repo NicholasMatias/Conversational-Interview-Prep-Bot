@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Questions.css";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "../auth/auth";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {
     doc,
     updateDoc,
@@ -94,14 +95,15 @@ function Questions() {
     };
 
     // allows users to remove question from the lineup
-    const handleRemoveFromLineup = async (questionId) => {
+    const handleRemoveFromLineup = async (index) => {
         if (currentUser) {
             const lineupRef = doc(
                 db,
                 "InterviewQuestionsLineup",
                 currentUser.uid
             );
-            const updatedLineup = userLineup.filter((q) => q.id !== questionId);
+            const updatedLineup = [...userLineup];
+            updatedLineup.splice(index, 1);
             await updateDoc(lineupRef, {
                 questions: updatedLineup,
             });
@@ -486,9 +488,9 @@ function Questions() {
         fetchQuestions();
     }, []);
 
-    // allows the user to load 20 more questions or until there are no more questions left
+    // allows the user to load 10 more questions or until there are no more questions left
     const loadMoreQuestions = () => {
-        const newCount = Math.min(currentCount + 20, questions.length);
+        const newCount = Math.min(currentCount + 10, questions.length);
         setCurrentCount(newCount);
 
         let filteredQuestions;
@@ -1043,28 +1045,36 @@ function Questions() {
                         <div className="lineup-modal">
                             <div className="lineup-modal-content">
                                 <h2>Your Question Lineup</h2>
-                                {userLineup.length>0 ? userLineup.map((q, index) => (
-                                    <div
-                                        key={q.id}
-                                        className="lineup-question-item"
-                                    >
-                                        <p>
-                                            {index + 1}. {q.question}
-                                        </p>
-                                        <button
-                                            onClick={() =>
-                                                handleRemoveFromLineup(q.id)
-                                            }
+                                {userLineup.length > 0 ? (
+                                    userLineup.map((q, index) => (
+                                        <div
+                                            key={q.id}
+                                            className="lineup-question-item"
                                         >
-                                            Remove
-                                        </button>
-                                    </div>
-                                )):
-                                <p className="modal-lineup-empty-message additional">Your lineup is empty. Add some questions to get started!
-
-                                </p>}
-                                <button onClick={toggleLineupModal}
-                                className="question-modal-btn">
+                                            <p>
+                                                {index + 1}. {q.question}
+                                            </p>
+                                            <button
+                                                onClick={() =>
+                                                    handleRemoveFromLineup(
+                                                        index
+                                                    )
+                                                }
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="modal-lineup-empty-message additional">
+                                        Your lineup is empty. Add some questions
+                                        to get started!
+                                    </p>
+                                )}
+                                <button
+                                    onClick={toggleLineupModal}
+                                    className="question-modal-btn"
+                                >
                                     Close
                                 </button>
                             </div>
