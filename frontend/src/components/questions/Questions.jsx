@@ -1074,28 +1074,39 @@ function Questions() {
                                             <div
                                                 {...provided.droppableProps}
                                                 ref={provided.innerRef}
-                                                style={{ padding: 0, margin: 0 }}
+                                                style={{
+                                                    padding: 0,
+                                                    margin: 0,
+                                                }}
                                             >
                                                 {userLineup.map((q, index) => (
                                                     <Draggable
-                                                        key={q.id+'-button'}
+                                                        key={q.id + "-button"}
                                                         draggableId={q.id.toString()}
                                                         index={index}
                                                     >
-                                                        {(provided, snapshot) => (
+                                                        {(
+                                                            provided,
+                                                            snapshot
+                                                        ) => (
                                                             <div
                                                                 ref={
                                                                     provided.innerRef
                                                                 }
                                                                 {...provided.draggableProps}
-                                                                className={`lineup-question-item ${snapshot.isDragging ? 'dragging' :""}`}
-                                                                style={{...provided.draggableProps.style,
-                                                                    background: snapshot.isDragging ? 'lightblue' : 'blue',
-
+                                                                {...provided.dragHandleProps}
+                                                                style={{
+                                                                    ...provided
+                                                                        .draggableProps
+                                                                        .style,
+                                                                    left: "auto !important",
+                                                                    top: "auto !important",
                                                                 }}
-
-                                                                
-                                                                
+                                                                className={`lineup-question-item ${
+                                                                    snapshot.isDragging
+                                                                        ? "dragging"
+                                                                        : ""
+                                                                }`}
                                                             >
                                                                 <div
                                                                     {...provided.dragHandleProps}
@@ -1119,60 +1130,19 @@ function Questions() {
                                                             </div>
                                                         )}
                                                     </Draggable>
-                                                    // <Draggable
-                                                    //     key={q.id.toString()}
-                                                    //     draggableId={q.id.toString()}
-                                                    //     index={index}
-                                                    // >
-                                                    //     {(
-                                                    //         provided,
-                                                    //         snapshot
-                                                    //     ) => (
-                                                    //         <div
-                                                    //             ref={
-                                                    //                 provided.innerRef
-                                                    //             }
-                                                    //             {...provided.draggableProps}
-                                                    //             className={`lineup-question-item ${
-                                                    //                 snapshot.isDragging
-                                                    //                     ? "dragging"
-                                                    //                     : ""
-                                                    //             }`
-                                                    //         }
-                                                    //         style={{
-                                                    //             ...provided.draggableProps.style,
-                                                    //             transform: snapshot.isDragging ? provided.draggableProps.style.transform : 'none',
-                                                    //         }}
-                                                
-                                                    //         >
-                                                    //             <div
-                                                    //                 {...provided.dragHandleProps}
-                                                    //                 className="drag-handle"
-                                                    //             >
-                                                    //                 ☰{" "}
-                                                    //             </div>
-                                                    //             <p>
-                                                    //                 {index + 1}.{" "}
-                                                    //                 {q.question}
-                                                    //             </p>
-                                                    //             <button
-                                                    //                 onClick={() =>
-                                                    //                     handleRemoveFromLineup(
-                                                    //                         index
-                                                    //                     )
-                                                    //                 }
-                                                    //             >
-                                                    //                 Remove
-                                                    //             </button>
-                                                    //         </div>
-                                                    //     )}
-                                                    // </Draggable>
                                                 ))}
                                                 {provided.placeholder}
                                             </div>
                                         )}
                                     </Droppable>
                                 </DragDropContext>
+                                
+                                {userLineup.length == 0 && (
+                                    <div className="no-questions-lineup">
+                                        <h3>Your lineup is currently empty</h3>
+                                    </div>
+                                )}
+
                                 <button
                                     onClick={toggleLineupModal}
                                     className="question-modal-btn"
