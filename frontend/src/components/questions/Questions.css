@@ -105,7 +105,7 @@
 }
 
 .lineup-modal {
-    position: fixed;
+    /* position: fixed; */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -272,15 +272,37 @@
     margin: 5px;
 }
 
+
+
+
 .lineup-question-item {
+    position: relative;
+    padding: 16px 16px 16px 40px; 
+    margin: 0 0 8px 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     display: flex;
-    margin: 15px;
     align-items: center;
 }
 
-/* .question-modal-btn{
-    margin-top: 20px;
-} */
+.drag-handle {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: grab;
+    font-size: 20px;
+    color: #888;
+}
+
+.dragging .drag-handle {
+    cursor: grabbing;
+} 
+
+.dragging {
+    box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+} 
 
 .additional{
     margin-bottom: 15px;

@@ -62,9 +62,17 @@ function Questions() {
                 );
                 const lineupSnap = await getDoc(lineupRef);
                 if (lineupSnap.exists()) {
-                    setUserLineup(lineupSnap.data().questions || []);
+                    const questions = lineupSnap.data().questions || [];
+                    // Ensure each question has an id
+                    setUserLineup(
+                        questions.map((q, index) => ({
+                            ...q,
+                            id: q.id || `question-${index}`,
+                        }))
+                    );
                 } else {
                     await setDoc(lineupRef, { questions: [] });
+                    setUserLineup([]);
                 }
             }
         };
@@ -72,7 +80,28 @@ function Questions() {
         fetchUserLineup();
     }, [currentUser]);
 
-    //enables users to add questions to the lineup
+    const onDragEnd = (result) => {
+        if (!result.destination) {
+            return;
+        }
+
+        const items = Array.from(userLineup);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+
+        setUserLineup(items);
+
+        // Update Firestore
+        if (currentUser) {
+            const lineupRef = doc(
+                db,
+                "InterviewQuestionsLineup",
+                currentUser.uid
+            );
+            updateDoc(lineupRef, { questions: items });
+        }
+    };
+
     const handleAddToLineup = async (question) => {
         if (currentUser) {
             const lineupRef = doc(
@@ -80,21 +109,18 @@ function Questions() {
                 "InterviewQuestionsLineup",
                 currentUser.uid
             );
-
-            // Check if the question is already in the lineup
             if (!userLineup.some((q) => q.id === question.id)) {
-                const updatedLineup = [...userLineup, question];
-                await updateDoc(lineupRef, {
-                    questions: arrayUnion(question),
-                });
+                const newQuestion = {
+                    ...question,
+                    id: question.id || `question-${Date.now()}`, // Ensure unique ID
+                };
+                const updatedLineup = [...userLineup, newQuestion];
+                await updateDoc(lineupRef, { questions: updatedLineup });
                 setUserLineup(updatedLineup);
-            } else {
-                //may add message display but shouldn't occur now that button no longer appears after being added.
             }
         }
     };
 
-    // allows users to remove question from the lineup
     const handleRemoveFromLineup = async (index) => {
         if (currentUser) {
             const lineupRef = doc(
@@ -102,11 +128,8 @@ function Questions() {
                 "InterviewQuestionsLineup",
                 currentUser.uid
             );
-            const updatedLineup = [...userLineup];
-            updatedLineup.splice(index, 1);
-            await updateDoc(lineupRef, {
-                questions: updatedLineup,
-            });
+            const updatedLineup = userLineup.filter((_, i) => i !== index);
+            await updateDoc(lineupRef, { questions: updatedLineup });
             setUserLineup(updatedLineup);
         }
     };
@@ -1045,32 +1068,111 @@ function Questions() {
                         <div className="lineup-modal">
                             <div className="lineup-modal-content">
                                 <h2>Your Question Lineup</h2>
-                                {userLineup.length > 0 ? (
-                                    userLineup.map((q, index) => (
-                                        <div
-                                            key={q.id}
-                                            className="lineup-question-item"
-                                        >
-                                            <p>
-                                                {index + 1}. {q.question}
-                                            </p>
-                                            <button
-                                                onClick={() =>
-                                                    handleRemoveFromLineup(
-                                                        index
-                                                    )
-                                                }
+                                <DragDropContext onDragEnd={onDragEnd}>
+                                    <Droppable droppableId="lineup">
+                                        {(provided) => (
+                                            <div
+                                                {...provided.droppableProps}
+                                                ref={provided.innerRef}
+                                                style={{ padding: 0, margin: 0 }}
                                             >
-                                                Remove
-                                            </button>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className="modal-lineup-empty-message additional">
-                                        Your lineup is empty. Add some questions
-                                        to get started!
-                                    </p>
-                                )}
+                                                {userLineup.map((q, index) => (
+                                                    <Draggable
+                                                        key={q.id+'-button'}
+                                                        draggableId={q.id.toString()}
+                                                        index={index}
+                                                    >
+                                                        {(provided, snapshot) => (
+                                                            <div
+                                                                ref={
+                                                                    provided.innerRef
+                                                                }
+                                                                {...provided.draggableProps}
+                                                                className={`lineup-question-item ${snapshot.isDragging ? 'dragging' :""}`}
+                                                                style={{...provided.draggableProps.style,
+                                                                    background: snapshot.isDragging ? 'lightblue' : 'blue',
+
+                                                                }}
+
+                                                                
+                                                                
+                                                            >
+                                                                <div
+                                                                    {...provided.dragHandleProps}
+                                                                    className="drag-handle"
+                                                                >
+                                                                    ☰{" "}
+                                                                </div>
+                                                                <p>
+                                                                    {index + 1}.{" "}
+                                                                    {q.question}
+                                                                </p>
+                                                                <button
+                                                                    onClick={() =>
+                                                                        handleRemoveFromLineup(
+                                                                            index
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Remove
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                    // <Draggable
+                                                    //     key={q.id.toString()}
+                                                    //     draggableId={q.id.toString()}
+                                                    //     index={index}
+                                                    // >
+                                                    //     {(
+                                                    //         provided,
+                                                    //         snapshot
+                                                    //     ) => (
+                                                    //         <div
+                                                    //             ref={
+                                                    //                 provided.innerRef
+                                                    //             }
+                                                    //             {...provided.draggableProps}
+                                                    //             className={`lineup-question-item ${
+                                                    //                 snapshot.isDragging
+                                                    //                     ? "dragging"
+                                                    //                     : ""
+                                                    //             }`
+                                                    //         }
+                                                    //         style={{
+                                                    //             ...provided.draggableProps.style,
+                                                    //             transform: snapshot.isDragging ? provided.draggableProps.style.transform : 'none',
+                                                    //         }}
+                                                
+                                                    //         >
+                                                    //             <div
+                                                    //                 {...provided.dragHandleProps}
+                                                    //                 className="drag-handle"
+                                                    //             >
+                                                    //                 ☰{" "}
+                                                    //             </div>
+                                                    //             <p>
+                                                    //                 {index + 1}.{" "}
+                                                    //                 {q.question}
+                                                    //             </p>
+                                                    //             <button
+                                                    //                 onClick={() =>
+                                                    //                     handleRemoveFromLineup(
+                                                    //                         index
+                                                    //                     )
+                                                    //                 }
+                                                    //             >
+                                                    //                 Remove
+                                                    //             </button>
+                                                    //         </div>
+                                                    //     )}
+                                                    // </Draggable>
+                                                ))}
+                                                {provided.placeholder}
+                                            </div>
+                                        )}
+                                    </Droppable>
+                                </DragDropContext>
                                 <button
                                     onClick={toggleLineupModal}
                                     className="question-modal-btn"
