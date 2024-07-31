@@ -89,11 +89,10 @@ const groqInstance = new groq({ apiKey: process.env.GROQ_API_KEY });
 app.post("/api/chat", async (req, res) => {
     const { message, context, lastQuestionCheck, prevIsFollowUp } = req.body;
 
-
     let lastQuestion = lastQuestionCheck === "quit";
     try {
-        const doFollowUp = Math.random() > followUpQuestionThreshold && !lastQuestion;
-
+        const doFollowUp =
+            Math.random() > followUpQuestionThreshold && !lastQuestion;
 
         const prompt = lastQuestion
             ? lastQuestion_prompt(context, message)
@@ -101,7 +100,6 @@ app.post("/api/chat", async (req, res) => {
             ? doFollowUp_notLastQuestion_prompt(context, message)
             : notLastQuestion_notFollowUp_prompt(context, message);
 
-        console.log(`response: ${message}\nquestion: ${context}\n\n`)
         const response = await groqInstance.chat.completions.create({
             messages: [
                 {
@@ -112,9 +110,9 @@ app.post("/api/chat", async (req, res) => {
             model: "llama3-70b-8192",
         });
 
-
-        const botResponse = response.choices[0]?.message?.content || "I didn't understand that.";
-
+        const botResponse =
+            response.choices[0]?.message?.content ||
+            "I didn't understand that.";
 
         res.json({
             response: botResponse,
@@ -126,10 +124,6 @@ app.post("/api/chat", async (req, res) => {
         res.status(500).json({ error: errorChatCompletion });
     }
 });
-
-
-
-
 
 // Configure Multer for file uploads, this essentially stores the user's audio response until it is sent through the api for transcription. The audio file is then deleted.
 //technically is stored in uploads folder for a ms or two before being deleted.
