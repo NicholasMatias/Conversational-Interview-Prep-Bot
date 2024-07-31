@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Questions.css";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "../auth/auth";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {
     doc,
     updateDoc,
@@ -61,9 +62,17 @@ function Questions() {
                 );
                 const lineupSnap = await getDoc(lineupRef);
                 if (lineupSnap.exists()) {
-                    setUserLineup(lineupSnap.data().questions || []);
+                    const questions = lineupSnap.data().questions || [];
+                    // Ensure each question has an id
+                    setUserLineup(
+                        questions.map((q, index) => ({
+                            ...q,
+                            id: q.id || `question-${index}`,
+                        }))
+                    );
                 } else {
                     await setDoc(lineupRef, { questions: [] });
+                    setUserLineup([]);
                 }
             }
         };
@@ -71,7 +80,28 @@ function Questions() {
         fetchUserLineup();
     }, [currentUser]);
 
-    //enables users to add questions to the lineup
+    const onDragEnd = (result) => {
+        if (!result.destination) {
+            return;
+        }
+
+        const items = Array.from(userLineup);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+
+        setUserLineup(items);
+
+        // Update Firestore
+        if (currentUser) {
+            const lineupRef = doc(
+                db,
+                "InterviewQuestionsLineup",
+                currentUser.uid
+            );
+            updateDoc(lineupRef, { questions: items });
+        }
+    };
+
     const handleAddToLineup = async (question) => {
         if (currentUser) {
             const lineupRef = doc(
@@ -79,32 +109,27 @@ function Questions() {
                 "InterviewQuestionsLineup",
                 currentUser.uid
             );
-
-            // Check if the question is already in the lineup
             if (!userLineup.some((q) => q.id === question.id)) {
-                const updatedLineup = [...userLineup, question];
-                await updateDoc(lineupRef, {
-                    questions: arrayUnion(question),
-                });
+                const newQuestion = {
+                    ...question,
+                    id: question.id || `question-${Date.now()}`, // Ensure unique ID
+                };
+                const updatedLineup = [...userLineup, newQuestion];
+                await updateDoc(lineupRef, { questions: updatedLineup });
                 setUserLineup(updatedLineup);
-            } else {
-                //may add message display but shouldn't occur now that button no longer appears after being added.
             }
         }
     };
 
-    // allows users to remove question from the lineup
-    const handleRemoveFromLineup = async (questionId) => {
+    const handleRemoveFromLineup = async (index) => {
         if (currentUser) {
             const lineupRef = doc(
                 db,
                 "InterviewQuestionsLineup",
                 currentUser.uid
             );
-            const updatedLineup = userLineup.filter((q) => q.id !== questionId);
-            await updateDoc(lineupRef, {
-                questions: updatedLineup,
-            });
+            const updatedLineup = userLineup.filter((_, i) => i !== index);
+            await updateDoc(lineupRef, { questions: updatedLineup });
             setUserLineup(updatedLineup);
         }
     };
@@ -395,6 +420,68 @@ function Questions() {
         return shuffled;
     }
 
+    // add company tag to existing question
+    const handleAddCompanyToQuestion = async (questionId, companyName) => {
+        if (companyName.trim() === "") return;
+
+        try {
+            const questionRef = doc(db, "questions", questionId);
+            const questionDoc = await getDoc(questionRef);
+
+            if (questionDoc.exists()) {
+                const currentCompanies = questionDoc.data().companies || [];
+
+                // Check if the company already exists (case-insensitive)
+                const companyExists = currentCompanies.some(
+                    (company) =>
+                        company.name.toLowerCase() ===
+                        companyName.trim().toLowerCase()
+                );
+
+                if (companyExists) {
+                    alert(
+                        "This company has already been added to the question."
+                    );
+                    return;
+                }
+
+                const newCompanyObject = {
+                    name: companyName.trim(),
+                    upvotes: 0,
+                    upvotedBy: [],
+                };
+
+                const updatedCompanies = [
+                    ...currentCompanies,
+                    newCompanyObject,
+                ];
+
+                await updateDoc(questionRef, { companies: updatedCompanies });
+
+                // Update local state
+                setQuestions((prevQuestions) =>
+                    prevQuestions.map((q) =>
+                        q.id === questionId
+                            ? { ...q, companies: updatedCompanies }
+                            : q
+                    )
+                );
+
+                // Update displayed questions
+                setDisplayedQuestions((prevDisplayed) =>
+                    prevDisplayed.map((q) =>
+                        q.id === questionId
+                            ? { ...q, companies: updatedCompanies }
+                            : q
+                    )
+                );
+            }
+            toggleAddCompanyInput(questionId);
+        } catch (error) {
+            console.error("Error adding company to question:", error);
+        }
+    };
+
     // calls shuffle method => randomly displayed
     const handleShuffle = () => {
         setIsShuffled(true);
@@ -413,6 +500,8 @@ function Questions() {
             const fetchedQuestions = querySnapshot.docs.map((doc) => ({
                 ...doc.data(),
                 id: doc.id,
+                companies: doc.data().companies || [],
+                showAddCompany: false,
             }));
             setQuestions(fetchedQuestions);
             setDisplayedQuestions(sortQuestions(fetchedQuestions, "type", 10));
@@ -422,9 +511,9 @@ function Questions() {
         fetchQuestions();
     }, []);
 
-    // allows the user to load 20 more questions or until there are no more questions left
+    // allows the user to load 10 more questions or until there are no more questions left
     const loadMoreQuestions = () => {
-        const newCount = Math.min(currentCount + 20, questions.length);
+        const newCount = Math.min(currentCount + 10, questions.length);
         setCurrentCount(newCount);
 
         let filteredQuestions;
@@ -633,6 +722,16 @@ function Questions() {
         );
     };
 
+    const toggleAddCompanyInput = (questionId) => {
+        setDisplayedQuestions((prevQuestions) =>
+            prevQuestions.map((q) =>
+                q.id === questionId
+                    ? { ...q, showAddCompany: !q.showAddCompany }
+                    : q
+            )
+        );
+    };
+
     const sortedQuestions = sortQuestions(questions, sortBy);
 
     const toHome = () => {
@@ -687,127 +786,113 @@ function Questions() {
             </nav>
 
             <div className="questions-container">
-                <h1>Interview Questions</h1>
-                <div className="sort-and-filter-container">
-                    <div className="search-and-filter-container">
-                        <div className="search-container">
-                            <input
-                                type="text"
-                                placeholder="Search questions..."
-                                value={searchTerm}
-                                onChange={handleSearch}
-                                className="search-input"
-                            />
-                        </div>
-                        <div className="sort-and-filter-container">
-                            <div className="sort-container">
-                                <label htmlFor="sort-select">Sort by: </label>
-                                <select
-                                    id="sort-select"
-                                    value={sortBy}
-                                    onChange={handleSort}
-                                >
-                                    <option value="type">Question Type</option>
-                                    {typeOrder.map((type) => (
-                                        <option key={type} value={type}>
-                                            {type}
-                                        </option>
-                                    ))}
-                                    <option value="upvotes">
-                                        Most Upvotes
-                                    </option>
-                                </select>
-                                <button onClick={handleShuffle}>
-                                    Shuffle Questions
-                                </button>
-                                <button
-                                    onClick={toggleAddQuestionForm}
-                                    className="add-question-btn"
-                                >
-                                    {showAddQuestionForm
-                                        ? "Cancel"
-                                        : "Add New Question"}
-                                </button>
-                            </div>
-                            <div className="filter-container">
-                                <label htmlFor="company-filter">
-                                    Filter by Company:{" "}
-                                </label>
-                                <select
-                                    id="company-filter"
-                                    value={filterCompany}
-                                    onChange={handleFilterByCompany}
-                                >
-                                    <option value="">All Companies</option>
-                                    {Array.from(
-                                        new Set(
-                                            questions
-                                                .filter(
-                                                    (q) =>
-                                                        q.companies &&
-                                                        Array.isArray(
-                                                            q.companies
-                                                        )
-                                                )
-                                                .flatMap((q) =>
-                                                    q.companies.map(
-                                                        (c) => c.name
-                                                    )
-                                                )
-                                        )
-                                    )
-                                        .sort()
-                                        .map((company) => (
-                                            <option
-                                                key={company}
-                                                value={company}
-                                            >
-                                                {company}
-                                            </option>
-                                        ))}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                <h1 className="questions-title">Interview Questions</h1>
+                <div className="search-container">
+                    <input
+                        type="search"
+                        placeholder="Search questions..."
+                        value={searchTerm}
+                        onChange={handleSearch}
+                        className="search-input"
+                    />
                 </div>
-                <button onClick={toggleLineupModal} className="view-lineup-btn">
-                    View Lineup
-                </button>
+                <div className="sort-container">
+                    <select
+                        id="sort-select"
+                        value={sortBy}
+                        onChange={handleSort}
+                        className="questions-btns"
+                    >
+                        <option value="type">Question Type</option>
+                        {typeOrder.map((type) => (
+                            <option key={type} value={type}>
+                                {type}
+                            </option>
+                        ))}
+                        <option value="upvotes">Most Upvotes</option>
+                    </select>
+
+                    <select
+                        id="company-filter"
+                        className="questions-btns"
+                        value={filterCompany}
+                        onChange={handleFilterByCompany}
+                    >
+                        <option value="">All Companies</option>
+                        {Array.from(
+                            new Set(
+                                questions
+                                    .filter(
+                                        (q) =>
+                                            q.companies &&
+                                            Array.isArray(q.companies)
+                                    )
+                                    .flatMap((q) =>
+                                        q.companies.map((c) => c.name)
+                                    )
+                            )
+                        )
+                            .sort()
+                            .map((company) => (
+                                <option key={company} value={company}>
+                                    {company}
+                                </option>
+                            ))}
+                    </select>
+
+                    <button onClick={handleShuffle} className="questions-btns">
+                        Shuffle Questions
+                    </button>
+
+                    <button
+                        onClick={toggleAddQuestionForm}
+                        className="questions-btns"
+                    >
+                        {showAddQuestionForm ? "Cancel" : "Add New Question"}
+                    </button>
+
+                    <button
+                        onClick={toggleLineupModal}
+                        className="questions-btns"
+                    >
+                        View Lineup
+                    </button>
+                </div>
+
                 <div className="questions-list">
                     {displayedQuestions.map((q) => (
                         <div key={q.id} className="question-item">
-                            <h3>{q.type}</h3>
-                            <p>{q.question}</p>
-                            {q.companies && q.companies.length > 0 && (
-                                <div className="question-companies">
-                                    {q.companies.map((company, index) => (
-                                        <span
-                                            key={index}
-                                            className="company-tag"
-                                        >
-                                            {company.name} ({company.upvotes})
-                                            <button
-                                                onClick={() =>
-                                                    handleCompanyUpvote(
-                                                        q.id,
-                                                        company.name
-                                                    )
-                                                }
-                                                className={`upvote-button ${
-                                                    company.upvotedBy.includes(
-                                                        currentUser.uid
-                                                    )
-                                                        ? "upvoted"
-                                                        : ""
-                                                }`}
-                                            >
-                                                ▲
-                                            </button>
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
-                            <div className="question-actions">
+                            <h3 className="question-title">{q.type}</h3>
+                            <p className="question-text">{q.question}</p>
+                            <div className="question-btns-container">
+                                {q.companies && q.companies.length > 0 && (
+                                    <>
+                                        {q.companies.map((company, index) => (
+                                            <div className="question-companies">
+                                                <button
+                                                    key={index}
+                                                    onClick={() =>
+                                                        handleCompanyUpvote(
+                                                            q.id,
+                                                            company.name
+                                                        )
+                                                    }
+                                                    className={`upvote-button ${
+                                                        company.upvotedBy.includes(
+                                                            currentUser.uid
+                                                        )
+                                                            ? "upvoted"
+                                                            : ""
+                                                    }`}
+                                                >
+                                                    ▲
+                                                </button>
+                                                {company.name} (
+                                                {company.upvotes})
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
                                 <div className="upvote-container">
                                     <button
                                         onClick={() => handleUpvote(q.id)}
@@ -821,8 +906,67 @@ function Questions() {
                                     >
                                         ▲
                                     </button>
-                                    <span>Upvotes: {q.upvotes}</span>
+                                    <span>Upvotes ({q.upvotes})</span>
                                 </div>
+
+                                <button
+                                    onClick={() => toggleAddCompanyInput(q.id)}
+                                    className="add-company-button"
+                                >
+                                    <h1>+</h1>
+                                </button>
+
+                                {q.showAddCompany && (
+                                    <div className="add-company-container">
+                                        <input
+                                            type="text"
+                                            value={q.newCompany || ""}
+                                            onChange={(e) => {
+                                                const updatedQuestion = {
+                                                    ...q,
+                                                    newCompany: e.target.value,
+                                                };
+                                                setDisplayedQuestions(
+                                                    (prevQuestions) =>
+                                                        prevQuestions.map(
+                                                            (prevQ) =>
+                                                                prevQ.id ===
+                                                                q.id
+                                                                    ? updatedQuestion
+                                                                    : prevQ
+                                                        )
+                                                );
+                                            }}
+                                            placeholder="Enter company name"
+                                        />
+                                        <button
+                                            onClick={() => {
+                                                handleAddCompanyToQuestion(
+                                                    q.id,
+                                                    q.newCompany
+                                                );
+                                                const updatedQuestion = {
+                                                    ...q,
+                                                    newCompany: "",
+                                                };
+                                                setDisplayedQuestions(
+                                                    (prevQuestions) =>
+                                                        prevQuestions.map(
+                                                            (prevQ) =>
+                                                                prevQ.id ===
+                                                                q.id
+                                                                    ? updatedQuestion
+                                                                    : prevQ
+                                                        )
+                                                );
+                                            }}
+                                            className="add-company-button-confirm"
+                                        >
+                                            Add Company
+                                        </button>
+                                    </div>
+                                )}
+
                                 {!userLineup.some(
                                     (lineupQ) => lineupQ.id === q.id
                                 ) && (
@@ -852,83 +996,160 @@ function Questions() {
                 )}
 
                 {showAddQuestionForm && (
-                    <div className="add-question-container">
-                        <form
-                            onSubmit={handleAddQuestion}
-                            className="add-question-form"
-                        >
-                            <textarea
-                                value={newQuestion}
-                                onChange={(e) => setNewQuestion(e.target.value)}
-                                placeholder="Enter your question here..."
-                                required
-                            />
-                            <div className="company-input">
-                                <input
-                                    type="text"
-                                    value={currentCompany}
+                    <div className="overlay">
+                        <div className="add-question-container">
+                            <form
+                                onSubmit={handleAddQuestion}
+                                className="add-question-form"
+                            >
+                                <h2 className="add-question-title">
+                                    Add a Question
+                                </h2>
+                                <textarea
+                                    value={newQuestion}
                                     onChange={(e) =>
-                                        setCurrentCompany(e.target.value)
+                                        setNewQuestion(e.target.value)
                                     }
-                                    placeholder="Enter company tag..."
+                                    placeholder="Enter your question here..."
+                                    required
                                 />
+                                <div className="company-input">
+                                    <input
+                                        type="text"
+                                        value={currentCompany}
+                                        onChange={(e) =>
+                                            setCurrentCompany(e.target.value)
+                                        }
+                                        placeholder="Enter company tag..."
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleAddCompany}
+                                    >
+                                        Add Company
+                                    </button>
+                                </div>
+                                <div className="company-tags">
+                                    {companies.map((company, index) => (
+                                        <span
+                                            key={index}
+                                            className="company-tag-button"
+                                        >
+                                            {company.name}
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleRemoveCompany(
+                                                        company.name
+                                                    )
+                                                }
+                                            >
+                                                <h3>X</h3>
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <button type="submit">Submit Question</button>
                                 <button
                                     type="button"
-                                    onClick={handleAddCompany}
+                                    onClick={handleAddQuestionCancel}
+                                    className="add-question-cancel-btn"
                                 >
-                                    Add Company
+                                    Cancel
                                 </button>
-                            </div>
-                            <div className="company-tags">
-                                {companies.map((company, index) => (
-                                    <span key={index} className="company-tag">
-                                        {company.name}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleRemoveCompany(
-                                                    company.name
-                                                )
-                                            }
-                                        >
-                                            ×
-                                        </button>
-                                    </span>
-                                ))}
-                            </div>
-
-                            <button type="submit">Submit Question</button>
-                            <button
-                                type="button"
-                                onClick={handleAddQuestionCancel}
-                                className="add-question-cancel-btn"
-                            >
-                                Cancel
-                            </button>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 )}
 
                 {showLineupModal && (
-                    <div className="lineup-modal">
-                        <div className="lineup-modal-content">
-                            <h2>Your Question Lineup</h2>
-                            {userLineup.map((q) => (
-                                <div
-                                    key={q.id}
-                                    className="lineup-question-item"
+                    <div className="overlay">
+                        <div className="lineup-modal">
+                            <div className="lineup-modal-content">
+                                <h2>Your Question Lineup</h2>
+                                <DragDropContext onDragEnd={onDragEnd}>
+                                    <Droppable droppableId="lineup">
+                                        {(provided) => (
+                                            <div
+                                                {...provided.droppableProps}
+                                                ref={provided.innerRef}
+                                                style={{
+                                                    padding: 0,
+                                                    margin: 0,
+                                                }}
+                                            >
+                                                {userLineup.map((q, index) => (
+                                                    <Draggable
+                                                        key={q.id + "-button"}
+                                                        draggableId={q.id.toString()}
+                                                        index={index}
+                                                    >
+                                                        {(
+                                                            provided,
+                                                            snapshot
+                                                        ) => (
+                                                            <div
+                                                                ref={
+                                                                    provided.innerRef
+                                                                }
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                style={{
+                                                                    ...provided
+                                                                        .draggableProps
+                                                                        .style,
+                                                                    left: "auto !important",
+                                                                    top: "auto !important",
+                                                                }}
+                                                                className={`lineup-question-item ${
+                                                                    snapshot.isDragging
+                                                                        ? "dragging"
+                                                                        : ""
+                                                                }`}
+                                                            >
+                                                                <div
+                                                                    {...provided.dragHandleProps}
+                                                                    className="drag-handle"
+                                                                >
+                                                                    ☰{" "}
+                                                                </div>
+                                                                <p>
+                                                                    {index + 1}.{" "}
+                                                                    {q.question}
+                                                                </p>
+                                                                <button
+                                                                    onClick={() =>
+                                                                        handleRemoveFromLineup(
+                                                                            index
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Remove
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                ))}
+                                                {provided.placeholder}
+                                            </div>
+                                        )}
+                                    </Droppable>
+                                </DragDropContext>
+                                
+                                {userLineup.length == 0 && (
+                                    <div className="no-questions-lineup">
+                                        <h3>Your lineup is currently empty</h3>
+                                    </div>
+                                )}
+
+                                <button
+                                    onClick={toggleLineupModal}
+                                    className="question-modal-btn"
                                 >
-                                    <p>{q.question}</p>
-                                    <button
-                                        onClick={() =>
-                                            handleRemoveFromLineup(q.id)
-                                        }
-                                    >
-                                        Remove
-                                    </button>
-                                </div>
-                            ))}
-                            <button onClick={toggleLineupModal}>Close</button>
+                                    Close
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}

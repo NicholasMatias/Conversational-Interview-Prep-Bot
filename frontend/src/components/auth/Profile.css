@@ -1,92 +1,123 @@
-.messages-container {
-    width: 80%;
+/* General Styles */
+.messages-container,
+.start-interview-container,
+.loading-container,
+.interview-btn-container {
     display: flex;
-    flex-direction: column;
     align-items: center;
+}
+
+.messages-container,
+.welcome-message {
+    width: 80%;
     margin: 0 auto;
+}
+
+.messages-container {
+    flex-direction: column;
     margin-bottom: 50px;
 }
 
-.current-message {
+.current-message,
+.start-interview-btn,
+.view-lineup-btn,
+.interview-end-btn {
     background-color: #393e46;
-    padding: 15px;
     border-radius: 3px;
+}
+
+.current-message {
+    padding: 15px;
     margin-bottom: 10px;
     width: 1200px;
     text-align: left;
 }
 
-.loader {
+/* Loader Styles */
+.loader,
+.loader-feedback {
     border: 2px solid #f3f3f3;
-    /* Light grey */
-    border-top: 2px solid #3498db;
-    /* Blue */
+    border-top-color: #3498db;
     border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+
+.loader {
     width: 15px;
     height: 15px;
-    animation: spin 2s linear infinite;
     margin-left: 5px;
+}
+
+.loader-feedback {
+    width: 20px;
+    height: 20px;
+    border-width: 4px;
 }
 
 @keyframes spin {
     0% {
         transform: rotate(0deg);
     }
-
     100% {
         transform: rotate(360deg);
     }
 }
 
 .loading-container {
-    display: flex;
-    align-items: center;
     width: 100%;
 }
 
-.welcome-message {
-    text-align: center;
-    color: white;
-    margin-bottom: 30px;
-}
-
+/* Text Styles */
+.welcome-message,
 .loading-message {
     color: white;
 }
-
-.start-interview-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.welcome-message {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-.start-interview-btn {
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #008a90;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    transform: translateY(-30px);
-}
-
-.start-interview-btn:hover {
-    cursor: pointer;
-    background-color: #0a5357;
-}
-
+/* Button Styles */
+.start-interview-btn,
+.view-lineup-btn,
 .interview-end-btn {
     padding: 10px;
     margin: 10px;
     background-color: #008a90;
     color: white;
     border: none;
-    border-radius: 3px;
 }
 
+.start-interview-btn,
+.view-lineup-btn {
+    transform: translateY(-30px);
+}
+
+.start-interview-btn:hover,
+.view-lineup-btn:hover,
 .interview-end-btn:hover {
     cursor: pointer;
     background-color: #0a5357;
+}
+
+.interview-btn-container {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Interview Styles */
+.interview-questions-empty {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 800px;
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    transform: translateY(30px);
 }
 
 .message-format {
@@ -99,11 +130,9 @@
     line-height: 1.3;
 }
 
+/* Tooltip Styles */
 .starTip {
     text-decoration: underline;
-}
-
-.starTip:hover {
     cursor: pointer;
 }
 
@@ -120,7 +149,33 @@
     width: 300px;
 }
 
+/* Feedback and Modal Styles */
+.feedback-loading,
+.lineup-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
 .feedback-loading {
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.lineup-modal {
+    max-height: 800px;
+    height: auto;
+    overflow-y: auto;
+    outline: 1px white solid;
+    z-index: 1000;
+}
+.overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -128,22 +183,43 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
+}
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Question Styles */
+.delete-question-btn,
+.question-modal-btn {
+    padding: 10px;
+    background-color: #008a90;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    cursor: pointer;
     color: white;
 }
 
-.loader-feedback {
-    border: 4px solid #f3f3f3;
-    /* Light grey */
-    border-top: 4px solid #3498db;
-    /* Blue */
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 2s linear infinite;
-    margin-left: 5px;
+.question-modal-btn {
+    margin-right: 10px;
+}
+.delete-question-btn {
+    margin-left: 20px;
 }
 
+.delete-question-btn:hover,
+.question-modal-btn:hover {
+    background-color: #007b7b;
+}
+
+.question-container {
+    display: flex;
+    align-items: center;
+    margin: 15px;
+}
+
+.questions-modal-button-container {
+    margin-top: 15px;
+}
+
+.modal-lineup-empty-message {
+    margin-top: 15px;
+    margin-left: 15px;
+}
