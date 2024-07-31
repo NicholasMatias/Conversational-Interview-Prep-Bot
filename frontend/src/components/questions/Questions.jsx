@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { signOut } from "../auth/auth";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-import { db,doc,
+import {
+    db,
+    doc,
     updateDoc,
     arrayUnion,
     arrayRemove,
@@ -13,7 +15,8 @@ import { db,doc,
     serverTimestamp,
     addDoc,
     setDoc,
-    getDoc, } from "../../../../backend/firebase/firebase.config";
+    getDoc,
+} from "../../firebase/firebase.config.js";
 import { useAuth } from "../auth/auth.jsx";
 
 function Questions() {
@@ -1134,7 +1137,7 @@ function Questions() {
                                         )}
                                     </Droppable>
                                 </DragDropContext>
-                                
+
                                 {userLineup.length == 0 && (
                                     <div className="no-questions-lineup">
                                         <h3>Your lineup is currently empty</h3>

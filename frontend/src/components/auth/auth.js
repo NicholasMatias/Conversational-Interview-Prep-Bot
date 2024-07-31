@@ -1,4 +1,4 @@
-import { auth } from "../../../../backend/firebase/firebase.config";
+import { auth } from "../../firebase/firebase.config";
 
 import {
     signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
@@ -7,7 +7,7 @@ import {
     GoogleAuthProvider,
     FacebookAuthProvider,
     signInWithPopup,
-} from "../../../../backend/firebase/firebase.config";
+} from "../../firebase/firebase.config";
 
 export const signInWithEmailAndPassword = (email, password) => {
     return firebaseSignInWithEmailAndPassword(auth, email, password);

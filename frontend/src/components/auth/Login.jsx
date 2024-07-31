@@ -1,5 +1,12 @@
 import "./Login.css";
-import { db,doc, setDoc, getDoc, addDoc, collection } from "../../../../backend/firebase/firebase.config";
+import {
+    db,
+    doc,
+    setDoc,
+    getDoc,
+    addDoc,
+    collection,
+} from "../../firebase/firebase.config";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
