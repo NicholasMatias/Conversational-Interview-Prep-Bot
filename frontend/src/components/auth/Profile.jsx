@@ -16,7 +16,7 @@ import { doc,
     addDoc,
     getDocs,
     limit,
-    query,} from "firebase/firestore";
+    query,} from "../../../../backend/firebase/firebase.config.js";
 
 import { db } from "../../../../backend/firebase/firebase.config.js";
 

@@ -9,7 +9,7 @@ import { doc,
     collection,
     addDoc,
     arrayRemove,
-    deleteDoc, } from "firebase/firestore";
+    deleteDoc, } from "../../../../backend/firebase/firebase.config.js";
 import { db } from "../../../../backend/firebase/firebase.config.js";
 import { useAuth } from "../auth/auth.jsx";
 

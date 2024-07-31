@@ -5,7 +5,7 @@ import { doc,
     getDoc,
     setDoc,
     collection,
-    addDoc, } from "firebase/firestore";
+    addDoc, } from "../../../../backend/firebase/firebase.config.js";
 import { db } from "../../../../backend/firebase/firebase.config.js";
 import { useAuth } from "../auth/auth.jsx";
 import "./SaveModal.css";

@@ -1,6 +1,6 @@
 import "./Login.css";
 // import { db,doc, setDoc, getDoc, addDoc, collection } from "../../../../backend/firebase/firebase.config";
-import { doc, setDoc, getDoc, addDoc, collection } from "firebase/firestore";
+import { doc, setDoc, getDoc, addDoc, collection } from "../../../../backend/firebase/firebase.config.js";
 import { db } from "../../../../backend/firebase/firebase.config";
 
 import React from "react";

@@ -13,7 +13,7 @@ import { doc,
     serverTimestamp,
     addDoc,
     setDoc,
-    getDoc, } from "firebase/firestore";
+    getDoc, } from "../../../../backend/firebase/firebase.config.js";
 import { db } from "../../../../backend/firebase/firebase.config";
 import { useAuth } from "../auth/auth.jsx";
 

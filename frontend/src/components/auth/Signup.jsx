@@ -5,7 +5,7 @@ import { createUserWithEmailAndPassword } from "./auth.js";
 import { useState } from "react";
 import Spacing from "../landing_page/spacing/Spacing.jsx";
 import Footer from "../landing_page/footer/Footer.jsx";
-import { doc, setDoc, collection, addDoc } from "firebase/firestore";
+import { doc, setDoc, collection, addDoc } from "../../../../backend/firebase/firebase.config.js";
 import { updateProfile } from "firebase/auth";
 import { db } from "../../../../backend/firebase/firebase.config.js";
 const Signup = () => {
