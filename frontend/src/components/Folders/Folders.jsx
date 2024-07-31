@@ -1,6 +1,6 @@
 import "./Folders.css";
 
-import { db,setDoc,
+import { setDoc,
     collection,
     getDoc,
     getDocs,
@@ -9,7 +9,9 @@ import { db,setDoc,
     deleteDoc,
     arrayRemove,
     updateDoc,
-    arrayUnion, } from "../../../../backend/firebase/firebase.config.js";
+    arrayUnion, } from "firebase/firestore";
+
+import { db } from "../../../../backend/firebase/firebase.config.js";
 import { useAuth } from "../auth/auth.jsx";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";

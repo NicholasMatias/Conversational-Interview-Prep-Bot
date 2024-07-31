@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { signOut } from "../auth/auth";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-import { db,doc,
+import { doc,
     updateDoc,
     arrayUnion,
     arrayRemove,
@@ -13,7 +13,8 @@ import { db,doc,
     serverTimestamp,
     addDoc,
     setDoc,
-    getDoc, } from "../../../../backend/firebase/firebase.config";
+    getDoc, } from "firebase/firestore";
+import { db } from "../../../../backend/firebase/firebase.config";
 import { useAuth } from "../auth/auth.jsx";
 
 function Questions() {

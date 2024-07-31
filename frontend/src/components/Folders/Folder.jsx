@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Folder.css";
 
-import { db,doc,
+import { doc,
     updateDoc,
     arrayUnion,
     getDoc,
@@ -9,7 +9,8 @@ import { db,doc,
     collection,
     addDoc,
     arrayRemove,
-    deleteDoc, } from "../../../../backend/firebase/firebase.config";
+    deleteDoc, } from "firebase/firestore";
+import { db } from "../../../../backend/firebase/firebase.config.js";
 import { useAuth } from "../auth/auth.jsx";
 
 const Folder = ({ folderName, onDelete }) => {
