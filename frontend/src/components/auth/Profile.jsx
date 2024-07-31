@@ -221,26 +221,215 @@ const Profile = () => {
     };
 
     // Manages the messages array, sends the user response and question asked to backend in body => then sent to groq llama3 to get a response to the user.
+    // const sendMessage = async (transcribedText) => {
+    //     const messageText = transcribedText || input;
+    //     if (messageText.trim()) {
+    //         setIsLoading(true);
+    //         const userMessage = { role: "user", content: messageText };
+    //         setMessages([...messages, userMessage]);
+
+    //         // sets the current question.
+    //         const currentQuestion = interviewQuestions[currentQuestionIndex];
+    //         const context = `Question: ${currentQuestion}`;
+    //         console.log(context)
+    //         // sets the last question, so that the correct content is used in api call to groq on the backend body params.
+
+    //         // if (interviewQuestions.length > 2) {
+    //             setLastQuestionCheck(
+    //                 interviewQuestions[currentQuestionIndex + 2]
+    //             );
+    //         // }
+
+    //         // const isLastQuestion =
+    //         //     currentQuestionIndex === interviewQuestions.length - 2;
+
+    //         try {
+    //             const response = await fetch("http://localhost:5000/api/chat", {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //                 body: JSON.stringify({
+    //                     message: transcribedText,
+    //                     context,
+    //                     lastQuestionCheck,
+    //                     prevIsFollowUp,
+    //                 }),
+    //             });
+    //             const data = await response.json();
+    //             const botMessage = { role: "bot", content: data.response };
+    //             setMessages([...messages, userMessage, botMessage]);
+    //             setInput("");
+    //             setIsLoading(false);
+    //             // if last question => ends interview after this question and makes sure mic no longer appears
+    //             if (data.lastQuestion) {
+    //                 setIsInterviewOver(true);
+    //                 setIsUserTurn(false);
+    //             }
+    //             // gives user chance to respond to follow-up question before asking next question
+    //             else if (data.followUp) {
+    //                 setPrevIsFollowUp(true);
+    //                 setIsUserTurn(true);
+    //                 setExpectingFollowUp(true);
+    //             } else {
+    //                 setPrevIsFollowUp(false);
+    //                 if (!data.lastQuestion) {
+    //                     setCurrentQuestionIndex(currentQuestionIndex + 1);
+
+    //                     const nextQuestion =
+    //                         interviewQuestions[currentQuestionIndex + 1];
+    //                     setMessages((prevMessages) => [
+    //                         ...prevMessages,
+    //                         { role: "bot", content: nextQuestion },
+    //                     ]);
+    //                     setExpectingFollowUp(false);
+    //                     setIsUserTurn(true);
+    //                 } else {
+    //                     setIsInterviewOver(true);
+    //                     setNewInterview(false);
+    //                     setIsUserTurn(false);
+    //                 }
+    //             }
+    //         } catch (error) {
+    //             console.error("Error sending message:", error);
+    //             setIsLoading(false);
+    //         }
+    //     }
+    // };
+    // const sendMessage = async (transcribedText) => {
+    //     const messageText = transcribedText || input;
+    //     if (messageText.trim()) {
+    //         setIsLoading(true);
+    //         const userMessage = { role: "user", content: messageText };
+    //         setMessages([...messages, userMessage]);
+
+    //         // Get the current question
+    //         const currentQuestion = interviewQuestions[currentQuestionIndex];
+    //         const context = `Question: ${currentQuestion}`;
+
+    //         // Check if it's the last question
+    //         const isLastQuestion = currentQuestionIndex === interviewQuestions.length - 2;
+
+    //         try {
+    //             const response = await fetch("http://localhost:5000/api/chat", {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //                 body: JSON.stringify({
+    //                     message: transcribedText,
+    //                     context,
+    //                     lastQuestionCheck: isLastQuestion ? "quit" : "",
+    //                     prevIsFollowUp,
+    //                 }),
+    //             });
+    //             const data = await response.json();
+    //             const botMessage = { role: "bot", content: data.response };
+    //             setMessages([...messages, userMessage, botMessage]);
+    //             setInput("");
+    //             setIsLoading(false);
+
+    //             if (data.lastQuestion) {
+    //                 setIsInterviewOver(true);
+    //                 setIsUserTurn(false);
+    //             } else if (data.followUp) {
+    //                 setPrevIsFollowUp(true);
+    //                 setIsUserTurn(true);
+    //                 setExpectingFollowUp(true);
+    //             } else {
+    //                 setPrevIsFollowUp(false);
+    //                 setCurrentQuestionIndex(currentQuestionIndex + 1);
+    //                 const nextQuestion = interviewQuestions[currentQuestionIndex + 1];
+    //                 setMessages((prevMessages) => [
+    //                     ...prevMessages,
+    //                     { role: "bot", content: nextQuestion },
+    //                 ]);
+    //                 setExpectingFollowUp(false);
+    //                 setIsUserTurn(true);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error sending message:", error);
+    //             setIsLoading(false);
+    //         }
+    //     }
+    // };
+
+    // const sendMessage = async (transcribedText) => {
+    //     const messageText = transcribedText || input;
+    //     if (messageText.trim()) {
+    //         setIsLoading(true);
+    //         const userMessage = { role: "user", content: messageText };
+    //         setMessages((prevMessages) => [...prevMessages, userMessage]);
+
+    //         // Get the current question
+    //         const currentQuestion = interviewQuestions[currentQuestionIndex];
+    //         const context = `Question: ${currentQuestion}`;
+
+    //         // Check if it's the last question
+    //         const isLastQuestion =
+    //             currentQuestionIndex === interviewQuestions.length - 1;
+
+    //         try {
+    //             const response = await fetch("http://localhost:5000/api/chat", {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //                 body: JSON.stringify({
+    //                     message: transcribedText,
+    //                     context,
+    //                     lastQuestionCheck: isLastQuestion ? "quit" : "",
+    //                     prevIsFollowUp,
+    //                 }),
+    //             });
+    //             const data = await response.json();
+    //             const botMessage = { role: "bot", content: data.response };
+    //             setMessages((prevMessages) => [...prevMessages, botMessage]);
+    //             setInput("");
+    //             setIsLoading(false);
+
+    //             if (isLastQuestion && !data.followUp) {
+    //                 setIsInterviewOver(true);
+    //                 setIsUserTurn(false);
+    //             } else if (data.followUp) {
+    //                 setPrevIsFollowUp(true);
+    //                 setIsUserTurn(true);
+    //                 setExpectingFollowUp(true);
+    //             } else {
+    //                 setPrevIsFollowUp(false);
+    //                 setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+    //                 if (currentQuestionIndex + 1 < interviewQuestions.length) {
+    //                     const nextQuestion =
+    //                         interviewQuestions[currentQuestionIndex + 1];
+    //                     setMessages((prevMessages) => [
+    //                         ...prevMessages,
+    //                         { role: "bot", content: nextQuestion },
+    //                     ]);
+    //                 }
+    //                 setExpectingFollowUp(false);
+    //                 setIsUserTurn(true);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error sending message:", error);
+    //             setIsLoading(false);
+    //         }
+    //     }
+    // };
     const sendMessage = async (transcribedText) => {
         const messageText = transcribedText || input;
         if (messageText.trim()) {
             setIsLoading(true);
             const userMessage = { role: "user", content: messageText };
-            setMessages([...messages, userMessage]);
+            setMessages((prevMessages) => [...prevMessages, userMessage]);
 
-            // sets the current question.
+            // Get the current question
             const currentQuestion = interviewQuestions[currentQuestionIndex];
             const context = `Question: ${currentQuestion}`;
 
-            // sets the last question, so that the correct content is used in api call to groq on the backend body params.
-            if (interviewQuestions.length > 2) {
-                setLastQuestionCheck(
-                    interviewQuestions[currentQuestionIndex + 2]
-                );
-            }
-
+            // Check if it's the last question (including the case of only one question)
             const isLastQuestion =
-                currentQuestionIndex === interviewQuestions.length - 2;
+                currentQuestionIndex === interviewQuestions.length - 1 ||
+                interviewQuestions.length === 1;
 
             try {
                 const response = await fetch("http://localhost:5000/api/chat", {
@@ -249,45 +438,38 @@ const Profile = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        message: input,
+                        message: transcribedText,
                         context,
-                        lastQuestionCheck,
+                        lastQuestionCheck: isLastQuestion ? "quit" : "",
                         prevIsFollowUp,
                     }),
                 });
                 const data = await response.json();
                 const botMessage = { role: "bot", content: data.response };
-                setMessages([...messages, userMessage, botMessage]);
+                setMessages((prevMessages) => [...prevMessages, botMessage]);
                 setInput("");
                 setIsLoading(false);
-                // if last question => ends interview after this question and makes sure mic no longer appears
-                if (isLastQuestion) {
+
+                if (isLastQuestion && !data.followUp) {
                     setIsInterviewOver(true);
                     setIsUserTurn(false);
-                }
-                // gives user chance to respond to follow-up question before asking next question
-                else if (data.followUp) {
+                } else if (data.followUp) {
                     setPrevIsFollowUp(true);
                     setIsUserTurn(true);
                     setExpectingFollowUp(true);
                 } else {
                     setPrevIsFollowUp(false);
-                    if (!isLastQuestion) {
-                        setCurrentQuestionIndex(currentQuestionIndex + 1);
-
+                    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+                    if (currentQuestionIndex + 1 < interviewQuestions.length) {
                         const nextQuestion =
                             interviewQuestions[currentQuestionIndex + 1];
                         setMessages((prevMessages) => [
                             ...prevMessages,
                             { role: "bot", content: nextQuestion },
                         ]);
-                        setExpectingFollowUp(false);
-                        setIsUserTurn(true);
-                    } else {
-                        setIsInterviewOver(true);
-                        setNewInterview(false);
-                        setIsUserTurn(false);
                     }
+                    setExpectingFollowUp(false);
+                    setIsUserTurn(true);
                 }
             } catch (error) {
                 console.error("Error sending message:", error);
@@ -372,8 +554,9 @@ const Profile = () => {
     // initializes interview environment.
     const startInterview = () => {
         if (
-            interviewQuestions[0] === "quit" ||
-            interviewQuestions.length === 0
+            interviewQuestions.length === 0 ||
+            (interviewQuestions.length === 1 &&
+                interviewQuestions[0] === "quit")
         ) {
             setIsInterviewQuestionsEmpty(true);
             setTimeout(() => {
@@ -397,6 +580,8 @@ const Profile = () => {
         if (interviewQuestions[1] == "quit") {
             setLastQuestionCheck("quit");
         }
+        // setLastQuestionCheck(interviewQuestions.length === 1 ? "quit" : "");
+        setCurrentQuestionIndex(0);
         setExpectingFollowUp(false);
         setIsUserTurn(true);
         setIsInterviewOver(false);
