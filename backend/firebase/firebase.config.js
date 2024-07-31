@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+// import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import {
     getAuth,
@@ -9,7 +9,8 @@ import {
     FacebookAuthProvider,
     signInWithPopup,
     onAuthStateChanged,
-    updateProfile
+    updateProfile,
+    initializeApp
 } from "firebase/auth";
 import {
     getFirestore,
