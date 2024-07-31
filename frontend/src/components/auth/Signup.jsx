@@ -6,7 +6,7 @@ import { useState } from "react";
 import Spacing from "../landing_page/spacing/Spacing.jsx";
 import Footer from "../landing_page/footer/Footer.jsx";
 import { doc, setDoc, collection, addDoc } from "../../../../backend/firebase/firebase.config.js";
-import { updateProfile } from "firebase/auth";
+import { updateProfile } from "../../../../backend/firebase/firebase.config";
 import { db } from "../../../../backend/firebase/firebase.config.js";
 const Signup = () => {
     const [email, setEmail] = useState("");
