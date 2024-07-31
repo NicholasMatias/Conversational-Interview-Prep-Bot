@@ -3,8 +3,8 @@ import "./Questions.css";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "../auth/auth";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import {
-    doc,
+
+import { db,doc,
     updateDoc,
     arrayUnion,
     arrayRemove,
@@ -13,9 +13,7 @@ import {
     serverTimestamp,
     addDoc,
     setDoc,
-    getDoc,
-} from "firebase/firestore";
-import { db } from "../../../../backend/firebase/firebase.config";
+    getDoc, } from "../../../../backend/firebase/firebase.config";
 import { useAuth } from "../auth/auth.jsx";
 
 function Questions() {

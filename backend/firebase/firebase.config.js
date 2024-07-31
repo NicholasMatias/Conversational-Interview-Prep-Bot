@@ -8,8 +8,25 @@ import {
     GoogleAuthProvider,
     FacebookAuthProvider,
     signInWithPopup,
+    onAuthStateChanged,
+    updateProfile
 } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    addDoc,
+    collection,
+    getDocs,
+    arrayRemove,
+    arrayUnion,
+    updateDoc,
+    deleteDoc,
+    query,
+    limit,
+    serverTimestamp
+} from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCjFjyMbmiEZDeu9Pb6IluxC3cXydh4E2Q",
@@ -37,4 +54,20 @@ export {
     createUserWithEmailAndPassword,
     signInWithPopup,
     signOut,
+    onAuthStateChanged,
+    doc,
+    setDoc,
+    getDoc,
+    addDoc,
+    collection,
+    updateProfile,
+    getDocs,
+    getFirestore,
+    deleteDoc,
+    arrayRemove,
+    updateDoc,
+    arrayUnion,
+    query,
+    limit,
+    serverTimestamp
 };

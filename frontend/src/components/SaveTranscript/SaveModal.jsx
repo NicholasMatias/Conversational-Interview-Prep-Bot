@@ -1,14 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { db } from "../../../../backend/firebase/firebase.config.js";
-import {
-    doc,
+import { db,doc,
     updateDoc,
     arrayUnion,
     getDoc,
     setDoc,
     collection,
-    addDoc,
-} from "firebase/firestore";
+    addDoc, } from "../../../../backend/firebase/firebase.config.js";
+
 import { useAuth } from "../auth/auth.jsx";
 import "./SaveModal.css";
 

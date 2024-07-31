@@ -7,9 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Record from "../Record.jsx";
 import TTS from "../TTS.jsx";
 import interview_questions from "../../../interview_questions.json";
-import { db } from "../../../../backend/firebase/firebase.config.js";
-import {
-    doc,
+import { db,doc,
     updateDoc,
     arrayUnion,
     getDoc,
@@ -18,8 +16,8 @@ import {
     addDoc,
     getDocs,
     limit,
-    query,
-} from "firebase/firestore";
+    query,} from "../../../../backend/firebase/firebase.config.js";
+
 import SaveModal from "../SaveTranscript/SaveModal.jsx";
 import Spacing from "../landing_page/spacing/Spacing.jsx";
 import InterviewFeedback from "../InterviewFeedback/InterviewFeedback.jsx";
