@@ -17,6 +17,7 @@
     "datasets": "^0.1.0",
     "dotenv": "^16.4.5",
     "evaluate": "^1.0.2",
+    "firebase": "^10.12.4",
     "framer-motion": "^11.3.2",
     "react": "^18.3.1",
     "react-audio-voice-recorder": "^2.2.0",
