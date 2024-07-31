@@ -3,11 +3,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "./auth.js";
 import { useState } from "react";
-import { updateProfile } from "firebase/auth";
 import Spacing from "../landing_page/spacing/Spacing.jsx";
 import Footer from "../landing_page/footer/Footer.jsx";
-import { doc, setDoc, collection, addDoc } from "firebase/firestore";
-import { db } from "../../../../backend/firebase/firebase.config.js";
+import { db,doc, setDoc, collection, addDoc, updateProfile } from "../../../../backend/firebase/firebase.config.js";
 
 const Signup = () => {
     const [email, setEmail] = useState("");
