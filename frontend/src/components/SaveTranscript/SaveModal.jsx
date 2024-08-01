@@ -19,7 +19,7 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
     const [error, setError] = useState("");
     const [folders, setFolders] = useState([]);
     const { currentUser } = useAuth();
-    const [selectedFolder, setSelectedFolder] = useState(
+    const [selectedFolder, setSelectedFolder] = useState( 
         folders[0] || `${currentUser.displayName}'s Default Folder`
     );
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -34,9 +34,9 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
         if (userDoc.exists()) {
             const userData = userDoc.data();
             setFolders(userData.folderNames || []);
-            setSelectedFolder(
-                folders[0] || "You have no folders. Please create one. "
-            );
+            // setSelectedFolder(
+            //     folders[0] || "You have no folders. Please create one. "
+            // );
         }
     };
     fetchFolders();
@@ -122,6 +122,9 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
                             </option>
                         ))}
                     </select>
+                    {
+                        console.log(selectedFolder)
+                    }
                     <button
                         onClick={() => onSave(transcriptName, selectedFolder)}
                     >
