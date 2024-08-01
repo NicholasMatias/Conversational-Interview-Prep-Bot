@@ -34,9 +34,7 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
         if (userDoc.exists()) {
             const userData = userDoc.data();
             setFolders(userData.folderNames || []);
-            // setSelectedFolder(
-            //     folders[0] || "You have no folders. Please create one. "
-            // );
+            
         }
     };
     fetchFolders();
@@ -122,9 +120,7 @@ const SaveModal = ({ isOpen, onClose, onSave }) => {
                             </option>
                         ))}
                     </select>
-                    {
-                        console.log(selectedFolder)
-                    }
+                    
                     <button
                         onClick={() => onSave(transcriptName, selectedFolder)}
                     >

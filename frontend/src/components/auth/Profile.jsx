@@ -408,7 +408,6 @@ const Profile = () => {
 
     // allows the user to save interview transcript in a folder of their choosing
     const handleSave = async (transcriptName, selectedFolder) => {
-        console.log("Folder Name Selection:",selectedFolder)
         if (!currentUser) return;
 
         try {
