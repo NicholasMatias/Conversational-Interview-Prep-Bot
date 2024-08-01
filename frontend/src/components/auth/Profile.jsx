@@ -175,12 +175,7 @@ const Profile = () => {
                 const questionObjects = lineupSnap.data().questions || [];
                 const questionTexts = questionObjects.map((q) => q.question);
                 setInterviewQuestions(questionTexts);
-                if (!interviewQuestions.includes("quit")) {
-                    setInterviewQuestions((prevArray) => [
-                        ...prevArray,
-                        "quit",
-                    ]);
-                }
+        
             }
         }
     };
@@ -236,6 +231,8 @@ const Profile = () => {
             const isLastQuestion =
                 currentQuestionIndex === interviewQuestions.length - 1 ||
                 interviewQuestions.length === 1;
+
+            
 
             try {
                 const response = await fetch("http://localhost:5000/api/chat", {

@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const doFollowUp_notLastQuestion_prompt = (context, message) => {
+    console.log("follow up question asked")
     return `You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people. 
     The user is about give their response to a question that you have asked. Please provide a relevant reaction to their answer and brief feedback. Remember to keep this concise. Here is the question that 
     was asked: ${context}. Here is the user's response to the question: ${message} Lastly, ask a follow-up question to the user based on their response. Make the question relevant to them yet still broad 
@@ -9,6 +10,7 @@ export const doFollowUp_notLastQuestion_prompt = (context, message) => {
 };
 
 export const notLastQuestion_notFollowUp_prompt = (context, message) => {
+    console.log("next question asked")
     return `You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; 
     do not include quotes around your response. The user is about give their response to a question that you have asked. Please provide a relevant reaction to their answer and say what you liked about 
     their response. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the user's response 
@@ -16,6 +18,7 @@ export const notLastQuestion_notFollowUp_prompt = (context, message) => {
 };
 
 export const lastQuestion_prompt = (context, message) => {
+    console.log("closing remarks")
     return `You are a interviewer conducting a behavioral interview. Make sure to talk in the first person as if this was a normal conversation between two people; do not include 
     quotes around your response. The user is about give their response to a question that you have 
     asked. Please provide a relevant reaction to their answer and say what you liked about their response. Remember to keep this concise. Here is the question that was asked: ${context}. Here is the 
