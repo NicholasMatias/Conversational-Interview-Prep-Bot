@@ -130,9 +130,11 @@ const Folder = ({ folderName, onDelete }) => {
             <div className="folder" onClick={handleOpenModal}>
                 <i className="fa-solid fa-folder folder-icon"></i>
                 <h3 className="folder-name">{folderName}</h3>
+                {folderName!==`${currentUser.displayName}'s Default Folder`?
                 <button className="delete-btn" onClick={handleDelete}>
                     <i className="fa-solid fa-trash"></i>
-                </button>
+                </button>:<></>
+}
             </div>
             {isModalOpen && !isDeleteModalOpen && (
                 <div className="overlay">
