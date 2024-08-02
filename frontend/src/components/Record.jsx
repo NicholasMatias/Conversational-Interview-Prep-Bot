@@ -4,13 +4,13 @@ import { useState } from "react";
 
 const Record = ({ onTranscriptionComplete, onTranscriptionStart }) => {
     const baseURL = import.meta.env.VITE_BASE_URL;
-
     const [isRecording, setIsRecording] = useState(false);
 
     // gets audio after used has pressed end recording button
     const addAudioElement = async (blob) => {
         setIsRecording(true);
         onTranscriptionStart();
+
         // Prepare the blob data to send to the API
         const formData = new FormData();
         formData.append("file", blob, "recording.mp4");

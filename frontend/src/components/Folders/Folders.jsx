@@ -126,6 +126,10 @@ const Folders = () => {
         navigate("/home");
     };
 
+    const toProfile = () => {
+        navigate("/dashboard")
+    }
+
     const toQuestions = () => {
         navigate("/questions");
     };
@@ -136,11 +140,11 @@ const Folders = () => {
                 <div className="navbar">
                     <div className="brand">InterviewMe</div>
                     <ul className="nav-links">
-                        <li>
+                        {/* <li>
                             <a type="button" onClick={toHome}>
                                 Home
                             </a>
-                        </li>
+                        </li> */}
 
                         <li>
                             <a type="button" onClick={toQuestions}>
@@ -151,6 +155,11 @@ const Folders = () => {
                         <li>
                             <a type="button" onClick={toInterviewPage}>
                                 Interview
+                            </a>
+                        </li>
+                        <li>
+                            <a type="button" onClick={toProfile}> 
+                                Profile
                             </a>
                         </li>
 

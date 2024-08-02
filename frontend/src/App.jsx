@@ -8,6 +8,7 @@ import { LandingPage } from "./components/landing_page/LandingPage";
 import Folders from "./components/Folders/Folders";
 import Home from "./components/home/Home";
 import Questions from "./components/questions/Questions";
+import Stats from "./components/dashboard/Stats"
 function App() {
     return (
         <Router>
@@ -19,6 +20,7 @@ function App() {
                 <Route path="/folders" element={<Folders />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/questions" element={<Questions />} />
+                <Route path="/dashboard" element={<Stats/>}/>
             </Routes>
         </Router>
     );

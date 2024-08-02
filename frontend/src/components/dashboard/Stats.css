@@ -1,0 +1,54 @@
+.stats-container{
+    width:100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.stats-header{
+    text-align: center;
+    color:white;
+}
+
+
+.basic-interview-stats{
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+}
+
+.freq-word{
+    margin: 5px;
+    color: white;
+}
+
+.freq-container{
+    width: 60%;
+}
+
+.star-graph{
+    width: 1000px;
+    height: 500px;
+}
+.stats-p{
+    margin: 5px;
+}
+
+.middle{
+    left: 0;
+    top:0;
+    transform: translate(-50%, -50%);
+    color:white;
+}
+
+.score-container{
+    display: flex;
+    margin: 10px;
+    gap: 10px;
+    color:white;
+    font-size: 20px;
+}

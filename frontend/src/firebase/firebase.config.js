@@ -9,7 +9,7 @@ import {
     FacebookAuthProvider,
     signInWithPopup,
     onAuthStateChanged,
-    updateProfile
+    updateProfile,
 } from "firebase/auth";
 import {
     getFirestore,
@@ -25,8 +25,16 @@ import {
     deleteDoc,
     query,
     limit,
-    serverTimestamp
+    serverTimestamp,
 } from "firebase/firestore";
+
+import {
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL,
+    deleteObject,
+} from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCjFjyMbmiEZDeu9Pb6IluxC3cXydh4E2Q",
@@ -42,12 +50,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 const db = getFirestore(app);
 
 export {
     db,
     app,
     auth,
+    storage,
     GoogleAuthProvider,
     FacebookAuthProvider,
     signInWithEmailAndPassword,
@@ -69,5 +79,9 @@ export {
     arrayUnion,
     query,
     limit,
-    serverTimestamp
+    serverTimestamp,
+    ref,
+    uploadBytes,
+    getDownloadURL,
+    deleteObject
 };

@@ -175,7 +175,6 @@ const Profile = () => {
                 const questionObjects = lineupSnap.data().questions || [];
                 const questionTexts = questionObjects.map((q) => q.question);
                 setInterviewQuestions(questionTexts);
-        
             }
         }
     };
@@ -220,7 +219,10 @@ const Profile = () => {
         const messageText = transcribedText || input;
         if (messageText.trim()) {
             setIsLoading(true);
-            const userMessage = { role: "user", content: messageText };
+            const userMessage = {
+                role: "user",
+                content: messageText,
+            };
             setMessages((prevMessages) => [...prevMessages, userMessage]);
 
             // Get the current question
@@ -231,8 +233,6 @@ const Profile = () => {
             const isLastQuestion =
                 currentQuestionIndex === interviewQuestions.length - 1 ||
                 interviewQuestions.length === 1;
-
-            
 
             try {
                 const response = await fetch("http://localhost:5000/api/chat", {
@@ -453,6 +453,122 @@ const Profile = () => {
         } catch (error) {
             console.error("Error saving transcript:", error);
         }
+    };
+
+    const updateUserStats = async (interviewData) => {
+        if (currentUser) {
+            console.log("NEW DATA:");
+            const userInterviewData = interviewData.filter(
+                (q) => q.role !== "bot"
+            );
+            userInterviewData.map((q) => {
+                console.log(
+                    q.situation[1],
+                    q.task[1],
+                    q.action[1],
+                    q.result[1]
+                );
+            });
+            const statsRef = doc(db, "InterviewStats", currentUser.uid);
+            const statsDoc = await getDoc(statsRef);
+
+            let stats = statsDoc.exists()
+                ? statsDoc.data()
+                : {
+                      totalInterviews: 0,
+                      totalQuestionsAnswered: 0,
+                      starScores: [],
+                      averageStarScores: {
+                          situation: 0,
+                          task: 0,
+                          action: 0,
+                          result: 0,
+                      },
+                      frequentWords: [],
+                      averageResponseTime: 0,
+                  };
+
+            stats.totalInterviews++;
+
+            stats.totalQuestionsAnswered += userInterviewData.length;
+
+            const starScores = {
+                situation: 0,
+                task: 0,
+                action: 0,
+                result: 0,
+            };
+            let totalResponseTime = 0;
+
+            userInterviewData.forEach((question) => {
+                starScores.situation += question.situation[1];
+                starScores.task += question.task[1];
+                starScores.action += question.action[1];
+                starScores.result += question.result[1];
+                totalResponseTime += question.responseTime || 0;
+            });
+
+            Object.keys(starScores).forEach((key) => {
+                starScores[key] /= userInterviewData.length;
+                console.log(key, "=>", starScores[key]);
+            });
+
+            stats.starScores.push(starScores);
+
+            Object.keys(stats.averageStarScores).forEach((key) => {
+                stats.averageStarScores[key] =
+                    ((stats.averageStarScores[key] *
+                        (stats.totalQuestionsAnswered -
+                            userInterviewData.length) +
+                        starScores[key]) *
+                        userInterviewData.length) /
+                    stats.totalQuestionsAnswered;
+                console.log(key, "=>", stats.averageStarScores[key]);
+                console.log("key:", key);
+            });
+            console.log("ORIGINAL:", stats.frequentWords);
+            stats.frequentWords = updateFrequentWords(
+                stats.frequentWords,
+                userInterviewData
+            );
+            console.log("NEW:", stats.frequentWords);
+
+            const avgResponseTime =
+                totalResponseTime / userInterviewData.length;
+            stats.averageResponseTime =
+                (stats.averageResponseTime *
+                    (stats.totalQuestionsAnswered - userInterviewData.length) +
+                    avgResponseTime * userInterviewData.length) /
+                stats.totalQuestionsAnswered;
+
+            await setDoc(statsRef, stats);
+        }
+    };
+
+    const updateFrequentWords = (existingFrequentWords, interviewData) => {
+        // Create a Map from the existing frequent words
+        const wordCounts = new Map(
+            existingFrequentWords.map((item) => [item.text, item.count])
+        );
+
+        // Process new words from the interview
+        interviewData.forEach((question) => {
+            const words = question.content.toLowerCase().split(/\s+/);
+            words.forEach((word) => {
+                if (word.length > 2) {
+                    // Ignore short words
+                    wordCounts.set(word, (wordCounts.get(word) || 0) + 1);
+                }
+            });
+        });
+
+        // Convert Map back to array and sort
+        const sortedWords = Array.from(wordCounts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 20) // Keep top 20 words
+            .map(([text, count]) => ({ text, count }));
+
+        return sortedWords;
     };
 
     // sets up the environment for a new interview
@@ -838,12 +954,17 @@ const Profile = () => {
 
         setFeedbackLoading(false);
         setIsFeedbackTime(true);
+        await updateUserStats(feedback);
     };
 
     // nav to questions
     const toQuestions = () => {
         navigate("/questions");
     };
+
+    const toProfile = () =>{
+        navigate("/dashboard")
+    }
 
     return (
         <div>
@@ -854,11 +975,11 @@ const Profile = () => {
                         <div className="navbar">
                             <div className="brand">InterviewMe</div>
                             <ul className="nav-links">
-                                <li>
+                                {/* <li>
                                     <a type="button" onClick={toHome}>
                                         Home
                                     </a>
-                                </li>
+                                </li> */}
 
                                 <li>
                                     <a type="button" onClick={toQuestions}>
@@ -869,6 +990,11 @@ const Profile = () => {
                                 <li>
                                     <a type="button" onClick={toFolders}>
                                         Folders
+                                    </a>
+                                </li>
+                                <li>
+                                    <a type="button" onClick={toProfile}>
+                                        Profile
                                     </a>
                                 </li>
 

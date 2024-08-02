@@ -755,6 +755,9 @@ function Questions() {
             console.error("Error signing out", error);
         }
     };
+    const toProfile = ()=> {
+        navigate("/dashboard")
+    }
 
     return (
         <div className="questions-page">
@@ -762,11 +765,12 @@ function Questions() {
                 <div className="navbar">
                     <div className="brand">InterviewMe</div>
                     <ul className="nav-links">
-                        <li>
+                        {/* <li>
                             <a type="button" onClick={toHome}>
                                 Home
                             </a>
-                        </li>
+                        </li> */}
+                        
                         <li>
                             <a type="button" onClick={toInterview}>
                                 Interview
@@ -775,6 +779,11 @@ function Questions() {
                         <li>
                             <a type="button" onClick={toFolders}>
                                 Folders
+                            </a>
+                        </li>
+                        <li>
+                            <a type="button" onClick={toProfile}> 
+                                Profile
                             </a>
                         </li>
                         <li>
