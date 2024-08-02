@@ -1,18 +1,17 @@
-.stats-container{
-    width:100%;
+.stats-container {
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.stats-header{
+.stats-header {
     text-align: center;
-    color:white;
+    color: white;
 }
 
-
-.basic-interview-stats{
+.basic-interview-stats {
     display: flex;
     flex-direction: column;
     width: 60%;
@@ -21,34 +20,34 @@
     text-align: center;
 }
 
-.freq-word{
+.freq-word {
     margin: 5px;
     color: white;
 }
 
-.freq-container{
+.freq-container {
     width: 60%;
 }
 
-.star-graph{
+.star-graph {
     width: 1000px;
     height: 500px;
 }
-.stats-p{
+.stats-p {
     margin: 5px;
 }
 
-.middle{
+.middle {
     left: 0;
-    top:0;
+    top: 0;
     transform: translate(-50%, -50%);
-    color:white;
+    color: white;
 }
 
-.score-container{
+.score-container {
     display: flex;
     margin: 10px;
     gap: 10px;
-    color:white;
+    color: white;
     font-size: 20px;
 }

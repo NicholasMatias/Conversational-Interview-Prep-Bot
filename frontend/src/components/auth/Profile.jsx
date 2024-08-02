@@ -457,18 +457,10 @@ const Profile = () => {
 
     const updateUserStats = async (interviewData) => {
         if (currentUser) {
-            console.log("NEW DATA:");
             const userInterviewData = interviewData.filter(
                 (q) => q.role !== "bot"
             );
-            userInterviewData.map((q) => {
-                console.log(
-                    q.situation[1],
-                    q.task[1],
-                    q.action[1],
-                    q.result[1]
-                );
-            });
+
             const statsRef = doc(db, "InterviewStats", currentUser.uid);
             const statsDoc = await getDoc(statsRef);
 
@@ -510,7 +502,6 @@ const Profile = () => {
 
             Object.keys(starScores).forEach((key) => {
                 starScores[key] /= userInterviewData.length;
-                console.log(key, "=>", starScores[key]);
             });
 
             stats.starScores.push(starScores);
@@ -523,15 +514,11 @@ const Profile = () => {
                         starScores[key]) *
                         userInterviewData.length) /
                     stats.totalQuestionsAnswered;
-                console.log(key, "=>", stats.averageStarScores[key]);
-                console.log("key:", key);
             });
-            console.log("ORIGINAL:", stats.frequentWords);
             stats.frequentWords = updateFrequentWords(
                 stats.frequentWords,
                 userInterviewData
             );
-            console.log("NEW:", stats.frequentWords);
 
             const avgResponseTime =
                 totalResponseTime / userInterviewData.length;
@@ -962,9 +949,9 @@ const Profile = () => {
         navigate("/questions");
     };
 
-    const toProfile = () =>{
-        navigate("/dashboard")
-    }
+    const toProfile = () => {
+        navigate("/dashboard");
+    };
 
     return (
         <div>

@@ -127,8 +127,8 @@ const Folders = () => {
     };
 
     const toProfile = () => {
-        navigate("/dashboard")
-    }
+        navigate("/dashboard");
+    };
 
     const toQuestions = () => {
         navigate("/questions");
@@ -158,7 +158,7 @@ const Folders = () => {
                             </a>
                         </li>
                         <li>
-                            <a type="button" onClick={toProfile}> 
+                            <a type="button" onClick={toProfile}>
                                 Profile
                             </a>
                         </li>

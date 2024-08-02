@@ -42,7 +42,6 @@ app.post("/api/chat", async (req, res) => {
     const { message, context, lastQuestionCheck, prevIsFollowUp } = req.body;
 
     let lastQuestion = lastQuestionCheck === "quit";
-    console.log(context)
     try {
         const doFollowUp =
             Math.random() > followUpQuestionThreshold && !lastQuestion;
@@ -52,7 +51,7 @@ app.post("/api/chat", async (req, res) => {
             : doFollowUp
             ? doFollowUp_notLastQuestion_prompt(context, message)
             : notLastQuestion_notFollowUp_prompt(context, message);
-        
+
         const response = await groqInstance.chat.completions.create({
             messages: [
                 {

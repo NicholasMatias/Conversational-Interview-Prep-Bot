@@ -70,9 +70,11 @@ function Stats() {
     }, [currentUser]);
 
     if (!stats) {
-        return <div>
-            <h1 className="middle">Loading Scores...</h1>
-        </div>;
+        return (
+            <div>
+                <h1 className="middle">Loading Scores...</h1>
+            </div>
+        );
     }
 
     const scoreClassifier = (result) => {
@@ -198,15 +200,26 @@ function Stats() {
                         Total Questions Answered: {stats.totalQuestionsAnswered}
                     </p>
                 </div>
-                <Spacing/>
-                <h2 className="stats-header">Average STAR Scores For All Question Responses</h2>
+                <Spacing />
+                <h2 className="stats-header">
+                    Average STAR Scores For All Question Responses
+                </h2>
                 <div className="score-container">
-                <p className="score-item">Situation: {stats.averageStarScores.situation.toFixed(2)}</p>
-                <p className="score-item">Task: {stats.averageStarScores.task.toFixed(2)}</p>
-                <p className="score-item">Action: {stats.averageStarScores.action.toFixed(2)}</p>
-                <p className="score-item">Result: {stats.averageStarScores.result.toFixed(2)}</p>
+                    <p className="score-item">
+                        Situation:{" "}
+                        {stats.averageStarScores.situation.toFixed(2)}
+                    </p>
+                    <p className="score-item">
+                        Task: {stats.averageStarScores.task.toFixed(2)}
+                    </p>
+                    <p className="score-item">
+                        Action: {stats.averageStarScores.action.toFixed(2)}
+                    </p>
+                    <p className="score-item">
+                        Result: {stats.averageStarScores.result.toFixed(2)}
+                    </p>
                 </div>
-                <Spacing/>
+                <Spacing />
                 <h2 className="stats-header">Most Frequent Words/Phrases</h2>
                 <div className="freq-container">
                     {stats.frequentWords.map((word, index) => {
@@ -221,9 +234,8 @@ function Stats() {
                 <div className="star-graph">
                     <Line data={starScoreData} options={options} />
                 </div>
-                
 
-                <Spacing/>
+                <Spacing />
             </div>
         </>
     );
