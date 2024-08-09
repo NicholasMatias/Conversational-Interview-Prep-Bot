@@ -176,6 +176,9 @@ const Profile = () => {
                 const questionTexts = questionObjects.map((q) => q.question);
                 setInterviewQuestions(questionTexts);
             }
+            else{
+                setInterviewQuestions([])
+            }
         }
     };
     fetchLineupQuestions();
